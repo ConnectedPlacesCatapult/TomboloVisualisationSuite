@@ -1,0 +1,15 @@
+[db]
+host = "DB_HOST"
+port = "DB_PORT"
+username = "DB_USER"
+password = "DB_PASSWORD"
+database = "DB"
+
+[logger]
+level = "LOG_LEVEL"
+
+[cors]
+origin = "CORS_ORIGIN"
+
+[client]
+authEndpoint = "AUTH_ENDPOINT"

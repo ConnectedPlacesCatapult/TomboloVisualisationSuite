@@ -1,0 +1,15 @@
+<mat-sidenav-container [@fadeIn]>
+
+  <mat-sidenav class="sidebar sidebar-left" align="start" mode="side" [opened]="leftBarOpen">
+    <router-outlet></router-outlet>
+  </mat-sidenav>
+
+  <tombolo-mapbox id="main-map" style="/maps/6a452c87-0645-4abb-b73e-e8265a60c890/style.json"></tombolo-mapbox>
+
+  <mat-sidenav class="sidebar sidebar-right" align="end" mode="over" [opened]="rightBarOpen">
+    <router-outlet name="rightBar"></router-outlet>
+  </mat-sidenav>
+
+</mat-sidenav-container>
+
+

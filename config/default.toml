@@ -1,0 +1,34 @@
+[logger]
+label = "tombolo-viewer"
+level = "debug"
+
+
+[db]
+host = "localhost"
+port = 5432
+username = "tombolo"
+password = "*************"  # Excluded from git - set DB_PASSWORD environment variable
+database = "tombolo-staging"
+dialect = "postgres"
+loglevel = 'debug' # Log level at which Sequelize logs are made
+
+[jwt]
+issuer = "Emu Analytics"
+secret = "pm7ycGPshGXx"
+
+[cors]
+origin = "*"
+credentials = true
+
+[mapnik]
+simplify_distance = 1
+area_threshold = 50
+
+[server]
+baseUrl = "http://localhost:3000"
+datasetCaching = false
+slowTileLimit = 500 # ms
+largeTileLimit = 100000 # bytes
+
+[client]
+authEndpoint = "/accounts/api/v1"

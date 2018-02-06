@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+
+  tombolo-viewer:
+    image: registry.emu-analytics.net/tombolo/viewer:ci
+    volumes:
+      - data:/data/mbtiles
+    networks:
+      - frontside
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - DB_HOST=**********
+      - DB_USER=tombolo
+      - DB_PASSWORD=**********
+      - DB=tombolo-staging
+      - NODE_CONFIG={"server":{"baseUrl":"https://tombolo-staging.emu-analytics.net"}}
+
+volumes:
+  data:
+    external:
+      name: mapstudio_data
+
+networks:
+  frontside:
+    external: true

@@ -1,0 +1,73 @@
+$fa-font-path: "../node_modules/font-awesome/fonts";
+
+@import '~font-awesome/scss/font-awesome';
+@import '~@angular/material/theming';
+@import '~mapbox-gl/dist/mapbox-gl.css';
+@import 'app/app-theme';
+@import 'app/dialogs/dialog-theme.scss';
+
+@include mat-core();
+
+// Define theme
+$app-primary: mat-palette($mat-blue-grey);
+$app-accent:  mat-palette($mat-light-green, 400);
+$app-warn:    mat-palette($mat-red);
+$dark-theme:  mat-dark-theme($app-primary, $app-accent, $app-warn);
+$light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+
+// Apply theme to base components
+@include angular-material-theme($light-theme);
+
+// Apply theme to dialogs
+@include dialog-theme($light-theme);
+
+// Apply theme to main
+tombolo-root {
+  @include angular-material-theme($dark-theme);
+  @include app-theme($dark-theme);
+}
+
+html {
+    // Disable 'bounce' overscroll on Chrome
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  // Helps fonts on OSX looks more consistent with other systems
+  // Isn't currently in button styles due to performance concerns
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+}
+
+// Ensure 'hidden' is really hidden
+[hidden] { display: none !important;}
+
+/////////////////////////////////////
+// App loader screen
+
+.preloader {
+  @include mat-fill();
+  background-color: #efefef;
+  background-image: url(/assets/images/tombolo_logo.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 500px;
+}
+
+//////////////////////////////////////////
+// Global Angular Material style overrides
+
+.mat-drawer-backdrop {
+  display: none !important;
+}
+
