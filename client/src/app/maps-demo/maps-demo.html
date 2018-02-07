@@ -1,7 +1,7 @@
 <mat-nav-list fxFlex>
   <h3 mat-subheader><mat-icon fontSet="fa" fontIcon="fa-map"></mat-icon>Example Maps</h3>
   <mat-radio-group>
-    <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/mapdemo', map.id]">
+    <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/mapdemo', map.id]" routerLinkActive="active">
      {{map.name}}
     </a>
   </mat-radio-group>
