@@ -21,6 +21,8 @@ import {MapboxModule} from './mapbox/index';
 import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
 import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
 import {MapsDemoComponent} from './maps-demo/maps-demo.component';
+import {MapInfoComponent} from './map-info/map-info.component';
+import {MarkdownModule} from 'ngx-md';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -36,7 +38,8 @@ export function AppConfigFactory(configService: ConfigService) {
     AppComponent,
     CyclingDemoComponent,
     BasemapDemoComponent,
-    MapsDemoComponent
+    MapsDemoComponent,
+    MapInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +47,7 @@ export function AppConfigFactory(configService: ConfigService) {
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
+    MarkdownModule.forRoot(),
     AppRoutingModule,
     MaterialModule,
     MapboxModule,
