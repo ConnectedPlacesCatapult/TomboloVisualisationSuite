@@ -44,6 +44,16 @@ export class TomboloMap extends Model<TomboloMap> {
   })
   description: string;
 
+  @Column({
+    type: DataType.DOUBLE
+  })
+  zoom: number;
+
+  @Column({
+    type: DataType.ARRAY(DataType.DOUBLE)
+  })
+  center: number;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,

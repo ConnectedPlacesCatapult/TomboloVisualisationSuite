@@ -20,7 +20,7 @@ export class Palette extends Model<Palette> {
     type: DataType.ARRAY(DataType.TEXT),
     field: 'color_stops'
   })
-  colorStops: string;
+  colorStops: string[];
 
 
 }

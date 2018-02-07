@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
 import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
+import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 
 const routes: Routes = [
   {
@@ -16,10 +17,18 @@ const routes: Routes = [
     path: 'basemaps',
     component: BasemapDemoComponent
   },
- // { path: '',
- //   redirectTo: '/cyclingdemo',
- //   pathMatch: 'full'
- // }
+  {
+    path: 'mapdemo',
+    component: MapsDemoComponent
+  },
+  {
+    path: 'mapdemo/:mapID',
+    component: MapsDemoComponent
+  },
+  { path: '',
+    redirectTo: '/mapdemo',
+    pathMatch: 'full'
+  }
 ];
 
 @NgModule({

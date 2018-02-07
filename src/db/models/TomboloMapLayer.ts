@@ -53,6 +53,12 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
   })
   paletteId: string;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'palette_inverted'
+  })
+  paletteInverted: boolean;
+
   @ForeignKey(() => Dataset)
   @Column({
     type: DataType.UUID,

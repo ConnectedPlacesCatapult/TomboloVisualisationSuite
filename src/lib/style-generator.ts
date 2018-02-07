@@ -1,10 +1,9 @@
 import {Container, Service} from 'typedi';
-import {LoggerService, Logger} from './logger';
+import {Logger, LoggerService} from './logger';
 import {TomboloMap} from '../db/models/TomboloMap';
 import {TomboloMapLayer} from '../db/models/TomboloMapLayer';
 import {DATA_LAYER_ID} from './tile-renderers/postgis-tile-renderer';
-import * as config from 'config';
-import {max, min} from 'moment';
+
 const { URL } = require('url');
 const LAYER_PREFIX = 'datalayer-';
 
@@ -24,6 +23,10 @@ export class StyleGenerator {
 
   generateMapStyle(map: TomboloMap, baseUrl: string): object {
     let style = map.basemap.style;
+
+    style['zoom'] = map.zoom || style['zoom'];
+    style['center'] = map.center || style['center'];
+
     style['sources'] = {...style['sources'], ...this.generateSources(map)};
     style['sources'] = this.expandTileSources(baseUrl, style['sources']);
 
@@ -90,12 +93,12 @@ export class StyleGenerator {
       source: layer.datasetId,
       'source-layer':  DATA_LAYER_ID,
       type: layer.layerType,
-      paint: this.paintStylForLayer(layer),
+      paint: this.paintStyleForLayer(layer),
       filter: ['has', layer.datasetAttribute]
     };
   }
 
-  private paintStylForLayer(layer: TomboloMapLayer): object {
+  private paintStyleForLayer(layer: TomboloMapLayer): object {
     if (layer.layerType === 'fill') {
       return {
         'fill-color': this.colorRampForLayer(layer),
@@ -108,6 +111,15 @@ export class StyleGenerator {
         'circle-radius': this.radiusRampForLayer(layer)
       };
     }
+    else if (layer.layerType === 'line') {
+      return {
+        'line-color': this.colorRampForLayer(layer),
+        'line-width': {
+          base: 1.3,
+          stops: [[10, 2], [20, 20]]
+        }
+      };
+    }
   }
 
   private colorRampForLayer(layer: TomboloMapLayer): object {
@@ -117,6 +129,9 @@ export class StyleGenerator {
     if (!dataAttribute) {
       throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
     }
+
+    const colorStops = layer.palette.colorStops;
+    if (layer.paletteInverted) colorStops.reverse();
 
     const stops = dataAttribute.quantiles5.map((val, i) => [val, layer.palette.colorStops[i]]).reduce((a, b) => a.concat(b), []);
 

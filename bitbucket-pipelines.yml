@@ -28,7 +28,7 @@ pipelines:
             - docker login https://registry.emu-analytics.net -u $DOCKER_USER -p $DOCKER_PASSWORD
             - docker build -t registry.emu-analytics.net/tombolo/viewer:ci -f Dockerfile.ci .
             - docker push registry.emu-analytics.net/tombolo/viewer:ci
-            
+
 
   tags:
       release-*:

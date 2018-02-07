@@ -20,6 +20,7 @@ import {MapRegistry} from "./mapbox/map-registry.service";
 import {MapboxModule} from './mapbox/index';
 import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
 import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
+import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -34,7 +35,8 @@ export function AppConfigFactory(configService: ConfigService) {
   declarations: [
     AppComponent,
     CyclingDemoComponent,
-    BasemapDemoComponent
+    BasemapDemoComponent,
+    MapsDemoComponent
   ],
   imports: [
     BrowserModule,

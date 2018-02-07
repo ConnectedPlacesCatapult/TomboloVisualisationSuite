@@ -2,14 +2,13 @@
  * Top-level app component - just an empty router-outlet to host components
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {environment} from '../environments/environment';
 import 'rxjs/add/operator/filter';
 import {NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
-
 const debug = Debug('tombolo:app');
 
 @Component({
