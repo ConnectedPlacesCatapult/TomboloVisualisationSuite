@@ -7,5 +7,5 @@
   </mat-radio-group>
 </mat-nav-list>
 <mat-nav-list>
-  <a routerLink="/basemaps" mat-list-item>Jump to Basemap demo</a>
+  <a [routerLink]="['/', {outlets:{primary:['basemaps'], rightBar:null}}]" mat-list-item>Jump to Basemap demo</a>
 </mat-nav-list>
