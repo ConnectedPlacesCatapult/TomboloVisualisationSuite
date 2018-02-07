@@ -7,7 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
 
-const debug = Debug('tombolo:basemap-demo');
+const debug = Debug('tombolo:maps-demo');
 
 @Component({
   selector: 'maps-demo',

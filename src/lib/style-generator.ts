@@ -24,6 +24,9 @@ export class StyleGenerator {
   generateMapStyle(map: TomboloMap, baseUrl: string): object {
     let style = map.basemap.style;
 
+    style['name'] = map.name;
+    style['metadata']['description'] = map.description;
+
     style['zoom'] = map.zoom || style['zoom'];
     style['center'] = map.center || style['center'];
 
