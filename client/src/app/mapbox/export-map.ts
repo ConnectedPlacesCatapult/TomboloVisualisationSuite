@@ -97,11 +97,11 @@ export class ExportMap {
   }
 
   // Create the hidden div which the renderMap container sits in.
-  private createHiddenDiv(): HTMLDataElement {
+  private createHiddenDiv(): HTMLDivElement {
     let hidden = <HTMLDivElement>document.createElement('div');
+
     hidden.className = 'hidden-map';
     hidden.id = 'hidden-map';
-    hidden.style = 'width: 0px; height: 0px; position: fixed; overflow: hidden;';
     document.body.appendChild(hidden);
     return hidden;
   }

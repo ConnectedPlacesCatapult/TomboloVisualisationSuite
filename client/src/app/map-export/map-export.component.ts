@@ -25,6 +25,7 @@ export class MapExportComponent implements OnInit {
 
   mapName: string;
   mapDescription: string;
+  exportForm: FormGroup;
   presets = {
     "a4_150dpi": { width: 18.2708, height: 12.9167, dpi: 150 }
   }
@@ -65,7 +66,7 @@ export class MapExportComponent implements OnInit {
         this.notificationService.info(`Downloaded ${name}`);
         this.routeBack();
       })
-      .catch(err => this.notificationService.error('Error', err));
+      .catch(err => this.notificationService.error(err));
   }
 
   formatFileName(name: string): string {
