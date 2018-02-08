@@ -5,6 +5,7 @@ import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
+import * as moment from 'moment';
 import {Style} from 'mapbox-gl';
 
 const debug = Debug('tombolo:map-info');
@@ -12,17 +13,21 @@ const debug = Debug('tombolo:map-info');
 @Component({
   selector: 'map-info',
   templateUrl: './map-info.html',
-  styles: ['div {padding: 0.5em;}']
+  styleUrls: ['./map-info.scss']
 })
 export class MapInfoComponent implements OnInit {
 
-  constructor(private activatedRoute: ActivatedRoute, private httpClient: HttpClient) {}
+  constructor(private activatedRoute: ActivatedRoute,
+              private httpClient: HttpClient,
+              private mapRegistry: MapRegistry) {}
 
   mapName: string;
+  mapID: string;
   mapDescription: string;
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
+      this.mapID = params.mapID;
       this.loadMapInfo(params.mapID);
     });
   }
@@ -38,5 +43,4 @@ export class MapInfoComponent implements OnInit {
       this.mapDescription = style.metadata['description'];
     });
   }
-
 }
