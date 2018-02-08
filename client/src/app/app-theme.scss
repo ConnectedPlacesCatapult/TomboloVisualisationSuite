@@ -23,6 +23,10 @@ $sidebar-width: 220px !default;
     width: $sidebar-width;
   }
 
+  .sidebar-right {
+    background-color: mat-color($mat-grey, 800, 0.95)
+  }
+
   .mat-nav-list .mat-subheader {
     background-color: mat-color($mat-grey, 900, 0.5);
     padding-left: 18px;

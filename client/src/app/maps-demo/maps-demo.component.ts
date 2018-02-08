@@ -34,10 +34,15 @@ export class MapsDemoComponent implements OnInit {
     debug('mapID:', mapID);
     if (!mapID) return;
     this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      debug(style);
       this.mapRegistry.getMap('main-map').then(map => {
         map.setStyle(style);
-        map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch})
+
+        // Fly to default location if not set in URL
+        const url = new URL(window.location.href);
+        let zoom = url.searchParams.get('zoom');
+        if (!zoom) {
+          map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
+        }
       });
     });
   }
