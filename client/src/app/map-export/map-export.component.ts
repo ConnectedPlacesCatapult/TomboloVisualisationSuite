@@ -61,7 +61,6 @@ export class MapExportComponent implements OnInit {
         this.exportForm.get('dpi').value,
         this.exportForm.get('format').value))
       .then(name => {
-        console.log(name + '--');
         debug('Downloaded ' + name);
         this.notificationService.info(`Downloaded ${name}`);
         this.routeBack();
