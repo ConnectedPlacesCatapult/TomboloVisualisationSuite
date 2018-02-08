@@ -12,6 +12,9 @@ export class ExportMap {
   renderMap: Map;
   nativeDPI: number;
 
+  dimensionsLimit = 1200;
+  dpiLimit = 300;
+
   constructor() {
   }
 
@@ -26,7 +29,16 @@ export class ExportMap {
    * @returns {Promise<string>}
    */
   downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string): Promise<string> {
-    const containerWidth = width*96, containerHeight = height*96;
+
+    // Handle errors
+    const errors = this.getErrors(width, height, dpi);
+    if (errors !== '') {
+      return new Promise((resolve,reject) => {
+        reject(new Error(errors));
+      });
+    }
+
+    const containerWidth = (width/25.4)*96, containerHeight = (height/25.4)*96;
     this.nativeDPI = window.devicePixelRatio * 96;
 
     this.setCanvasDPI(dpi);
@@ -43,6 +55,7 @@ export class ExportMap {
     });
 
     return new Promise((resolve,reject) => {
+
       this.renderMap.on('load', () => {
         const fileName = `${name}.${format}`;
 
@@ -57,6 +70,7 @@ export class ExportMap {
             resolve(fileName);
           } else {
             reject(new Error(`Unsupported format ${format}. Must be png or pdf.`));
+            return;
           }
 
           this.revertChanges();
@@ -113,5 +127,19 @@ export class ExportMap {
     const hidden = document.getElementById('hidden-map');
     hidden.parentNode.removeChild(hidden);
     this.setCanvasDPI(this.nativeDPI);
+  }
+
+  private getErrors(width: number, height: number, dpi: number): string {
+    let errors = [];
+
+    if (width > this.dimensionsLimit || width < 0 || height > this.dimensionsLimit || height < 0) {
+      errors.push(`Width and height be between 0 and ${this.dimensionsLimit}mm.`);
+    }
+
+    if (dpi > this.dpiLimit || dpi < 0) {
+      errors.push(`DPI must be between 0 and ${this.dpiLimit}.`);
+    }
+
+    return errors.join(' ');
   }
 }

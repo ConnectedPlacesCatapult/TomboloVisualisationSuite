@@ -27,7 +27,10 @@ export class MapExportComponent implements OnInit {
   mapDescription: string;
   exportForm: FormGroup;
   presets = {
-    "a4_150dpi": { width: 18.2708, height: 12.9167, dpi: 150 }
+    "a4_150dpi": { width: 297, height: 210, dpi: 150, format: 'png' },
+    "a4_300dpi": { width: 297, height: 210, dpi: 300, format: 'png' },
+    "a3_150dpi": { width: 420, height: 297, dpi: 150, format: 'png' },
+    "a3_300dpi": { width: 420, height: 297, dpi: 300, format: 'png' }
   }
 
   ngOnInit() {
@@ -63,7 +66,6 @@ export class MapExportComponent implements OnInit {
         this.exportForm.get('format').value))
       .then(name => {
         debug('Downloaded ' + name);
-        this.notificationService.info(`Downloaded ${name}`);
         this.routeBack();
       })
       .catch(err => this.notificationService.error(err));
@@ -82,7 +84,8 @@ export class MapExportComponent implements OnInit {
     this.exportForm.patchValue({
       width: this.presets[preset].width,
       height: this.presets[preset].height,
-      dpi: this.presets[preset].dpi
+      dpi: this.presets[preset].dpi,
+      format: this.presets[preset].format
     });
   }
 

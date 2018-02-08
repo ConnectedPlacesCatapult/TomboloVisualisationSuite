@@ -36,6 +36,9 @@
       <span matPrefix class="prefix">Preset Layouts</span>
       <mat-select (change)="onPresetChange($event)">
         <mat-option value="a4_150dpi">A4 at 150 DPI</mat-option>
+        <mat-option value="a4_300dpi">A4 at 300 DPI</mat-option>
+        <mat-option value="a3_150dpi">A3 at 150 DPI</mat-option>
+        <mat-option value="a3_300dpi">A3 at 300 DPI</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -43,6 +46,6 @@
   </div>
   <div class="buttons">
     <button mat-button (click)="routeBack()">Back</button>
-    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid">Save</button>
+    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid">Export</button>
   </div>
 </mat-nav-list>
