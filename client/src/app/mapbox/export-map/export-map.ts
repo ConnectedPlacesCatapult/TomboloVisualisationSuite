@@ -66,27 +66,26 @@ export class ExportMap {
         setTimeout(() => {
           let canvas = this.renderMap.getCanvas();
 
-          // Before blobbing, draw something overlaying the map.
-          let colourScaleCanvas = this.mapDom.createColourScaleCanvas(canvas.width, canvas.height);
-
-          let colourScaleCtx = colourScaleCanvas.getContext("2d");
-
-          // User-defined draw instructions for the colour-scale canvas.
+          // Overlay user-defined draw instructions for the colour-scale canvas.
           if (drawOverlay !== null) {
-            drawOverlay(colourScaleCtx);
-          }
+            let colourScaleCanvas = this.mapDom.createColourScaleCanvas(canvas.width, canvas.height);
+            let colourScaleCtx = colourScaleCanvas.getContext("2d");
 
-          // Combine the map canvas and the overlayed colour-scale canvas.
-          let map2dCanvas = webglToCanvas2d(canvas);
-          let mapCtx = map2dCanvas.getContext("2d");
-          mapCtx.drawImage(colourScaleCanvas, 0, 0);
+            // Pass context into draw instructions.
+            drawOverlay(colourScaleCtx);
+            canvas = webglToCanvas2d(canvas);
+            let mapCtx = canvas.getContext("2d");
+
+            // Combine the map and overlay canvases.
+            mapCtx.drawImage(colourScaleCanvas, 0, 0);
+          }
 
 
           if (format === 'png') {
-            map2dCanvas.toBlob(blob => saveAs(blob, fileName));
+            canvas.toBlob(blob => saveAs(blob, fileName));
             resolve(fileName);
           } else if (format === 'pdf') {
-            this.buildPdf(map2dCanvas, fileName, width, height);
+            this.buildPdf(canvas, fileName, width, height);
             resolve(fileName);
           } else {
             reject(new Error(`Unsupported format ${format}. Must be png or pdf.`));
