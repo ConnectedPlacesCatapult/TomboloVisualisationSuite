@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -12,9 +12,11 @@ const debug = Debug('tombolo:maps-demo');
 @Component({
   selector: 'maps-demo',
   templateUrl: './maps-demo.html',
-  styles: [':host{flex-direction:column; height: 100%;}']
+  styles: []
 })
 export class MapsDemoComponent implements OnInit {
+
+  @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   maps$: Observable<object[]> = null;
 
@@ -34,10 +36,15 @@ export class MapsDemoComponent implements OnInit {
     debug('mapID:', mapID);
     if (!mapID) return;
     this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      debug(style);
       this.mapRegistry.getMap('main-map').then(map => {
         map.setStyle(style);
-        map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch})
+
+        // Fly to default location if not set in URL
+        const url = new URL(window.location.href);
+        let zoom = url.searchParams.get('zoom');
+        if (!zoom) {
+          map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
+        }
       });
     });
   }

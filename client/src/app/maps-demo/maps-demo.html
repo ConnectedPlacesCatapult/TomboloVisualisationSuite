@@ -1,11 +1,20 @@
-<mat-nav-list fxFlex>
-  <h3 mat-subheader><mat-icon fontSet="fa" fontIcon="fa-map"></mat-icon>Example Maps</h3>
+<h3 class="sidebar-header"><mat-icon fontSet="fa" fontIcon="fa-map"></mat-icon> Example Maps</h3>
+
+<div class="sidebar-content">
+  <mat-nav-list>
   <mat-radio-group>
     <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo', map.id]}}]" routerLinkActive="active">
-     {{map.name}}
+      {{map.name}}
     </a>
   </mat-radio-group>
-</mat-nav-list>
-<mat-nav-list>
-  <a [routerLink]="['/', {outlets:{primary:['basemaps'], rightBar:null}}]" mat-list-item>Jump to Basemap demo</a>
-</mat-nav-list>
+  </mat-nav-list>
+</div>
+
+
+<div class="sidebar-footer">
+  <div class="button-box">
+
+    <a mat-button [routerLink]="['/', {outlets:{primary:['basemaps'], rightBar:null}}]">Jump to Basemap demo</a>
+  </div>
+
+</div>

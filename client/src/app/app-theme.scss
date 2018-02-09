@@ -1,8 +1,13 @@
 @import '../../node_modules/@angular/material/theming';
 
 $sidebar-width: 220px !default;
+$sidebar-padding: 0.5em 0.75em;
 
-@mixin app-theme($theme) {
+@mixin app-theme($theme, $typography: null) {
+
+  @if $typography == null {
+    $typography: mat-typography-config();
+  }
 
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -23,6 +28,10 @@ $sidebar-width: 220px !default;
     width: $sidebar-width;
   }
 
+  .sidebar-right {
+    background-color: mat-color($mat-grey, 800, 0.95)
+  }
+
   .mat-nav-list .mat-subheader {
     background-color: mat-color($mat-grey, 900, 0.5);
     padding-left: 18px;
@@ -36,6 +45,49 @@ $sidebar-width: 220px !default;
   a.mat-list-item.active, a.mat-list-item.active:hover, a.mat-list-item.active:visited, a.mat-list-item.active:focus {
     background-color: mat-color($accent);
     color: mat-contrast($accent, 500);
+  }
+
+  /* Sidebar styling */
+  .sidebar-component {
+    @include mat-fill();
+    display: flex;
+    flex-direction: column;
+  }
+
+  h3.sidebar-header {
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    padding: $sidebar-padding;
+    margin: 0;
+
+    color: mat-color($foreground, secondary-text);
+    background-color: mat-color($background, background);
+    font-family: mat-font-family($typography, body-2);
+    font-size: mat-font-size($typography, body-2);
+    font-weight: mat-font-weight($typography, body-2);
+  }
+
+  .sidebar-content {
+    @include mat-typography-level-to-styles($typography, body-1);
+
+    overflow-y: auto;
+    flex: 1 1;
+
+    &.with-padding {
+      padding: $sidebar-padding;
+    }
+  }
+
+  .sidebar-footer {
+
+  }
+
+  .button-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: $sidebar-padding;
   }
 
 }
