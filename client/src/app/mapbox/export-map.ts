@@ -64,16 +64,13 @@ export class ExportMap {
           let canvas = this.renderMap.getCanvas();
 
           // Before blobbing, draw something overlaying the map.
-          let canvasContainer = document.getElementsByClassName('mapboxgl-canvas-container')[1];
-          let colourScaleCanvas = document.createElement('canvas');
-          colourScaleCanvas.setAttribute('id', 'colourScaleCanvas');
-          colourScaleCanvas.setAttribute('width', canvas.width);
-          colourScaleCanvas.setAttribute('height', canvas.height);
-          canvasContainer.appendChild(colourScaleCanvas);
+          let colourScaleCanvas = this.createColourScaleCanvas();
+          let colourScaleCtx = colourScaleCanvas.getContext("2d");
 
-          let ctx=colourScaleCanvas.getContext("2d");
+          // User-defined draw instructions for the colour-scale canvas.
           drawOverlay(ctx);
 
+          // Combine the map canvas and the overlayed colour-scale canvas.
           let map2dCanvas = webglToCanvas2d(canvas);
           let mapCtx = map2dCanvas.getContext("2d");
           mapCtx.drawImage(colourScaleCanvas, 0, 0);
@@ -135,6 +132,15 @@ export class ExportMap {
     hidden.id = 'hidden-map';
     document.body.appendChild(hidden);
     return hidden;
+  }
+
+  private createColourScaleCanvas(): HTMLCanvasElement {
+    let canvasContainer = document.getElementsByClassName('mapboxgl-canvas-container')[1];
+    let colourScaleCanvas = document.createElement('canvas');
+    colourScaleCanvas.setAttribute('id', 'colourScaleCanvas');
+    colourScaleCanvas.setAttribute('width', canvas.width);
+    colourScaleCanvas.setAttribute('height', canvas.height);
+    canvasContainer.appendChild(colourScaleCanvas);
   }
 
   // Remove temporary DOM elements and map copy,
