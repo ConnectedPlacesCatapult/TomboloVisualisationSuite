@@ -32,7 +32,7 @@ export class ExportMap {
    * @param {string} format
    * @returns {Promise<string>}
    */
-  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string, drawOverlay = () => {}): Promise<string> {
+  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string, drawOverlay: (ctx) => void): Promise<string> {
 
     // Handle errors
     const errors = this.getErrors(width, height, dpi);
@@ -68,10 +68,13 @@ export class ExportMap {
 
           // Before blobbing, draw something overlaying the map.
           let colourScaleCanvas = this.mapDom.createColourScaleCanvas(canvas.width, canvas.height);
+
           let colourScaleCtx = colourScaleCanvas.getContext("2d");
 
           // User-defined draw instructions for the colour-scale canvas.
-          drawOverlay(colourScaleCtx);
+          if (drawOverlay !== null) {
+            drawOverlay(colourScaleCtx);
+          }
 
           // Combine the map canvas and the overlayed colour-scale canvas.
           let map2dCanvas = webglToCanvas2d(canvas);

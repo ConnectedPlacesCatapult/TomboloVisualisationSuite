@@ -13,7 +13,7 @@ export class TomboloMapbox extends Map {
 
   exportMap = new ExportMap();
 
-  export(name, width, height, dpi, format, drawOverlay): Promise<string> {
+  export(name, width, height, dpi, format, drawOverlay: (ctx) => void = null): Promise<string> {
     const options = {
       center: this.getCenter(),
       zoom: this.getZoom(),
