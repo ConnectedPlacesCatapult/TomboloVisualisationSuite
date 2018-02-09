@@ -1,7 +1,14 @@
-<mat-nav-list><h3 mat-subheader><mat-icon fontSet="fa" fontIcon="fa-info-circle"></mat-icon>Map Info</h3></mat-nav-list>
-<div class="mat-body-1" Markdown [data]="mapDescription"></div>
-<div class="export">
-  <button mat-button
-     [routerLink]="['/', {outlets: {'rightBar': ['mapexport', mapID]}}]">Export map
-  </button>
+<h3 class="sidebar-header">
+  <mat-icon fontSet="fa" fontIcon="fa-info-circle"></mat-icon>
+  Map Info
+</h3>
+
+<div class="sidebar-content with-padding" Markdown [data]="mapDescription"></div>
+
+<div class="sidebar-footer">
+  <div class="button-box">
+    <button mat-button
+            [routerLink]="['/', {outlets: {'rightBar': ['mapexport', mapID]}}]">Export map
+    </button>
+  </div>
 </div>

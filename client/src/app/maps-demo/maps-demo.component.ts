@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -12,9 +12,11 @@ const debug = Debug('tombolo:maps-demo');
 @Component({
   selector: 'maps-demo',
   templateUrl: './maps-demo.html',
-  styles: [':host{flex-direction:column; height: 100%;}']
+  styles: []
 })
 export class MapsDemoComponent implements OnInit {
+
+  @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   maps$: Observable<object[]> = null;
 

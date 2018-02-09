@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -16,6 +16,8 @@ const debug = Debug('tombolo:map-info');
   styleUrls: ['./map-info.scss']
 })
 export class MapInfoComponent implements OnInit {
+
+  @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   constructor(private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,

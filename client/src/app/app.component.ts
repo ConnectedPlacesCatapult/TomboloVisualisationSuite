@@ -100,7 +100,7 @@ export class AppComponent implements OnInit {
 
     if (zoom && lng && lat) {
       // Position map based on URL query params: zoom, lng, lat
-      this.mapRegistry.getMap('main-map').then(map => map.jumpTo({zoom: +zoom, center: [+lng, +lat]});
+      this.mapRegistry.getMap('main-map').then(map => map.jumpTo({zoom: +zoom, center: [+lng, +lat]}));
     }
 
     return true;
