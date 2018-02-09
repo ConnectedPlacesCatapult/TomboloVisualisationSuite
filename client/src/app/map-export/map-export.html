@@ -1,0 +1,57 @@
+<mat-nav-list *ngIf="mapName">
+  <h3 mat-subheader><mat-icon fontSet="fa" fontIcon="fa-info-circle"></mat-icon>Export Map</h3>
+  <div class="nav-content">
+    <form [formGroup]="exportForm">
+
+      <mat-form-field class="form-field">
+        <span matPrefix class="prefix">Name</span>
+        <input matInput formControlName="name">
+      </mat-form-field>
+
+      <mat-form-field class="form-field-half">
+        <span matPrefix class="prefix">Width</span>
+        <input matInput formControlName="width">
+      </mat-form-field>
+
+      <mat-form-field class="form-field-half">
+        <span matPrefix class="prefix">Height</span>
+        <input matInput formControlName="height">
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <span matPrefix class="prefix">DPI</span>
+        <input matInput formControlName="dpi">
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <span matPrefix class="prefix">Format</span>
+        <mat-select formControlName="format">
+          <mat-option value="png">PNG</mat-option>
+          <mat-option value="pdf">PDF</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+
+    <mat-form-field class="form-field presets">
+      <span matPrefix class="prefix">Preset Layouts</span>
+      <mat-select (change)="onPresetChange($event)" [ngModel]="selectedPreset">
+        <mat-option value="a4_150dpi">A4 at 150 DPI</mat-option>
+        <mat-option value="a4_300dpi">A4 at 300 DPI</mat-option>
+        <mat-option value="a3_150dpi">A3 at 150 DPI</mat-option>
+        <mat-option value="a3_300dpi">A3 at 300 DPI</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+  </div>
+  <div class="buttons">
+    <button mat-button (click)="routeBack()">Back</button>
+    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || exportLoading">Export</button>
+  </div>
+</mat-nav-list>
+
+<mat-nav-list *ngIf="exportLoading || !mapName">
+  <div class="spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+</mat-nav-list>

@@ -9,7 +9,7 @@ import {APP_CONFIG, AppConfig, ConfigService} from "./config.service";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppRoutingModule} from "./app-routing.module";
 import {DialogsModule} from "./dialogs/index";
 import {LocalStorageModule} from 'angular-2-local-storage';
@@ -23,6 +23,8 @@ import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
 import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
+import {MapExportComponent} from "./map-export/map-export.component";
+import {MatInputModule} from "@angular/material";
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -39,10 +41,13 @@ export function AppConfigFactory(configService: ConfigService) {
     CyclingDemoComponent,
     BasemapDemoComponent,
     MapsDemoComponent,
-    MapInfoComponent
+    MapInfoComponent,
+    MapExportComponent
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    MatInputModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
     ReactiveFormsModule,
