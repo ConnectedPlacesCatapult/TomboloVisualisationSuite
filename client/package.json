@@ -39,6 +39,7 @@
     "ngx-md": "^3.1.1",
     "rxjs": "^5.5.2",
     "sort-object": "^3.0.2",
+    "webgl-to-canvas2d": "^1.1.0",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {

@@ -6,13 +6,14 @@ import 'rxjs/add/operator/map';
 import * as jsPDF from 'jspdf';
 import {saveAs} from 'file-saver';
 import {Map} from 'mapbox-gl';
+import * as webglToCanvas2d from 'webgl-to-canvas2d';
 
 export class ExportMap {
 
   renderMap: Map;
   nativeDPI: number;
 
-  dimensionsLimit = 1200;
+  dimensionsLimit = 1200; // Max width and height in mm
   dpiLimit = 300;
 
   constructor() {
@@ -28,7 +29,7 @@ export class ExportMap {
    * @param {string} format
    * @returns {Promise<string>}
    */
-  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string): Promise<string> {
+  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string, drawOverlay): Promise<string> {
 
     // Handle errors
     const errors = this.getErrors(width, height, dpi);
@@ -62,11 +63,27 @@ export class ExportMap {
         setTimeout(() => {
           let canvas = this.renderMap.getCanvas();
 
+          // Before blobbing, draw something overlaying the map.
+          let canvasContainer = document.getElementsByClassName('mapboxgl-canvas-container')[1];
+          let colourScaleCanvas = document.createElement('canvas');
+          colourScaleCanvas.setAttribute('id', 'colourScaleCanvas');
+          colourScaleCanvas.setAttribute('width', canvas.width);
+          colourScaleCanvas.setAttribute('height', canvas.height);
+          canvasContainer.appendChild(colourScaleCanvas);
+
+          let ctx=colourScaleCanvas.getContext("2d");
+          drawOverlay(ctx);
+
+          let map2dCanvas = webglToCanvas2d(canvas);
+          let mapCtx = map2dCanvas.getContext("2d");
+          mapCtx.drawImage(colourScaleCanvas, 0, 0);
+
+
           if (format === 'png') {
-            canvas.toBlob(blob => saveAs(blob, fileName));
+            map2dCanvas.toBlob(blob => saveAs(blob, fileName));
             resolve(fileName);
           } else if (format === 'pdf') {
-            this.buildPdf(fileName, width, height);
+            this.buildPdf(map2dCanvas, fileName, width, height);
             resolve(fileName);
           } else {
             reject(new Error(`Unsupported format ${format}. Must be png or pdf.`));
@@ -80,7 +97,7 @@ export class ExportMap {
 
   }
 
-  private buildPdf(name: string, width: number, height: number): void {
+  private buildPdf(canvas, name: string, width: number, height: number): void {
     let pdf = new jsPDF({
       orientation: width > height ? 'l' : 'p',
       unit: 'in',
@@ -88,7 +105,7 @@ export class ExportMap {
       compress: true
     });
 
-    pdf.addImage(this.renderMap.getCanvas().toDataURL('image/png'),
+    pdf.addImage(canvas.toDataURL('image/png'),
       'png', 0, 0, width, height, null, 'FAST');
 
     pdf.save(name);

@@ -1117,6 +1117,10 @@ caniuse-lite@^1.0.30000791, caniuse-lite@^1.0.30000792:
   version "1.0.30000792"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000792.tgz#d0cea981f8118f3961471afbb43c9a1e5bbf0332"
 
+canvas-pixels@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/canvas-pixels/-/canvas-pixels-0.0.0.tgz#cba3c242c7d83c3bb9fb01e30c98e52c4ed7e828"
+
 caseless@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.11.0.tgz#715b96ea9841593cc33067923f5ec60ebda4f7d7"
@@ -7183,6 +7187,12 @@ webdriver-manager@^12.0.6:
     rimraf "^2.5.2"
     semver "^5.3.0"
     xml2js "^0.4.17"
+
+webgl-to-canvas2d@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/webgl-to-canvas2d/-/webgl-to-canvas2d-1.1.0.tgz#d95b9ebb0924f1557c9925f0cb88a877facbc8a1"
+  dependencies:
+    canvas-pixels "0.0.0"
 
 webpack-core@^0.6.8:
   version "0.6.9"

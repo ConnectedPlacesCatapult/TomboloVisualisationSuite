@@ -13,7 +13,7 @@ export class TomboloMapbox extends Map {
 
   exportMap = new ExportMap();
 
-  export(name, width, height, dpi, format): Promise<string> {
+  export(name, width, height, dpi, format, drawOverlay): Promise<string> {
     const options = {
       center: this.getCenter(),
       zoom: this.getZoom(),
@@ -22,7 +22,7 @@ export class TomboloMapbox extends Map {
       pitch: this.getPitch(),
     };
 
-    return this.exportMap.downloadCanvas(options, name, width, height, dpi, format);
+    return this.exportMap.downloadCanvas(options, name, width, height, dpi, format, drawOverlay);
   }
 
   // Update a source as smoothly as possible. All layers using that source are duplicated while the updated source

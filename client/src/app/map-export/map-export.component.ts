@@ -60,13 +60,25 @@ export class MapExportComponent implements OnInit {
   exportMap(): void {
     this.exportLoading = true;
 
+    // Sample function for drawing a red line across the map.
+    // Argument is a canvas 2D context.
+    const drawOverlay = (ctx) => {
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(300,150);
+      ctx.strokeStyle = "#FF0000";
+      ctx.lineWidth = 14;
+      ctx.stroke();
+    }
+
     this.mapRegistry.getMap('main-map')
       .then(map => map.export(
         this.exportForm.get('name').value,
         this.exportForm.get('width').value,
         this.exportForm.get('height').value,
         this.exportForm.get('dpi').value,
-        this.exportForm.get('format').value))
+        this.exportForm.get('format').value,
+        drawOverlay))
       .then(name => {
         debug('Downloaded ' + name);
         this.routeBack();
