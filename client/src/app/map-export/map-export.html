@@ -46,7 +46,7 @@
   </div>
   <div class="buttons">
     <button mat-button (click)="routeBack()">Back</button>
-    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid">Export</button>
+    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || exportLoading">Export</button>
   </div>
 </mat-nav-list>
 
