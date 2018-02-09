@@ -13,7 +13,9 @@ function ServiceFactory() {
 }
 
 /**
- * Sequelize wrapper class
+ * MapboxGL style generator
+ *
+ * https://www.mapbox.com/mapbox-gl-js/style-spec/
  */
 @Service({factory: ServiceFactory})
 export class StyleGenerator {
@@ -26,6 +28,8 @@ export class StyleGenerator {
 
     style['name'] = map.name;
     style['metadata']['description'] = map.description;
+    style['metadata']['datasets'] = this.datasetsMetadataForMap(map);
+    style['metadata']['dataLayers'] = map.layers.map(layer => LAYER_PREFIX + layer.layerId);
 
     style['zoom'] = map.zoom || style['zoom'];
     style['center'] = map.center || style['center'];
@@ -93,6 +97,7 @@ export class StyleGenerator {
   private generateMapLayer(layer: TomboloMapLayer): object {
     return {
       id: LAYER_PREFIX + layer.layerId,
+      metadata: this.metadataForMapLayer(layer),
       source: layer.datasetId,
       'source-layer':  DATA_LAYER_ID,
       type: layer.layerType,
@@ -101,6 +106,10 @@ export class StyleGenerator {
       paint: this.paintStyleForLayer(layer),
       filter: ['has', layer.datasetAttribute]
     };
+  }
+
+  private insertMapLayer(index: number, style: object, layer: object): void {
+    style['layers'].splice(index, 0, layer);
   }
 
   private paintStyleForLayer(layer: TomboloMapLayer): object {
@@ -183,8 +192,45 @@ export class StyleGenerator {
     ];
   }
 
-  private insertMapLayer(index: number, style: object, layer: object): void { 
-    style['layers'].splice(index, 0, layer);
+  private datasetsMetadataForMap(map: TomboloMap): object[] {
+
+    // Reduce datasets from all map layers to remove duplicates
+    const reducedDatasets =  map.layers.reduce((accum, layer) => {
+      const ds = layer.dataset;
+      accum['id'] = {
+        id: ds.id,
+        name: ds.name,
+        description: ds.description,
+        geometryType: ds.geometryType,
+        attributes: layer.dataset.dataAttributes.map(attr => ({
+          id: attr.field,
+          name: attr.name,
+          description: attr.description,
+          minValue: attr.minValue,
+          maxValue: attr.maxValue,
+          quantiles5: attr.quantiles5,
+          quantiels10: attr.quantiles10,
+          type: attr.type,
+          categories: attr.categories
+        }))
+      };
+
+      return accum;
+    }, {});
+
+    return Object.keys(reducedDatasets).map(key => reducedDatasets[key]);
+  }
+
+  private metadataForMapLayer(layer: TomboloMapLayer): object {
+    return {
+      dataset: layer.datasetId,
+      attribute: layer.datasetAttribute,
+      palette: {
+        id: layer.paletteId,
+        colorStops: layer.palette.colorStops,
+        inverted: layer.paletteInverted
+      }
+    };
   }
 
   /**
@@ -193,6 +239,4 @@ export class StyleGenerator {
   private expandRelativeTileURL(baseUrl, url: string): string {
     return (new URL(url, baseUrl)).toString();
   }
-
-
 }
