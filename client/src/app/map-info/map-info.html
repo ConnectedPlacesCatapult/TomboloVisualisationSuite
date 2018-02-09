@@ -4,4 +4,5 @@
   <button mat-button
      [routerLink]="['/', {outlets: {'rightBar': ['mapexport', mapID]}}]">Export map
   </button>
+  <button mat-button (click)="postBookmark()">Create bookmark</button>
 </div>

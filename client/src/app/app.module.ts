@@ -25,6 +25,7 @@ import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from "./map-export/map-export.component";
 import {MatInputModule} from "@angular/material";
+import {BookmarkService} from "./bookmark-service/bookmark.service";
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -63,6 +64,7 @@ export function AppConfigFactory(configService: ConfigService) {
     DialogsModule
   ],
   providers: [
+    BookmarkService,
     NotificationService,
     ConfigService,
     MapRegistry,
