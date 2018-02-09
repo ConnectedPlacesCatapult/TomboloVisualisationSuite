@@ -96,6 +96,8 @@ export class StyleGenerator {
       source: layer.datasetId,
       'source-layer':  DATA_LAYER_ID,
       type: layer.layerType,
+      minzoom: layer.dataset.minZoom,
+      maxzoom: layer.dataset.maxZoom,
       paint: this.paintStyleForLayer(layer),
       filter: ['has', layer.datasetAttribute]
     };
@@ -105,13 +107,21 @@ export class StyleGenerator {
     if (layer.layerType === 'fill') {
       return {
         'fill-color': this.colorRampForLayer(layer),
-        'fill-outline-color': 'white'
+        'fill-outline-color': 'white',
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'],
+          layer.dataset.minZoom, 0,
+          layer.dataset.minZoom + 0.5, 1
+        ]
       };
     }
     else if (layer.layerType === 'circle') {
       return {
         'circle-color': this.colorRampForLayer(layer),
-        'circle-radius': this.radiusRampForLayer(layer)
+        'circle-radius': this.radiusRampForLayer(layer),
+        'circle-opacity': ['interpolate', ['linear'], ['zoom'],
+          layer.dataset.minZoom, 0,
+          layer.dataset.minZoom + 0.5, 1
+        ]
       };
     }
     else if (layer.layerType === 'line') {
@@ -120,7 +130,11 @@ export class StyleGenerator {
         'line-width': {
           base: 1.3,
           stops: [[10, 2], [20, 20]]
-        }
+        },
+        'line-opacity': ['interpolate', ['linear'], ['zoom'],
+          layer.dataset.minZoom, 0,
+          layer.dataset.minZoom + 0.5, 1
+        ]
       };
     }
   }
