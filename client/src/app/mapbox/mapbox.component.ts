@@ -5,7 +5,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 import {MapRegistry} from "./map-registry.service";
 import {Map, LngLat, MapMouseEvent} from 'mapbox-gl';
 import MapDataEvent = mapboxgl.MapDataEvent;
-import {ExportMap} from "./export-map";
+import {ExportMap} from "./export-map/export-map";
 
 const debug = Debug('tombolo:mapboxgl');
 

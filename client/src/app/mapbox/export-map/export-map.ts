@@ -7,6 +7,7 @@ import * as jsPDF from 'jspdf';
 import {saveAs} from 'file-saver';
 import {Map} from 'mapbox-gl';
 import * as webglToCanvas2d from 'webgl-to-canvas2d';
+import {MapDom} from "./map-dom";
 
 export class ExportMap {
 
@@ -15,6 +16,8 @@ export class ExportMap {
 
   dimensionsLimit = 1200; // Max width and height in mm
   dpiLimit = 300;
+
+  mapDom = new MapDom();
 
   constructor() {
   }
@@ -44,7 +47,7 @@ export class ExportMap {
 
     this.setCanvasDPI(dpi);
 
-    const container = this.createContainerDiv(containerWidth, containerHeight);
+    const container = this.mapDom.createContainerDiv(containerWidth, containerHeight);
 
     // Temporary "copy" of the orginal Map object which will be used for exporting.
     this.renderMap = new Map({
@@ -64,7 +67,7 @@ export class ExportMap {
           let canvas = this.renderMap.getCanvas();
 
           // Before blobbing, draw something overlaying the map.
-          let colourScaleCanvas = this.createColourScaleCanvas(canvas.width, canvas.height);
+          let colourScaleCanvas = this.mapDom.createColourScaleCanvas(canvas.width, canvas.height);
           let colourScaleCtx = colourScaleCanvas.getContext("2d");
 
           // User-defined draw instructions for the colour-scale canvas.
@@ -114,42 +117,11 @@ export class ExportMap {
     });
   }
 
-  // Create the container div for the temporary renderMap.
-  private createContainerDiv(width: number, height: number): HTMLDivElement {
-    let hidden = this.createHiddenDiv();
-    let container = document.createElement('div');
-    container.style.width = `${width}px`;
-    container.style.height = `${height}px`;
-    hidden.appendChild(container);
-    return container;
-  }
-
-  // Create the hidden div which the renderMap container sits in.
-  private createHiddenDiv(): HTMLDivElement {
-    let hidden = <HTMLDivElement>document.createElement('div');
-
-    hidden.className = 'hidden-map';
-    hidden.id = 'hidden-map';
-    document.body.appendChild(hidden);
-    return hidden;
-  }
-
-  private createColourScaleCanvas(width, height): HTMLCanvasElement {
-    let canvasContainer = document.getElementsByClassName('mapboxgl-canvas-container')[1];
-    let colourScaleCanvas = document.createElement('canvas');
-    colourScaleCanvas.setAttribute('id', 'colourScaleCanvas');
-    colourScaleCanvas.setAttribute('width', width);
-    colourScaleCanvas.setAttribute('height', height);
-    canvasContainer.appendChild(colourScaleCanvas);
-    return colourScaleCanvas;
-  }
-
   // Remove temporary DOM elements and map copy,
   // and change the DPI back to its native setting.
   private revertChanges(): void {
     this.renderMap.remove();
-    const hidden = document.getElementById('hidden-map');
-    hidden.parentNode.removeChild(hidden);
+    this.mapDom.revertDomChanges();
     this.setCanvasDPI(this.nativeDPI);
   }
 
