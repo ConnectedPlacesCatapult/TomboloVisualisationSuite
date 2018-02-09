@@ -34,7 +34,7 @@
 
     <mat-form-field class="form-field presets">
       <span matPrefix class="prefix">Preset Layouts</span>
-      <mat-select (change)="onPresetChange($event)">
+      <mat-select (change)="onPresetChange($event)" [ngModel]="selectedPreset">
         <mat-option value="a4_150dpi">A4 at 150 DPI</mat-option>
         <mat-option value="a4_300dpi">A4 at 300 DPI</mat-option>
         <mat-option value="a3_150dpi">A3 at 150 DPI</mat-option>

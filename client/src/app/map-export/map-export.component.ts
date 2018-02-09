@@ -32,7 +32,8 @@ export class MapExportComponent implements OnInit {
     "a4_300dpi": { width: 297, height: 210, dpi: 300, format: 'png' },
     "a3_150dpi": { width: 420, height: 297, dpi: 150, format: 'png' },
     "a3_300dpi": { width: 420, height: 297, dpi: 300, format: 'png' }
-  }
+  };
+  selectedPreset = "a4_150dpi";
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
@@ -49,10 +50,10 @@ export class MapExportComponent implements OnInit {
 
       this.exportForm = new FormGroup({
         name: new FormControl(this.formatFileName(this.mapName), Validators.required),
-        width: new FormControl('', Validators.required),
-        height: new FormControl('', Validators.required),
-        dpi: new FormControl('', Validators.required),
-        format: new FormControl('', Validators.required)
+        width: new FormControl(this.presets['a4_150dpi'].width, Validators.required),
+        height: new FormControl(this.presets['a4_150dpi'].height, Validators.required),
+        dpi: new FormControl(this.presets['a4_150dpi'].dpi, Validators.required),
+        format: new FormControl(this.presets['a4_150dpi'].format, Validators.required)
       });
     });
   }

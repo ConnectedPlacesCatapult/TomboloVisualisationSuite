@@ -29,7 +29,7 @@ export class ExportMap {
    * @param {string} format
    * @returns {Promise<string>}
    */
-  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string, drawOverlay): Promise<string> {
+  downloadCanvas(options: object, name: string, width: number, height: number, dpi: number, format: string, drawOverlay = () => {}): Promise<string> {
 
     // Handle errors
     const errors = this.getErrors(width, height, dpi);

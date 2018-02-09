@@ -9,7 +9,7 @@ import {APP_CONFIG, AppConfig, ConfigService} from "./config.service";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppRoutingModule} from "./app-routing.module";
 import {DialogsModule} from "./dialogs/index";
 import {LocalStorageModule} from 'angular-2-local-storage';
@@ -46,6 +46,7 @@ export function AppConfigFactory(configService: ConfigService) {
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     MatInputModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
