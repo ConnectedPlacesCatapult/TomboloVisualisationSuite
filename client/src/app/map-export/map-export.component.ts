@@ -23,6 +23,7 @@ export class MapExportComponent implements OnInit {
               private location: Location,
               private notificationService: NotificationService) {}
 
+  exportLoading = false;
   mapName: string;
   mapDescription: string;
   exportForm: FormGroup;
@@ -57,6 +58,8 @@ export class MapExportComponent implements OnInit {
   }
 
   exportMap(): void {
+    this.exportLoading = true;
+
     this.mapRegistry.getMap('main-map')
       .then(map => map.export(
         this.exportForm.get('name').value,
@@ -68,11 +71,14 @@ export class MapExportComponent implements OnInit {
         debug('Downloaded ' + name);
         this.routeBack();
       })
-      .catch(err => this.notificationService.error(err));
+      .catch(err => {
+        this.exportLoading = false;
+        this.notificationService.error(err)
+      });
   }
 
   formatFileName(name: string): string {
-    return name.toLowerCase().replace(" ", "_");
+    return name.toLowerCase().replace(/ /g, "_");
   }
 
   routeBack(): void {
