@@ -126,6 +126,22 @@ export class Dataset extends Model<Dataset> {
     }));
   }
 
+  async calculateGeometryExtent(): Promise<void> {
+
+    const extentSql = `
+      select btrim(replace(st_extent(${this.sqlSafeGeometryColumn()})::text, ' ', ','), '(BOX()') as extent 
+      from ${this.sqlSafeSource()}`;
+
+    const result = await this.sequelize.query(extentSql, {type: sequelize.QueryTypes.SELECT});
+    this.extent = result[0]['extent'].split(',').map(val => +val);
+
+    await this.save();
+  }
+
+  sqlSafeGeometryColumn() {
+    return `"${this.geometryColumn}"`;
+  }
+
   sqlSafeSource() {
     if (this.sourceType === 'table')
       return `"${this.source}"`;
