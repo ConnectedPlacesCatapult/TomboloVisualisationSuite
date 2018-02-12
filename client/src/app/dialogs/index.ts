@@ -6,6 +6,7 @@ import {ConfirmDialog }   from './confirm-dialog.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {InformationDialog} from './info-dialog.component';
 import {NotificationService} from './notification.service';
+import {ShareDialog} from './share-dialog.component';
 
 @NgModule({
   imports: [
@@ -14,11 +15,13 @@ import {NotificationService} from './notification.service';
   ],
   exports: [
     ConfirmDialog,
-    InformationDialog
+    InformationDialog,
+    ShareDialog
   ],
   declarations: [
     ConfirmDialog,
-    InformationDialog
+    InformationDialog,
+    ShareDialog
   ],
   providers: [
     DialogsService,
@@ -26,7 +29,8 @@ import {NotificationService} from './notification.service';
   ],
   entryComponents: [
     ConfirmDialog,
-    InformationDialog
+    InformationDialog,
+    ShareDialog
   ],
 })
 export class DialogsModule { }
