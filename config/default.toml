@@ -25,7 +25,7 @@ simplify_distance = 1
 area_threshold = 50
 
 [server]
-baseUrl = "http://localhost:3000"
+baseUrl = "http://localhost:4200"
 datasetCaching = false
 slowTileLimit = 500 # ms
 largeTileLimit = 100000 # bytes

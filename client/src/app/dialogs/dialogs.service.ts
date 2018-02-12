@@ -34,7 +34,7 @@ export class DialogsService {
 
   public share(title: string, url: string): Observable<boolean> {
 
-    let dialogRef = this.dialog.open(ShareDialog, {width: '300px'});
+    let dialogRef = this.dialog.open(ShareDialog, {width: '400px'});
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.url = url;
 
