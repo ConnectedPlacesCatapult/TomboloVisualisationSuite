@@ -15,11 +15,11 @@ export class BookmarkService {
   constructor(private http: HttpClient) {
   }
 
-  postBookmark(url: string): Observable<string> {
+  postBookmark(url: string): Observable<object> {
     return this.http.post(`${environment.apiEndpoint}/createBookmark`,{url: url});
   }
 
-  getBookmark(base58Id: string): Observable<string> {
-    return this.http.get<string>(`/b/${base58Id}`,{withCredentials: true});
+  getBookmark(base58Id: string): Observable<object> {
+    return this.http.get(`/b/${base58Id}`,{withCredentials: true});
   }
 }
