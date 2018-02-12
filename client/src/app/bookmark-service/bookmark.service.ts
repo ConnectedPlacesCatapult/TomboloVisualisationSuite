@@ -16,7 +16,7 @@ export class BookmarkService {
   }
 
   postBookmark(url: string): Observable<object> {
-    return this.http.post(`${environment.apiEndpoint}/createBookmark`,{url: url});
+    return this.http.post(`${environment.apiEndpoint}/bookmarks`,{url: url});
   }
 
   getBookmark(base58Id: string): Observable<object> {

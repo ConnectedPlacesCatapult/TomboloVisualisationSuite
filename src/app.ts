@@ -29,8 +29,8 @@ import {DB} from './db';
 import ConfigRouter from './routes/api/config';
 import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
-import CreateBookmarkRouter from './routes/api/createBookmark';
-import BookmarksRouter from './routes/bookmarks';
+import BookmarksRouter from './routes/api/bookmarks';
+import BookmarkRedirectRouter from './routes/bookmark-redirect';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
@@ -72,10 +72,10 @@ app.use(jwt({
 //////////////////////////////////////////////////////////////////////////
 // Register Routes
 app.use('/api/v1/config', ConfigRouter);
-app.use('/api/v1/createBookmark', CreateBookmarkRouter);
+app.use('/api/v1/bookmarks', BookmarksRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
-app.use('/b', BookmarksRouter);
+app.use('/b', BookmarkRedirectRouter);
 
 // Redirect to index.html for Angular routes
 app.get('/[^\.]+$', function(req, res){

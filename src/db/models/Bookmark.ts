@@ -1,4 +1,5 @@
 import {Column, DataType, Model, Table} from 'sequelize-typescript';
+const base58 = require('base58');
 
 @Table({
   tableName: 'bookmarks',
@@ -21,4 +22,11 @@ export class Bookmark extends Model<Bookmark> {
   })
   url: string;
 
+  get shortId() {
+    return base58.encode(this.id);
+  }
+
+  static findByShortId(shortId: number) {
+    return Bookmark.findOne<Bookmark>({where: { id: base58.decode(shortId)}});
+  }
 }
