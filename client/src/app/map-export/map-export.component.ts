@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
@@ -17,8 +17,9 @@ const debug = Debug('tombolo:map-info');
 })
 export class MapExportComponent implements OnInit {
 
+  @HostBinding('class.sidebar-component') sidebarComponentClass = true;
+
   constructor(private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient,
               private mapRegistry: MapRegistry,
               private location: Location,
               private notificationService: NotificationService) {}
@@ -33,29 +34,24 @@ export class MapExportComponent implements OnInit {
     "a3_150dpi": { width: 420, height: 297, dpi: 150, format: 'png' },
     "a3_300dpi": { width: 420, height: 297, dpi: 300, format: 'png' }
   };
-  selectedPreset = "a4_150dpi";
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
-      this.loadMapInfo(params.mapID);
-    });
-  }
-
-  loadMapInfo(mapID: string) {
-    debug('mapID:', mapID);
-    if (!mapID) return;
-    this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      this.mapName = style.name;
-      this.mapDescription = style.metadata['description'];
-
-      this.exportForm = new FormGroup({
-        name: new FormControl(this.formatFileName(this.mapName), Validators.required),
-        width: new FormControl(this.presets['a4_150dpi'].width, Validators.required),
-        height: new FormControl(this.presets['a4_150dpi'].height, Validators.required),
-        dpi: new FormControl(this.presets['a4_150dpi'].dpi, Validators.required),
-        format: new FormControl(this.presets['a4_150dpi'].format, Validators.required)
+      this.mapRegistry.getMap('main-map').then(map => {
+        this.exportForm.patchValue({'name': this.formatFileName(map.getStyle().name)});
       });
     });
+
+    this.exportForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      width: new FormControl(this.presets['a4_150dpi'].width, Validators.required),
+      height: new FormControl(this.presets['a4_150dpi'].height, Validators.required),
+      dpi: new FormControl(this.presets['a4_150dpi'].dpi, Validators.required),
+      format: new FormControl(this.presets['a4_150dpi'].format, Validators.required),
+      preset: new FormControl('a4_150dpi')
+    });
+
+    this.exportForm.get('preset').valueChanges.subscribe(val => this.onPresetChange(val));
   }
 
   exportMap(): void {
@@ -86,8 +82,7 @@ export class MapExportComponent implements OnInit {
     this.location.back();
   }
 
-  onPresetChange(presetOption) {
-    const preset = presetOption.value;
+  onPresetChange(preset) {
     this.exportForm.patchValue({
       width: this.presets[preset].width,
       height: this.presets[preset].height,

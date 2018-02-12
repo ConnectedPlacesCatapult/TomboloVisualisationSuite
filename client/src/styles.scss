@@ -24,7 +24,7 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 // Apply theme to main
 tombolo-root {
   @include angular-material-theme($dark-theme);
-  @include app-theme($dark-theme);
+  @include app-theme($dark-theme, mat-typography-config());
 }
 
 html {
