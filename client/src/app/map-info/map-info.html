@@ -10,5 +10,8 @@
     <button mat-button
             [routerLink]="['/', {outlets: {'rightBar': ['mapexport', mapID]}}]">Export map
     </button>
+    <button mat-button
+            (click)="postBookmark()">Share map
+    </button>
   </div>
 </div>

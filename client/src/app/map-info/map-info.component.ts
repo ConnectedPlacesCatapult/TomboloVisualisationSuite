@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {Style} from 'mapbox-gl';
 import {BookmarkService} from "../bookmark-service/bookmark.service";
 import {Location} from '@angular/common';
+import {DialogsService} from "../dialogs/dialogs.service";
 
 const debug = Debug('tombolo:map-info');
 
@@ -21,7 +22,7 @@ export class MapInfoComponent implements OnInit {
 
   constructor(private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
-              private mapRegistry: MapRegistry,
+              private dialogsService: DialogsService,
               private bookmarkService: BookmarkService,
               private location: Location) {}
 
@@ -49,8 +50,8 @@ export class MapInfoComponent implements OnInit {
   }
 
   postBookmark(): void {
-    this.bookmarkService.postBookmark(this.location.path()).subscribe(shortUrl => {
-      console.log(shortUrl);
+    this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
+      this.dialogsService.information('Short URL', `http://localhost:4200/b/${res.shortId}`);
     });
   }
 }
