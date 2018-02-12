@@ -47,6 +47,10 @@ $sidebar-padding: 0.5em 0.75em;
     color: mat-contrast($accent, 500);
   }
 
+  .full-width {
+    width: 100%;
+  }
+
   /* Sidebar styling */
   .sidebar-component {
     @include mat-fill();
@@ -102,6 +106,28 @@ $sidebar-padding: 0.5em 0.75em;
 
     p {
       @include mat-typography-level-to-styles($typography, body-1);
+    }
+  }
+
+  /* Slider box */
+  .slider-box {
+    padding: 0 16px;
+    h3 {
+      @include mat-typography-level-to-styles($typography, caption);
+      padding:0;
+      margin:0;
+    }
+    .slider-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      @include mat-typography-level-to-styles($typography, caption);
+      text-transform: uppercase;
+      color: mat-color($foreground, hint-text);
+      .mat-slider {
+        margin: 0.5em;
+        flex: 1;
+      }
     }
   }
 }

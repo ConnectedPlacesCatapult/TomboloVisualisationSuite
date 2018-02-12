@@ -1,11 +1,11 @@
 /**
  * Main app module
  */
-
+import 'hammerjs';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
-import {APP_CONFIG, AppConfig, ConfigService} from "./config.service";
+import {APP_CONFIG, ConfigService} from "./config.service";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -24,7 +24,6 @@ import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from "./map-export/map-export.component";
-import {MatInputModule} from "@angular/material";
 import {BookmarkService} from "./bookmark-service/bookmark.service";
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -48,7 +47,6 @@ export function AppConfigFactory(configService: ConfigService) {
   imports: [
     BrowserModule,
     FormsModule,
-    MatInputModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
     ReactiveFormsModule,

@@ -12,8 +12,16 @@
 
 
 <div class="sidebar-footer">
-  <div class="button-box">
 
+
+  <div class="slider-box">
+    <h3>Road Detail</h3>
+    <div class="slider-container">
+      off <mat-slider min="0" max="4" step="1" value="4" tickInterval="1" (change)="sliderChanged($event)" (input)="sliderChanged($event)"></mat-slider> full
+    </div>
+  </div>
+
+  <div class="button-box">
     <a mat-button [routerLink]="['/', {outlets:{primary:['basemaps'], rightBar:null}}]">Jump to Basemap demo</a>
   </div>
 

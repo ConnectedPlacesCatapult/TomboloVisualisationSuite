@@ -49,4 +49,31 @@ export class MapsDemoComponent implements OnInit {
     });
   }
 
+  /* TODO - Following code is temporary demo!!!! */
+  sliderChanged(event) {
+
+    this.mapRegistry.getMap('main-map').then(map => {
+
+      const roadNetwork = map.getStyle().metadata['roadNetwork'];
+
+      Object.keys(roadNetwork).forEach(key => {
+        const layer = map.getLayer(key);
+        if (!layer) throw new Error(`Unknown layer ${key}`);
+        let prop: string;
+        switch (layer.type) {
+          case 'line':
+            prop = 'line-opacity';
+            break;
+          case 'symbol':
+            prop = 'text-opacity';
+            break;
+         default:
+
+            break;
+        }
+        map.setPaintProperty(key, prop, roadNetwork[key] <= event.value? 1 : 0);
+      });
+    });
+  }
+
 }
