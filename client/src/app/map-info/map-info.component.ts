@@ -51,7 +51,6 @@ export class MapInfoComponent implements OnInit {
 
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
-      console.log(res);
       this.dialogsService.information('Short URL', `http://localhost:4200/b/${res['shortId']}`);
     });
   }
