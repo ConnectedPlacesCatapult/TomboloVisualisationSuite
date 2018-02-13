@@ -34,10 +34,18 @@ export class TooltipRenderComponent {
     this.attributesSource = new AttributesDataSource(dataArray);
   }
 
-  formatValue(value: string | number): string | number {
-    if (!value) return 'No Data';
+  formatValue(attribute: object): string | number {
+    const value = attribute['value'];
+    const unit = attribute['unit'];
+    if (!value) return '<i>No Data</i>';
     if (typeof value === 'string') return value;
-    return value.toPrecision(4);
+
+    let formattedValue = value.toPrecision(4);
+    if (unit) {
+      formattedValue = formattedValue + ' ' + unit;
+    }
+
+    return formattedValue;
   }
 }
 
