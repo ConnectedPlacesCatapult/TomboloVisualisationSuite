@@ -2,6 +2,7 @@ import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from 'se
 import {User} from './User';
 import {DataAttribute} from './DataAttribute';
 import * as sequelize from 'sequelize';
+import {Sequelize} from 'sequelize';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
@@ -97,6 +98,18 @@ export class Dataset extends Model<Dataset> {
   @Column(DataType.JSON)
   headers: object;
 
+  @Column({
+    type: DataType.INTEGER,
+    field: 'original_bytes'
+  })
+  originalBytes: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    field: 'db_bytes'
+  })
+  dbBytes: number;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
@@ -133,18 +146,32 @@ export class Dataset extends Model<Dataset> {
       from ${this.sqlSafeSource()}`;
 
     const result = await this.sequelize.query(extentSql, {type: sequelize.QueryTypes.SELECT});
+
     this.extent = result[0]['extent'].split(',').map(val => +val);
 
     await this.save();
   }
 
+  async calculateDatasetBytes(): Promise<void> {
+
+    if (this.sourceType !== 'table') return;
+
+    const bytesSql = `SELECT pg_total_relation_size('${this.sqlSafeSource()}') as bytes`;
+
+    const result = await this.sequelize.query(bytesSql, {type: sequelize.QueryTypes.SELECT});
+
+    this.dbBytes = result[0]['bytes'];
+
+    await this.save();
+  }
+
   sqlSafeGeometryColumn() {
-    return `"${this.geometryColumn}"`;
+    return this.sequelize.getQueryInterface().quoteIdentifier(this.geometryColumn, true);
   }
 
   sqlSafeSource() {
     if (this.sourceType === 'table')
-      return `"${this.source}"`;
+      return this.sequelize.getQueryInterface().quoteIdentifier(this.source, true);
     else
       return this.source;
   }
