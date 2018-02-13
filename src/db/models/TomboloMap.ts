@@ -19,7 +19,10 @@ import {Palette} from './Palette';
       () => BaseMap,
       {
         model: () => TomboloMapLayer,
-        include: [() => Palette, {model: () => Dataset, include: [() => DataAttribute]}]
+        include: [() => Palette, {
+          model: () => Dataset,
+          include: [() => DataAttribute]
+        }]
       }]
   }
 })
