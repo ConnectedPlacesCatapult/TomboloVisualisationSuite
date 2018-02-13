@@ -1,11 +1,16 @@
 
-import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
 
 @Table({
   tableName: 'data_attributes',
   timestamps: true,
   version: true
+})
+@Scopes({
+  default: {
+    order: [['order', 'ASC']]
+  }
 })
 export class DataAttribute extends Model<DataAttribute> {
 
@@ -46,6 +51,11 @@ export class DataAttribute extends Model<DataAttribute> {
     type: DataType.TEXT
   })
   description: string;
+
+  @Column({
+    type: DataType.TEXT
+  })
+  unit: string;
 
   @Column({
     type: DataType.DOUBLE,
@@ -90,6 +100,9 @@ export class DataAttribute extends Model<DataAttribute> {
   })
   isLog: boolean;
 
+  @Column(DataType.INTEGER)
+  order: number;
+
   @BelongsTo(() => Dataset)
   dataset: Dataset;
 
@@ -100,7 +113,7 @@ export class DataAttribute extends Model<DataAttribute> {
       return this.fieldSql;
     }
     else {
-      return `"${this.field}"`;
+      return this.sequelize.getQueryInterface().quoteIdentifier(this.field, true);
     }
   }
 }
