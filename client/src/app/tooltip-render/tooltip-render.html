@@ -2,7 +2,9 @@
   <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef class="field-cell">Attribute</mat-header-cell>
     <mat-cell *matCellDef="let attribute" class="field-cell">
-      <div class="tooltip">{{attribute.name}}<span class="tooltiptext">{{attribute.description}}</span></div>
+      <div class="tooltip">
+        {{attribute.name}}<span class="tooltiptext" *ngIf="attribute.description!==null">{{attribute.description}}</span>
+      </div>
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="value">

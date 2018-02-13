@@ -154,15 +154,15 @@ export class AppComponent implements OnInit {
     const dataSourceId = dataFeature['layer']['source'];
     const attributes = mapStyle.metadata.datasets.filter(dataset => dataset.id === dataSourceId)[0].attributes;
 
-    return Object.keys(properties).map(propertyId => {
-      const propertyAttribute = attributes.filter(attribute => attribute.id === propertyId)[0];
+    return attributes.map(attribute => {
+      const propertyId = Object.keys(properties).filter(id => attribute.id === id)[0];
 
       return {
-        name: propertyAttribute['name'],
-        description: propertyAttribute['description'],
-        id: propertyAttribute['id'],
+        name: attribute['name'],
+        description: attribute['description'],
+        id: attribute['id'],
         value: properties[propertyId],
-        unit: propertyAttribute['unit']
+        unit: attribute['unit']
       };
 
     });
