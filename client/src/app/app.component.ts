@@ -2,7 +2,7 @@
  * Top-level app component - just an empty router-outlet to host components
  */
 
-import {Component, Inject, OnInit, ComponentFactoryResolver, Injector} from '@angular/core';
+import {Component, OnInit, ComponentFactoryResolver, Injector} from '@angular/core';
 import {Location} from '@angular/common';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
@@ -13,7 +13,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
 const debug = Debug('tombolo:app');
 import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
-import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
+import {TooltipRenderComponent, AttributeRow} from "./tooltip-render/tooltip-render.component";
 import * as mapboxgl from 'mapbox-gl';
 import {TomboloMapbox} from "./mapbox/mapbox.component";
 
@@ -145,14 +145,14 @@ export class AppComponent implements OnInit {
    * Given the map style and the data-layer feature of a clicked point,
    * return an object combining human-readable information about each property
    * with each actual property value.
-   * @param mapStyle
-   * @param dataFeature
-   * @returns {{name: any; description: any; id: any; value: any}[]}
+   * @param {mapboxgl.Style} mapStyle
+   * @param {Object} dataFeature
+   * @returns {AttributeRow[]}
    */
-  private getAttributesWithValues(mapStyle, dataFeature) {
-    let properties = dataFeature.properties;
-    const dataSourceId = dataFeature.layer.source;
-    const attributes = mapStyle['metadata']['datasets'].filter(dataset => dataset.id === dataSourceId)[0].attributes;
+  private getAttributesWithValues(mapStyle: mapboxgl.Style, dataFeature: object): AttributeRow[] {
+    let properties = dataFeature['properties'];
+    const dataSourceId = dataFeature['layer']['source'];
+    const attributes = mapStyle.metadata.datasets.filter(dataset => dataset.id === dataSourceId)[0].attributes;
 
     return Object.keys(properties).map(propertyId => {
       const propertyAttribute = attributes.filter(attribute => attribute.id === propertyId)[0];

@@ -19,7 +19,7 @@ export interface AttributeRow {
   styleUrls: ['./tooltip-render.scss']
 })
 export class TooltipRenderComponent {
-  private _data;
+  private _data: object;
 
   attributesSource: AttributesDataSource;
   headerRows = ['name', 'value'];
