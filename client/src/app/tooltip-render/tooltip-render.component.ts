@@ -10,7 +10,8 @@ export interface AttributeRow {
   name: string,
   description: string,
   id: string,
-  value: number | string
+  value: number | string,
+  unit: string
 }
 
 @Component({

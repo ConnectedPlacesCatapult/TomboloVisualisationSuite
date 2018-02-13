@@ -161,7 +161,8 @@ export class AppComponent implements OnInit {
         name: propertyAttribute['name'],
         description: propertyAttribute['description'],
         id: propertyAttribute['id'],
-        value: properties[propertyId]
+        value: properties[propertyId],
+        unit: propertyAttribute['unit']
       };
 
     });
