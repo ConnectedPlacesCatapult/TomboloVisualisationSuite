@@ -9,6 +9,7 @@ export class TooltipRenderService {
 
   private _tooltipData: object;
   private _tooltipUpdate = new Subject<object>();
+  componentInstance;
 
   setTooltip(attributes: object, lngLat: mapboxgl.LngLatLike): void {
     this._tooltipData = {attributes: attributes, lngLat: lngLat};

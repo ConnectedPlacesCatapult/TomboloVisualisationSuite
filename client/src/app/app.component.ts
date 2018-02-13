@@ -63,10 +63,12 @@ export class AppComponent implements OnInit {
     this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
       const popupContent = this.getTooltipInnerHtml(tooltipData);
 
-      new mapboxgl.Popup()
+      const popup = new mapboxgl.Popup()
         .setLngLat(tooltipData['lngLat'])
         .setHTML(`<div>${popupContent}</div>`)
         .addTo(this.map);
+
+      popup.on('close', () => this.tooltipRenderService.componentInstance.destroy() );
     });
   }
 
@@ -179,6 +181,7 @@ export class AppComponent implements OnInit {
     const component = factory.create(this.injector);
     component.instance.data = {...tooltipData['attributes']};
     component.changeDetectorRef.detectChanges();
+    this.tooltipRenderService.componentInstance = component;
     return component.location.nativeElement.innerHTML;
   }
 }
