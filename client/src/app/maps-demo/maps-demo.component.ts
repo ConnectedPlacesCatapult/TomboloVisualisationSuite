@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
+import {MapService} from '../map-service/map.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -20,7 +21,10 @@ export class MapsDemoComponent implements OnInit {
 
   maps$: Observable<object[]> = null;
 
-  constructor(private mapRegistry: MapRegistry, private activatedRoute: ActivatedRoute, private httpClient: HttpClient) {}
+  constructor(private mapRegistry: MapRegistry,
+              private activatedRoute: ActivatedRoute,
+              private httpClient: HttpClient,
+              private mapService: MapService) {}
 
   ngOnInit() {
     this.maps$ = this.httpClient.get<object[]>('/maps');
@@ -35,18 +39,16 @@ export class MapsDemoComponent implements OnInit {
   loadMap(mapID: string) {
     debug('mapID:', mapID);
     if (!mapID) return;
+
+    this.mapService.loadMap(mapID);
+/*
     this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
       this.mapRegistry.getMap('main-map').then(map => {
         map.setStyle(style);
 
-        // Fly to default location if not set in URL
-        const url = new URL(window.location.href);
-        let zoom = url.searchParams.get('zoom');
-        if (!zoom) {
-          map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
-        }
+
       });
-    });
+    });*/
   }
 
   /* TODO - Following code is temporary demo!!!! */

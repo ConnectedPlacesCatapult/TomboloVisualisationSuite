@@ -7,6 +7,8 @@ import {environment} from '../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../dialogs/notification.service';
 
+import 'rxjs/add/operator/do';
+
 const debug = Debug('tombolo:MapService');
 
 export class OptimisticLockingError extends Error {
@@ -29,10 +31,13 @@ export class MapService {
     return this._mapLoaded$.asObservable();
   }
 
-  loadMap(mapId: string): Observable<Style> {
-    return this.http.get<Style>(`${environment.apiEndpoint}/maps/${mapId}`, {withCredentials: true})
-      .do(style => this._mapLoaded$.next(style))
-      .catch(e => this.handleError(e));
+  loadMap(mapId: string): Promise<Style> {
+    return this.http.get<Style>(`/maps/${mapId}/style.json`, {withCredentials: true})
+      .do(style => {
+        debug(`Map ${mapId} loaded.`);
+        this._mapLoaded$.next(style);
+      })
+      .catch(e => this.handleError(e)).toPromise();
   }
 
   /**
@@ -41,7 +46,6 @@ export class MapService {
    * @returns {Observable<any>}
    */
   private handleError(e): Observable<any> {
-
     if (e instanceof HttpErrorResponse && e.error.error && e.error.error.name === 'SequelizeOptimisticLockError') {
       e = new OptimisticLockingError(e.error.message, e.error.error);
     }

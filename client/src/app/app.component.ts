@@ -11,6 +11,8 @@ import 'rxjs/add/operator/filter';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
+import {MapService} from './map-service/map.service';
+import Style = mapboxgl.Style;
 const debug = Debug('tombolo:app');
 
 @Component({
@@ -32,8 +34,14 @@ export class AppComponent implements OnInit {
   leftBarOpen = true;
   rightBarOpen = false;
   routerEventSubscription: Subscription;
+  mapServiceSubscription: Subscription;
 
-  constructor(private router: Router, private mapRegistry: MapRegistry, private location: Location, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private mapRegistry: MapRegistry,
+    private location: Location,
+    private activatedRoute: ActivatedRoute,
+    private mapService: MapService) {}
 
   ngOnInit() {
     debug(`App loaded - environment = ${environment.name} `);
@@ -48,10 +56,15 @@ export class AppComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       this.positionMapFromURLParams(params);
     });
+
+    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(style => {
+      this.mapLoadedHandler(style);
+    });
   }
 
   ngOnDestroy() {
     this.routerEventSubscription.unsubscribe();
+    this.mapServiceSubscription.unsubscribe();
   }
 
   ngAfterViewInit() {
@@ -76,6 +89,19 @@ export class AppComponent implements OnInit {
    */
   closeRightBar() {
     this.router.navigate([{ outlets: { rightBar: null }}]);
+  }
+
+
+  private mapLoadedHandler(style: Style) {
+    this.mapRegistry.getMap('main-map').then(map => {
+      map.setStyle(style);
+      // Fly to default location if not set in URL
+      const url = new URL(window.location.href);
+      let zoom = url.searchParams.get('zoom');
+      if (!zoom) {
+        map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
+      }
+    });
   }
 
   private setURLFromMap(map) {
