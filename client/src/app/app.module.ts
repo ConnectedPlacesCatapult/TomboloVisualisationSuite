@@ -1,11 +1,11 @@
 /**
  * Main app module
  */
-
+import 'hammerjs';
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
-import {APP_CONFIG, AppConfig, ConfigService} from "./config.service";
+import {APP_CONFIG, ConfigService} from "./config.service";
 import {environment} from "../environments/environment";
 import {HttpClientModule} from "@angular/common/http";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -55,7 +55,6 @@ export function AppConfigFactory(configService: ConfigService) {
   imports: [
     BrowserModule,
     FormsModule,
-    MatInputModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
     ReactiveFormsModule,

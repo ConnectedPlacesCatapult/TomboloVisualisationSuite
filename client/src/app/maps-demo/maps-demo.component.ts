@@ -49,4 +49,39 @@ export class MapsDemoComponent implements OnInit {
     });
   }
 
+  /* TODO - Following code is temporary demo!!!! */
+  basemapSliderChanged(event) {
+
+    this.mapRegistry.getMap('main-map').then(map => {
+
+
+      debug(map.getStyle());
+
+      const basemapDetail = map.getStyle().metadata['basemapDetail'];
+
+      if (!basemapDetail) return;
+
+      Object.keys(basemapDetail).forEach(key => {
+        const layer = map.getLayer(key);
+        if (!layer) throw new Error(`Unknown layer ${key}`);
+        let prop: string;
+        switch (layer.type) {
+          case 'line':
+            prop = 'line-opacity';
+            break;
+          case 'symbol':
+            prop = 'text-opacity';
+            break;
+          case 'fill':
+            prop = 'fill-opacity';
+            break;
+          default:
+            debug(`Unsupported layer type for basemap detail: ${layer.type}`);
+            break;
+        }
+        map.setPaintProperty(key, prop, basemapDetail[key] <= event.value? 1 : 0);
+      });
+    });
+  }
+
 }
