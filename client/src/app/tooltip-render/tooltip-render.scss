@@ -32,6 +32,7 @@ mat-row:nth-child(odd){
 .tooltip {
   position: relative;
   display: inline-block;
+  cursor: default;
 }
 
 .tooltip .tooltiptext {
