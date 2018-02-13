@@ -20,7 +20,6 @@ export interface AttributeRow {
 })
 export class TooltipRenderComponent {
   private _data;
-  dataArray: AttributeRow[];
 
   attributesSource: AttributesDataSource;
   headerRows = ['name', 'value'];
@@ -30,8 +29,8 @@ export class TooltipRenderComponent {
   }
   set data(data) {
     this._data = data;
-    this.dataArray = Object.keys(this.data).map(dataKey => this.data[dataKey]);
-    this.attributesSource = new AttributesDataSource(this.dataArray);
+    const dataArray = Object.keys(this._data).map(dataKey => this._data[dataKey]);
+    this.attributesSource = new AttributesDataSource(dataArray);
   }
 
   formatValue(value: string | number): string | number {

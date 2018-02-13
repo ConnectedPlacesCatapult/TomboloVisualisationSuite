@@ -1,14 +1,14 @@
 <mat-table [dataSource]="attributesSource">
   <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef>Attribute</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef class="field-cell">Attribute</mat-header-cell>
     <mat-cell *matCellDef="let attribute" class="field-cell"> {{attribute.name}} </mat-cell>
   </ng-container>
   <ng-container matColumnDef="value">
-    <mat-header-cell *matHeaderCellDef>Value</mat-header-cell>
-    <mat-cell *matCellDef="let attribute" class="value-cell"> {{formatValue(attribute.value)}} </mat-cell>
+    <mat-header-cell *matHeaderCellDef class="field-cell">Value</mat-header-cell>
+    <mat-cell *matCellDef="let attribute" class="field-cell"> {{formatValue(attribute.value)}} </mat-cell>
   </ng-container>
 
-  <mat-header-row *matHeaderRowDef="headerRows"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: headerRows;"></mat-row>
+  <mat-header-row *matHeaderRowDef="headerRows" class="field-row"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: headerRows;" class="field-row"></mat-row>
 </mat-table>
 

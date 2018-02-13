@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
 
       new mapboxgl.Popup()
         .setLngLat(tooltipData['lngLat'])
-        .setHTML(`<div class="popupContent">${popupContent}</div>`)
+        .setHTML(`<div>${popupContent}</div>`)
         .addTo(this.map);
     });
   }

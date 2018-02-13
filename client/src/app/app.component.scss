@@ -16,6 +16,12 @@
   flex-direction: column;
 }
 
-.popupContent {
-  width:auto;
+/deep/ .mapboxgl-popup {
+  width: 350px;
+  height: auto;
 }
+
+/deep/ .mat-table {
+  margin-top: 5px;
+}
+
