@@ -206,6 +206,7 @@ export class StyleGenerator {
           id: attr.field,
           name: attr.name,
           description: attr.description,
+          unit: attr.unit,
           minValue: attr.minValue,
           maxValue: attr.maxValue,
           quantiles5: attr.quantiles5,
