@@ -50,13 +50,18 @@ export class MapsDemoComponent implements OnInit {
   }
 
   /* TODO - Following code is temporary demo!!!! */
-  sliderChanged(event) {
+  basemapSliderChanged(event) {
 
     this.mapRegistry.getMap('main-map').then(map => {
 
-      const roadNetwork = map.getStyle().metadata['roadNetwork'];
 
-      Object.keys(roadNetwork).forEach(key => {
+      debug(map.getStyle());
+
+      const basemapDetail = map.getStyle().metadata['basemapDetail'];
+
+      if (!basemapDetail) return;
+
+      Object.keys(basemapDetail).forEach(key => {
         const layer = map.getLayer(key);
         if (!layer) throw new Error(`Unknown layer ${key}`);
         let prop: string;
@@ -67,11 +72,14 @@ export class MapsDemoComponent implements OnInit {
           case 'symbol':
             prop = 'text-opacity';
             break;
-         default:
-
+          case 'fill':
+            prop = 'fill-opacity';
+            break;
+          default:
+            debug(`Unsupported layer type for basemap detail: ${layer.type}`);
             break;
         }
-        map.setPaintProperty(key, prop, roadNetwork[key] <= event.value? 1 : 0);
+        map.setPaintProperty(key, prop, basemapDetail[key] <= event.value? 1 : 0);
       });
     });
   }
