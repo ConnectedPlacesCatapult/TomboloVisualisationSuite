@@ -7,7 +7,8 @@
       "circle": "highway_name_other",
       "line": "highway_name_other"
     },
-    "roadNetwork": {
+    "basemapDetail": {
+      "building": 4,
       "highway_path": 4,
       "highway_minor": 3,
       "highway_major_casing": 2,
