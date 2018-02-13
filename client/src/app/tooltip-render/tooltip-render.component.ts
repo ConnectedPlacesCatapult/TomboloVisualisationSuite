@@ -35,6 +35,7 @@ export class TooltipRenderComponent {
   }
 
   formatValue(value: string | number): string | number {
+    if (!value) return 'No Data';
     if (typeof value === 'string') return value;
     return value.toPrecision(4);
   }

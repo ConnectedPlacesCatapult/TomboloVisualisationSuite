@@ -1,6 +1,6 @@
 /** Tooltip Render Service **/
 
-import {Injectable} from '@angular/core';
+import {ComponentRef, Injectable} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Observable} from "rxjs/Observable";
 
@@ -9,7 +9,7 @@ export class TooltipRenderService {
 
   private _tooltipData: object;
   private _tooltipUpdate = new Subject<object>();
-  componentInstance;
+  componentInstance: ComponentRef<any>;
 
   setTooltip(attributes: object, lngLat: mapboxgl.LngLatLike): void {
     this._tooltipData = {attributes: attributes, lngLat: lngLat};

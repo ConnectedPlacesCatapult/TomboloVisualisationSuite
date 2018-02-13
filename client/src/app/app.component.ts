@@ -159,11 +159,13 @@ export class AppComponent implements OnInit {
     return attributes.map(attribute => {
       const propertyId = Object.keys(properties).filter(id => attribute.id === id)[0];
 
+      const property = (propertyId) ? properties[propertyId] : null;
+
       return {
         name: attribute['name'],
         description: attribute['description'],
         id: attribute['id'],
-        value: properties[propertyId],
+        value: property,
         unit: attribute['unit']
       };
 
