@@ -48,6 +48,11 @@ export class DataAttribute extends Model<DataAttribute> {
   description: string;
 
   @Column({
+    type: DataType.TEXT
+  })
+  unit: string;
+
+  @Column({
     type: DataType.DOUBLE,
     field: 'min'
   })
