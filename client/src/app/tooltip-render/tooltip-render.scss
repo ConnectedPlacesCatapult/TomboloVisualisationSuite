@@ -2,15 +2,27 @@
   padding: 0 !important;
   min-height: 30px !important;
   height: auto !important;
-  color: red;
 }
 
 .field-cell {
   padding: 6px 8px 6px 8px;
   height: auto;
   font-size: 12px;
+  color: black;
 }
 
 /deep/ .mat-table {
   background-color: white;
+}
+
+mat-row:nth-child(even){
+  background-color: white;
+}
+
+mat-row:nth-child(odd){
+  background-color: ghostwhite;
+}
+
+.header {
+  background-color: ghostwhite;
 }

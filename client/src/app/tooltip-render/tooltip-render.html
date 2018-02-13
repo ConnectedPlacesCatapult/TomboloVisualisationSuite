@@ -8,7 +8,7 @@
     <mat-cell *matCellDef="let attribute" class="field-cell"> {{formatValue(attribute.value)}} </mat-cell>
   </ng-container>
 
-  <mat-header-row *matHeaderRowDef="headerRows" class="field-row"></mat-header-row>
+  <mat-header-row *matHeaderRowDef="headerRows" class="field-row header"></mat-header-row>
   <mat-row *matRowDef="let row; columns: headerRows;" class="field-row"></mat-row>
 </mat-table>
 
