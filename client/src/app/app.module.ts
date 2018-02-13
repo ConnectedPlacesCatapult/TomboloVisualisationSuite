@@ -29,6 +29,7 @@ import {BookmarkService} from "./bookmark-service/bookmark.service";
 import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
 import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
 import {CdkTableModule} from "@angular/cdk/table";
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -65,6 +66,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapboxModule,
     MatTableModule,
     CdkTableModule,
+    MatTooltipModule,
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
       storageType: 'localStorage'

@@ -19,6 +19,8 @@
 /deep/ .mapboxgl-popup {
   width: 350px;
   height: auto;
+  pointer-events: auto !important;
+  color: red;
 }
 
 /deep/ .mat-table {

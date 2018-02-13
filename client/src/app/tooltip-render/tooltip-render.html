@@ -1,7 +1,9 @@
 <mat-table [dataSource]="attributesSource">
   <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef class="field-cell">Attribute</mat-header-cell>
-    <mat-cell *matCellDef="let attribute" class="field-cell"> {{attribute.name}} </mat-cell>
+    <mat-cell *matCellDef="let attribute" class="field-cell">
+      <div class="tooltip">{{attribute.name}}<span class="tooltiptext">{{attribute.description}}</span></div>
+    </mat-cell>
   </ng-container>
   <ng-container matColumnDef="value">
     <mat-header-cell *matHeaderCellDef class="field-cell">Value</mat-header-cell>
@@ -11,4 +13,3 @@
   <mat-header-row *matHeaderRowDef="headerRows" class="field-row header"></mat-header-row>
   <mat-row *matRowDef="let row; columns: headerRows;" class="field-row"></mat-row>
 </mat-table>
-
