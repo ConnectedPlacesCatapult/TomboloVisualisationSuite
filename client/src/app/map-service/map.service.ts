@@ -41,7 +41,6 @@ export class MapService {
    * when the map has been loaded.
    *
    * @param {string} mapId
-   * @returns {Promise<mapboxgl.Style>}
    */
   loadMap(mapId: string): Promise<TomboloMapboxMap> {
 
@@ -61,21 +60,27 @@ export class MapService {
   }
 
 
+  /**
+   * Set a map style and wait for the 'style.load' event to fire. Used to prevent race conditions seen when
+   * Trying to call getStyle() soon after setStyle()
+   *
+   * @param {TomboloMapboxMap} map
+   * @param {TomboloMapStyle} style
+   */
   private setStyleAndWait(map: TomboloMapboxMap, style: TomboloMapStyle): Promise<TomboloMapboxMap> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       map.once('style.load', () => {
         debug('Style loaded');
         resolve(map);
       });
 
-      (map as any).setStyle(style, {diff: false});
+      map.setStyle(style, {diff: false});
     });
   }
 
   /**
    * Error handling
    * @param e Error instance
-   * @returns {Observable<any>}
    */
   private handleError(e): Promise<any> {
     if (e instanceof HttpErrorResponse && e.error.error && e.error.error.name === 'SequelizeOptimisticLockError') {

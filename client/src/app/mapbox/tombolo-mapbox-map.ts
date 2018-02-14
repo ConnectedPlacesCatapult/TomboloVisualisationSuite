@@ -85,6 +85,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   get name(): string {
     return this.getStyle().name;
   }
+
   get description(): string {
     return this.getStyle().metadata.description;
   }

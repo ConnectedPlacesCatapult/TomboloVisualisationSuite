@@ -54,5 +54,4 @@ export class MapInfoComponent implements OnInit {
       this.dialogsService.share('Share Map', res['shortUrl']);
     });
   }
-
 }
