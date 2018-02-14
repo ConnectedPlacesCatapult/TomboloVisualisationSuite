@@ -6,6 +6,8 @@ import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
+import {MapService} from '../map-service/map.service';
+import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -20,7 +22,10 @@ export class MapsDemoComponent implements OnInit {
 
   maps$: Observable<object[]> = null;
 
-  constructor(private mapRegistry: MapRegistry, private activatedRoute: ActivatedRoute, private httpClient: HttpClient) {}
+  constructor(private mapRegistry: MapRegistry,
+              private activatedRoute: ActivatedRoute,
+              private httpClient: HttpClient,
+              private mapService: MapService) {}
 
   ngOnInit() {
     this.maps$ = this.httpClient.get<object[]>('/maps');
@@ -35,33 +40,20 @@ export class MapsDemoComponent implements OnInit {
   loadMap(mapID: string) {
     debug('mapID:', mapID);
     if (!mapID) return;
-    this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      this.mapRegistry.getMap('main-map').then(map => {
-        map.setStyle(style);
 
-        // Fly to default location if not set in URL
-        const url = new URL(window.location.href);
-        let zoom = url.searchParams.get('zoom');
-        if (!zoom) {
-          map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
-        }
-      });
-    });
+    this.mapService.loadMap(mapID);
   }
 
   /* TODO - Following code is temporary demo!!!! */
   basemapSliderChanged(event) {
 
-    this.mapRegistry.getMap('main-map').then(map => {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
 
-
-      debug(map.getStyle());
-
-      const basemapDetail = map.getStyle().metadata['basemapDetail'];
+      const basemapDetail = map.getStyle().metadata.basemapDetail;
 
       if (!basemapDetail) return;
 
-      Object.keys(basemapDetail).forEach(key => {
+      Object.keys(basemapDetail.layers).forEach(key => {
         const layer = map.getLayer(key);
         if (!layer) throw new Error(`Unknown layer ${key}`);
         let prop: string;
@@ -79,7 +71,7 @@ export class MapsDemoComponent implements OnInit {
             debug(`Unsupported layer type for basemap detail: ${layer.type}`);
             break;
         }
-        map.setPaintProperty(key, prop, basemapDetail[key] <= event.value? 1 : 0);
+        map.setPaintProperty(key, prop, basemapDetail.layers[key] <= event.value? 1 : 0);
       });
     });
   }

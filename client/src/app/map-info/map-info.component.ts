@@ -1,13 +1,12 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
-import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {Style} from 'mapbox-gl';
 import {BookmarkService} from "../bookmark-service/bookmark.service";
 import {Location} from '@angular/common';
 import {DialogsService} from "../dialogs/dialogs.service";
+import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {MapService} from '../map-service/map.service';
+import {Subscription} from 'rxjs/Subscription';
+import {MapRegistry} from '../mapbox/map-registry.service';
 
 const debug = Debug('tombolo:map-info');
 
@@ -20,8 +19,8 @@ export class MapInfoComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient,
+  constructor(private mapService: MapService,
+              private mapRegistry: MapRegistry,
               private dialogsService: DialogsService,
               private bookmarkService: BookmarkService,
               private location: Location) {}
@@ -29,24 +28,26 @@ export class MapInfoComponent implements OnInit {
   mapName: string;
   mapID: string;
   mapDescription: string;
+  mapServiceSubscription: Subscription;
 
   ngOnInit() {
-    this.activatedRoute.params.subscribe(params => {
-      this.mapID = params.mapID;
-      this.loadMapInfo(params.mapID);
+
+    // Initial setting of name and description
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      const style = map.getStyle();
+      this.mapName = style.name;
+      this.mapDescription = style.metadata.description;
+    });
+
+    // Update name and description if map is loaded
+    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe((mapStyle: TomboloMapStyle) => {
+      this.mapName = mapStyle.name;
+      this.mapDescription = mapStyle.metadata.description;
     });
   }
 
   ngOnDestroy() {
-  }
-
-  loadMapInfo(mapID: string) {
-    debug('mapID:', mapID);
-    if (!mapID) return;
-    this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      this.mapName = style.name;
-      this.mapDescription = style.metadata['description'];
-    });
+    this.mapServiceSubscription.unsubscribe();
   }
 
   postBookmark(): void {
