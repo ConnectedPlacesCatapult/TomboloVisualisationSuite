@@ -102,7 +102,7 @@ export class ExportMap {
   private buildPdf(canvas, name: string, width: number, height: number): void {
     let pdf = new jsPDF({
       orientation: width > height ? 'l' : 'p',
-      unit: 'in',
+      unit: 'mm',
       format: [width, height],
       compress: true
     });
