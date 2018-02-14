@@ -134,6 +134,10 @@ export class ExportMap {
       errors.push(`Width and height be between 0 and ${this.dimensionsLimit}mm.`);
     }
 
+    if (isNaN(dpi) || isNaN(width) || isNaN(height) ) {
+      errors.push(`Width, height and DPI must be numbers.`);
+    }
+
     if (dpi > this.dpiLimit || dpi < 0) {
       errors.push(`DPI must be between 0 and ${this.dpiLimit}.`);
     }
