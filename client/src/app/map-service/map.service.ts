@@ -8,6 +8,8 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../dialogs/notification.service';
 
 import 'rxjs/add/operator/do';
+import {MapRegistry} from '../mapbox/map-registry.service';
+import {TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:MapService');
 
@@ -23,21 +25,34 @@ export class OptimisticLockingError extends Error {
 @Injectable()
 export class MapService {
 
-  constructor(private http: HttpClient, private notificationService: NotificationService) {}
+  constructor(
+    private http: HttpClient,
+    private notificationService: NotificationService,
+    private mapRegistry: MapRegistry) {}
 
-  private _mapLoaded$ = new Subject<Style>();
+  private _mapLoaded$ = new Subject<TomboloMapStyle>();
 
-  mapLoaded$(): Observable<Style> {
+  mapLoaded$(): Observable<TomboloMapStyle> {
     return this._mapLoaded$.asObservable();
   }
 
-  loadMap(mapId: string): Promise<Style> {
-    return this.http.get<Style>(`/maps/${mapId}/style.json`, {withCredentials: true})
-      .do(style => {
-        debug(`Map ${mapId} loaded.`);
-        this._mapLoaded$.next(style);
-      })
-      .catch(e => this.handleError(e)).toPromise();
+  /**
+   * Loads a map by id and sets the main-map style from the response
+   * Clients can subscribe to the mapLoaded$ observable to be notified
+   * when the map has been loaded.
+   *
+   * @param {string} mapId
+   * @returns {Promise<mapboxgl.Style>}
+   */
+  async loadMap(mapId: string): Promise<TomboloMapStyle> {
+    const style = await this.http.get<TomboloMapStyle>(`/maps/${mapId}/style.json`).toPromise();
+    const map = await this.mapRegistry.getMap('main-map');
+    debug(`Map ${mapId} loaded.`);
+
+    map.setStyle(style);
+    this._mapLoaded$.next(style);
+
+    return style;
   }
 
   /**

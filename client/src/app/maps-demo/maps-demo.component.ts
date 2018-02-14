@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
 import {MapService} from '../map-service/map.service';
+import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -41,29 +42,18 @@ export class MapsDemoComponent implements OnInit {
     if (!mapID) return;
 
     this.mapService.loadMap(mapID);
-/*
-    this.httpClient.get<Style>(`/maps/${mapID}/style.json`).subscribe(style => {
-      this.mapRegistry.getMap('main-map').then(map => {
-        map.setStyle(style);
-
-
-      });
-    });*/
   }
 
   /* TODO - Following code is temporary demo!!!! */
   basemapSliderChanged(event) {
 
-    this.mapRegistry.getMap('main-map').then(map => {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
 
-
-      debug(map.getStyle());
-
-      const basemapDetail = map.getStyle().metadata['basemapDetail'];
+      const basemapDetail = map.getStyle().metadata.basemapDetail;
 
       if (!basemapDetail) return;
 
-      Object.keys(basemapDetail).forEach(key => {
+      Object.keys(basemapDetail.layers).forEach(key => {
         const layer = map.getLayer(key);
         if (!layer) throw new Error(`Unknown layer ${key}`);
         let prop: string;
@@ -81,7 +71,7 @@ export class MapsDemoComponent implements OnInit {
             debug(`Unsupported layer type for basemap detail: ${layer.type}`);
             break;
         }
-        map.setPaintProperty(key, prop, basemapDetail[key] <= event.value? 1 : 0);
+        map.setPaintProperty(key, prop, basemapDetail.layers[key] <= event.value? 1 : 0);
       });
     });
   }
