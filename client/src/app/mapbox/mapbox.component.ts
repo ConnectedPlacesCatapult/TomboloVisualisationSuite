@@ -183,6 +183,7 @@ export class MapboxComponent implements OnInit {
   loading = true;
   mapOpacity = 0;
 
+  @Input() mapClass: typeof EmuMapboxMap = EmuMapboxMap;
   @Input() showHover: boolean;
   @Input() id: string;
   @ViewChild('mapContainer') mapContainer;
@@ -199,7 +200,7 @@ export class MapboxComponent implements OnInit {
       container: this.mapContainer.nativeElement
     };
 
-    this.map = new EmuMapboxMap(options);
+    this.map = new this.mapClass(options);
 
     if (this.pendingStyle) {
       this.map.setStyle(this.pendingStyle);

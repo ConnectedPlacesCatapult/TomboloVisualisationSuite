@@ -56,8 +56,63 @@ export interface TomboloLayerMetadata {
 
 export class TomboloMapboxMap extends EmuMapboxMap {
 
+  private _cachedStyle: TomboloMapStyle = null;
+
   getStyle(): TomboloMapStyle {
-    return super.getStyle() as TomboloMapStyle;
+
+    if (!this._cachedStyle) {
+      this._cachedStyle = super.getStyle() as TomboloMapStyle;
+    }
+
+    return this._cachedStyle
   }
 
+  setStyle(style: string | MapboxStyle): this {
+
+    this._cachedStyle = null;
+    super.setStyle(style);
+
+    return this;
+  }
+
+  getLayer(layerID: string): TomboloStyleLayer {
+    return super.getLayer(layerID) as TomboloStyleLayer;
+  }
+
+  get description(): string {
+    return this.getStyle().metadata.description;
+  }
+
+  get datasets(): TomboloDatasetMetadata[] {
+    return this.getStyle().metadata.datasets;
+  }
+
+  get dataLayers(): string[] {
+    return this.getStyle().metadata.dataLayers;
+  }
+
+  getDatasetForLayer(layerID: string): TomboloDatasetMetadata {
+    const layer = this.getLayer(layerID);
+    const datasetID = layer.metadata.dataset;
+    const dataset = this.datasets.find(d => d.id === datasetID);
+
+    if (!dataset) {
+      throw new Error(`Dataset not found on layer: ${layerID}`);
+    }
+
+    return dataset;
+  }
+
+  getDataAttributesForLayer(layerID: string): TomboloDataAttributeMetadata[] {
+    return this.getDatasetForLayer(layerID).attributes;
+  }
+
+  getDataAttributeForLayer(layerID: string, attributeID: string): TomboloDataAttributeMetadata {
+    const attribute = this.getDataAttributesForLayer(layerID).find(a => a.id === attributeID);
+    if (!attribute) {
+      throw new Error(`Data attribute '${attributeID} not found on layer: ${layerID}`);
+    }
+
+    return attribute;
+  }
 }
