@@ -9,7 +9,7 @@ import {ExportMap} from "./export-map/export-map";
 
 const debug = Debug('tombolo:mapboxgl');
 
-export class TomboloMapbox extends Map {
+export class EmuMapboxMap extends Map {
 
   exportMap = new ExportMap();
 
@@ -178,16 +178,17 @@ export class MapboxComponent implements OnInit {
 
   private mouseMove$ = new EventEmitter<MapboxState>();
 
-  map: TomboloMapbox;
+  map: EmuMapboxMap;
   pendingStyle: any;
   loading = true;
   mapOpacity = 0;
 
+  @Input() mapClass: typeof EmuMapboxMap = EmuMapboxMap;
   @Input() showHover: boolean;
   @Input() id: string;
   @ViewChild('mapContainer') mapContainer;
 
-  @Output() mapLoaded = new EventEmitter<TomboloMapbox>();
+  @Output() mapLoaded = new EventEmitter<EmuMapboxMap>();
   @Output() mapMoveEnd = new EventEmitter<MapboxState>();
   @Output() mapClick = new EventEmitter<MapMouseEvent>();
   @Output() mouseMove = this.mouseMove$.auditTime(200);
@@ -199,7 +200,7 @@ export class MapboxComponent implements OnInit {
       container: this.mapContainer.nativeElement
     };
 
-    this.map = new TomboloMapbox(options);
+    this.map = new this.mapClass(options);
 
     if (this.pendingStyle) {
       this.map.setStyle(this.pendingStyle);

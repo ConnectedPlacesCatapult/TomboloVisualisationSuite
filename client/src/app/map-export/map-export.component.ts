@@ -7,6 +7,7 @@ import {Style} from 'mapbox-gl';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Location} from '@angular/common';
 import {NotificationService} from "../dialogs/notification.service";
+import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:map-info');
 
@@ -36,11 +37,6 @@ export class MapExportComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.activatedRoute.params.subscribe(params => {
-      this.mapRegistry.getMap('main-map').then(map => {
-        this.exportForm.patchValue({'name': this.formatFileName(map.getStyle().name)});
-      });
-    });
 
     this.exportForm = new FormGroup({
       name: new FormControl('', Validators.required),
@@ -49,6 +45,10 @@ export class MapExportComponent implements OnInit {
       dpi: new FormControl(this.presets['a4_150dpi'].dpi, Validators.required),
       format: new FormControl(this.presets['a4_150dpi'].format, Validators.required),
       preset: new FormControl('a4_150dpi')
+    });
+
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      this.exportForm.patchValue({'name': this.formatFileName(map.getStyle().name)});
     });
 
     this.exportForm.get('preset').valueChanges.subscribe(val => this.onPresetChange(val));

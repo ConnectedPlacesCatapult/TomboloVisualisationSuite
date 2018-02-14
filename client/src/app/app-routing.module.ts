@@ -28,12 +28,12 @@ const routes: Routes = [
     component: MapsDemoComponent
   },
   {
-    path: 'mapinfo/:mapID',
+    path: 'mapinfo',
     component: MapInfoComponent,
     outlet: 'rightBar'
   },
   {
-    path: 'mapexport/:mapID',
+    path: 'mapexport',
     component: MapExportComponent,
     outlet: 'rightBar'
   },

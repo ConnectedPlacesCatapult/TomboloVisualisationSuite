@@ -3,7 +3,7 @@
 <div class="sidebar-content">
   <mat-nav-list>
   <mat-radio-group>
-    <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo', map.id]}}]" routerLinkActive="active">
+    <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]" routerLinkActive="active">
       {{map.name}}
     </a>
   </mat-radio-group>

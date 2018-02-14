@@ -26,6 +26,7 @@ import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from "./map-export/map-export.component";
 import {MatInputModule, MatTableModule} from "@angular/material";
 import {BookmarkService} from "./bookmark-service/bookmark.service";
+import {MapService} from './map-service/map.service';
 import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
 import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
 import {CdkTableModule} from "@angular/cdk/table";
@@ -80,6 +81,7 @@ export function AppConfigFactory(configService: ConfigService) {
     NotificationService,
     ConfigService,
     MapRegistry,
+    MapService,
     TooltipRenderService,
     {
       // Load app config at startup
