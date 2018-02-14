@@ -1,12 +1,12 @@
 /deep/ .mat-dialog-container {
-  padding: 12px;
+  padding: 22px;
   overflow: hidden;
 }
 
 :host {
 
-  $icon-size: 30px;
-  $button-padding: 3px;
+  $icon-size: 40px;
+  $button-padding: 6px;
 
   .full-width {
     width: 100%;
@@ -22,12 +22,17 @@
   }
 
   /deep/ .mat-dialog-actions {
-    padding: 8px 0 0 0;
+    padding: 15px 0 0 0;
     margin: 0;
   }
 
   /deep/ .mat-dialog-content {
     height: 46px;
+  }
+
+  /deep/ .mat-form-field-underline {
+    height: 2px;
+    background-color: rgb(200,217,217);
   }
 
   .share-buttons {
@@ -38,7 +43,7 @@
       width: $icon-size+$button-padding;
       height: $icon-size+3;
       padding: 0;
-      margin-right: 5px;
+      margin-right: 3px;
     }
 
     /deep/ .mat-icon {
@@ -46,8 +51,18 @@
       height: $icon-size;
       font-size: $icon-size;
       size: $icon-size;
-      margin-bottom: 3px;
+      margin-top: 10px;
     }
+  }
+
+  .copy {
+    background-color: rgb(68,202,224);
+    color: white;
+    font-size: 11px;
+  }
+
+  .mat-cornered {
+    corner-radius: 20;
   }
 
 }

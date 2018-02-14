@@ -52,7 +52,7 @@ export class MapInfoComponent implements OnInit {
 
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
-      this.dialogsService.share('Share Map', res['shortUrl']);
+      this.dialogsService.share('Share your Map', res['shortUrl']);
     });
   }
 
