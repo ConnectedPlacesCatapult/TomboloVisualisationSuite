@@ -32,4 +32,9 @@ export class ShareDialog  {
     document.execCommand('copy');
     this.dialogRef.close(true);
   }
+
+  email() {
+    window.location.href = `mailto:?subject=My Tombolo Map&body=${this.url}`;
+    return false;
+  }
 }
