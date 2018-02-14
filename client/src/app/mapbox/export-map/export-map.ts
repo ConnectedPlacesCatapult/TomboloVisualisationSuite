@@ -23,7 +23,7 @@ export class ExportMap {
   }
 
   /**
-   * Download the map canvas as a PNG or PDF file. Width and height should be in inches.
+   * Download the map canvas as a PNG or PDF file. Width and height should be in mm.
    *
    * @param {string} name
    * @param {number} width

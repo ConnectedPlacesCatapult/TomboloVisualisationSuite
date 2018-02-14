@@ -4,24 +4,13 @@
 
 import { MatDialogRef } from '@angular/material';
 import {Component, ViewChild, OnInit} from '@angular/core';
-import {InformationDialog} from './info-dialog.component';
+import {InformationDialog} from '../info-dialog.component';
+import { ShareButtons } from '@ngx-share/core';
 
 @Component({
   selector: 'share-dialog',
-  template: `
-    <h1 mat-dialog-title>{{title}}</h1>
-    <div mat-dialog-content>
-      <p class="mat-body">Use this link to share your map.</p>
-      <mat-form-field class="full-width">
-        <input #urlInput matInput type="text" [value]="url" readonly>
-      </mat-form-field>
-      
-    </div>
-    <div mat-dialog-actions fxLayoutAlign="end">
-      <button type="button" mat-button (click)="copy()">Copy to Clipboard</button>
-    </div>
-    `,
-  styles: ['.full-width {width: 100%}']
+  templateUrl: './share-dialog.html',
+  styleUrls: ['./share-dialog.scss']
 })
 export class ShareDialog  {
 
@@ -30,7 +19,7 @@ export class ShareDialog  {
 
   @ViewChild('urlInput') urlInput;
 
-  constructor(public dialogRef: MatDialogRef<ShareDialog>) {
+  constructor(public dialogRef: MatDialogRef<ShareDialog>, public share: ShareButtons) {
 
   }
 

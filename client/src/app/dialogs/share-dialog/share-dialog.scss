@@ -1,0 +1,53 @@
+/deep/ .mat-dialog-container {
+  padding: 12px;
+  overflow: hidden;
+}
+
+:host {
+
+  $icon-size: 30px;
+  $button-padding: 3px;
+
+  .full-width {
+    width: 100%;
+  }
+
+  h1, input[type='text'] {
+    margin-left: $button-padding;
+  }
+
+  /deep/ .mat-dialog-title, /deep/ .mat-input-flex  {
+    padding: 0;
+    margin: 0;
+  }
+
+  /deep/ .mat-dialog-actions {
+    padding: 8px 0 0 0;
+    margin: 0;
+  }
+
+  /deep/ .mat-dialog-content {
+    height: 46px;
+  }
+
+  .share-buttons {
+    z-index: 9999;
+    margin: 8px 0 0 0;
+
+    .share-button {
+      width: $icon-size+$button-padding;
+      height: $icon-size+3;
+      padding: 0;
+      margin-right: 5px;
+    }
+
+    /deep/ .mat-icon {
+      width: $icon-size;
+      height: $icon-size;
+      font-size: $icon-size;
+      size: $icon-size;
+      margin-bottom: 3px;
+    }
+  }
+
+}

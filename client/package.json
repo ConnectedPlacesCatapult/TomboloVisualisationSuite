@@ -25,6 +25,7 @@
     "@angular/router": "^5.0.0",
     "@mapbox/mapbox-gl-style-spec": "^10.1.0",
     "@mapbox/sphericalmercator": "^1.0.5",
+    "@ngx-share/core": "^5.0.1",
     "@types/mapbox-gl": "^0.43.1",
     "angular-2-local-storage": "^1.0.1",
     "codemirror": "^5.33.0",
