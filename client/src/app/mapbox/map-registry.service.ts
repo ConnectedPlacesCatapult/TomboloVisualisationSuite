@@ -4,16 +4,16 @@
 
 import {Injectable} from "@angular/core";
 import * as Debug from 'debug';
-import {TomboloMapbox} from "./mapbox.component";
+import {EmuMapboxMap} from "./mapbox.component";
 
 const debug = Debug('tombolo:MapRegistry');
 
 @Injectable()
 export class MapRegistry {
 
-  private maps: Map<string, Promise<TomboloMapbox>> = new Map<string, Promise<TomboloMapbox>>();
+  private maps: Map<string, Promise<EmuMapboxMap>> = new Map<string, Promise<EmuMapboxMap>>();
 
-  registerMap(id: string, map: TomboloMapbox): void {
+  registerMap(id: string, map: EmuMapboxMap): void {
 
     debug(`Registering map '${id}'`);
 
@@ -25,13 +25,13 @@ export class MapRegistry {
     }));
   }
 
-  getMap(id: string): Promise<TomboloMapbox> {
+  getMap<T extends EmuMapboxMap = EmuMapboxMap>(id: string): Promise<T> {
     debug(`Getting map '${id}'`);
     const mapPromise = this.maps.get(id);
     if (!mapPromise) {
       return Promise.reject(new Error(`Map '${id}' not registered`));
     }
 
-    return mapPromise;
+    return mapPromise as Promise<T>;
   }
 }

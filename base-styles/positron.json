@@ -8,20 +8,23 @@
       "line": "highway_name_other"
     },
     "basemapDetail": {
-      "building": 4,
-      "highway_path": 4,
-      "highway_minor": 3,
-      "highway_major_casing": 2,
-      "highway_major_inner": 2,
-      "highway_major_subtle": 2,
-      "highway_name_other": 2,
-      "highway_name_other-en": 2,
-      "highway_motorway_casing": 1,
-      "highway_motorway_inner": 1,
-      "highway_motorway_subtle": 1,
-      "highway_motorway_bridge_casing": 1,
-      "highway_motorway_bridge_inner": 1,
-      "highway_name_motorway": 1
+      "defaultDetailLevel": 4,
+      "layers": {
+        "building": 4,
+        "highway_path": 4,
+        "highway_minor": 3,
+        "highway_major_casing": 2,
+        "highway_major_inner": 2,
+        "highway_major_subtle": 2,
+        "highway_name_other": 2,
+        "highway_name_other-en": 2,
+        "highway_motorway_casing": 1,
+        "highway_motorway_inner": 1,
+        "highway_motorway_subtle": 1,
+        "highway_motorway_bridge_casing": 1,
+        "highway_motorway_bridge_inner": 1,
+        "highway_name_motorway": 1
+      }
     }
   },
   "center": [
