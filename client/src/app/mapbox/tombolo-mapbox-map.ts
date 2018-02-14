@@ -67,10 +67,13 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return this._cachedStyle
   }
 
-  setStyle(style: string | MapboxStyle): this {
+  setStyle(style: string | MapboxStyle, options?: any): this {
 
     this._cachedStyle = null;
-    super.setStyle(style);
+
+    // Workaround for missing options parameter in @types/mapbox
+    const untypedSetStyle: any = super.setStyle.bind(this);
+    untypedSetStyle(style, options);
 
     return this;
   }
@@ -79,6 +82,9 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return super.getLayer(layerID) as TomboloStyleLayer;
   }
 
+  get name(): string {
+    return this.getStyle().name;
+  }
   get description(): string {
     return this.getStyle().metadata.description;
   }

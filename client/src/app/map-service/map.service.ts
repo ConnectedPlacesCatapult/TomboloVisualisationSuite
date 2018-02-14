@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
 import * as Debug from 'debug';
 import {Observable} from 'rxjs/Observable';
-import Style = mapboxgl.Style;
 import {Subject} from 'rxjs/Subject';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
@@ -9,7 +8,7 @@ import {NotificationService} from '../dialogs/notification.service';
 
 import 'rxjs/add/operator/do';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:MapService');
 
@@ -30,9 +29,9 @@ export class MapService {
     private notificationService: NotificationService,
     private mapRegistry: MapRegistry) {}
 
-  private _mapLoaded$ = new Subject<TomboloMapStyle>();
+  private _mapLoaded$ = new Subject<TomboloMapboxMap>();
 
-  mapLoaded$(): Observable<TomboloMapStyle> {
+  mapLoaded$(): Observable<TomboloMapboxMap> {
     return this._mapLoaded$.asObservable();
   }
 
@@ -44,15 +43,33 @@ export class MapService {
    * @param {string} mapId
    * @returns {Promise<mapboxgl.Style>}
    */
-  async loadMap(mapId: string): Promise<TomboloMapStyle> {
-    const style = await this.http.get<TomboloMapStyle>(`/maps/${mapId}/style.json`).toPromise();
-    const map = await this.mapRegistry.getMap('main-map');
-    debug(`Map ${mapId} loaded.`);
+  loadMap(mapId: string): Promise<TomboloMapboxMap> {
 
-    map.setStyle(style);
-    this._mapLoaded$.next(style);
+    return Promise.all([
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),
+      this.http.get<TomboloMapStyle>(`/maps/${mapId}/style.json`).toPromise()
+    ])
+      .then(([map, style]) => {
+        return this.setStyleAndWait(map, style);
+      })
+      .then(map => {
+        debug(`Map ${mapId} loaded.`);
+        this._mapLoaded$.next(map);
+        return map;
+      })
+      .catch(e => this.handleError(e));
+  }
 
-    return style;
+
+  private setStyleAndWait(map: TomboloMapboxMap, style: TomboloMapStyle): Promise<TomboloMapboxMap> {
+    return new Promise((resolve, reject) => {
+      map.once('style.load', () => {
+        debug('Style loaded');
+        resolve(map);
+      });
+
+      (map as any).setStyle(style, {diff: false});
+    });
   }
 
   /**
@@ -60,7 +77,7 @@ export class MapService {
    * @param e Error instance
    * @returns {Observable<any>}
    */
-  private handleError(e): Observable<any> {
+  private handleError(e): Promise<any> {
     if (e instanceof HttpErrorResponse && e.error.error && e.error.error.name === 'SequelizeOptimisticLockError') {
       e = new OptimisticLockingError(e.error.message, e.error.error);
     }
@@ -68,6 +85,6 @@ export class MapService {
     if (!environment.production) {
       this.notificationService.error(e);
     }
-    return Observable.throw(e);
+    return Promise.reject(e);
   }
 }

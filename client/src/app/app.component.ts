@@ -12,7 +12,7 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
 import {MapService} from './map-service/map.service';
-import {TomboloMapboxMap, TomboloMapStyle} from './mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap} from './mapbox/tombolo-mapbox-map';
 import {Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
 import {AttributeRow, TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
@@ -65,8 +65,8 @@ export class AppComponent implements OnInit {
       this.positionMapFromURLParams(params);
     });
 
-    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(style => {
-      this.mapLoadedHandler(style);
+    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+      this.mapLoadedHandler(map);
     });
 
     this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
@@ -116,15 +116,14 @@ export class AppComponent implements OnInit {
    *
    * @param {mapboxgl.Style} style
    */
-  private mapLoadedHandler(style: TomboloMapStyle) {
-    this.mapRegistry.getMap('main-map').then(map => {
-      // Fly to default location if not set in URL
-      const url = new URL(window.location.href);
-      let zoom = url.searchParams.get('zoom');
-      if (!zoom) {
-        map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
-      }
-    });
+  private mapLoadedHandler(map: TomboloMapboxMap) {
+    // Fly to default location if not set in URL
+    const url = new URL(window.location.href);
+    let zoom = url.searchParams.get('zoom');
+    if (!zoom) {
+      const style = map.getStyle();
+      map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
+    }
   }
 
   /**
