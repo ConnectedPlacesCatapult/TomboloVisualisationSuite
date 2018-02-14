@@ -48,32 +48,7 @@ export class MapsDemoComponent implements OnInit {
   basemapSliderChanged(event) {
 
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-
-      const basemapDetail = map.getStyle().metadata.basemapDetail;
-
-      if (!basemapDetail) return;
-
-      Object.keys(basemapDetail.layers).forEach(key => {
-        const layer = map.getLayer(key);
-        if (!layer) throw new Error(`Unknown layer ${key}`);
-        let prop: string;
-        switch (layer.type) {
-          case 'line':
-            prop = 'line-opacity';
-            break;
-          case 'symbol':
-            prop = 'text-opacity';
-            break;
-          case 'fill':
-            prop = 'fill-opacity';
-            break;
-          default:
-            debug(`Unsupported layer type for basemap detail: ${layer.type}`);
-            break;
-        }
-        map.setPaintProperty(key, prop, basemapDetail.layers[key] <= event.value? 1 : 0);
-      });
+      map.setBasemapDetail(event.value);
     });
   }
-
 }
