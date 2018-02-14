@@ -202,7 +202,8 @@ export class StyleGenerator {
         name: ds.name,
         description: ds.description,
         geometryType: ds.geometryType,
-        attributes: layer.dataset.dataAttributes.map(attr => ({
+        attributes: layer.dataset.dataAttributes
+          .sort((a, b) => a.order - b.order).map(attr => ({
           id: attr.field,
           name: attr.name,
           description: attr.description,

@@ -115,6 +115,7 @@ router.get('/:datasetId/calculatestats', async (req, res, next) => {
     const dataset = await loadDataset(req.params.datasetId);
     await dataset.calculateDataAttributeStats();
     await dataset.calculateGeometryExtent();
+    await dataset.calculateDatasetBytes();
     await dataset.reload({include: [DataAttribute]});
     res.json(dataset);
   } catch (e) {

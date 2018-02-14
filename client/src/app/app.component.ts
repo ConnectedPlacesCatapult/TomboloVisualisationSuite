@@ -2,7 +2,7 @@
  * Top-level app component - just an empty router-outlet to host components
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit, ComponentFactoryResolver, Injector} from '@angular/core';
 import {Location} from '@angular/common';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
@@ -14,6 +14,10 @@ import {MapRegistry} from './mapbox/map-registry.service';
 import {MapService} from './map-service/map.service';
 import Style = mapboxgl.Style;
 const debug = Debug('tombolo:app');
+import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
+import {TooltipRenderComponent, AttributeRow} from "./tooltip-render/tooltip-render.component";
+import * as mapboxgl from 'mapbox-gl';
+import {TomboloMapbox} from "./mapbox/mapbox.component";
 
 @Component({
   selector: 'tombolo-root',
@@ -35,13 +39,16 @@ export class AppComponent implements OnInit {
   rightBarOpen = false;
   routerEventSubscription: Subscription;
   mapServiceSubscription: Subscription;
+  map: TomboloMapbox;
 
-  constructor(
-    private router: Router,
-    private mapRegistry: MapRegistry,
-    private location: Location,
-    private activatedRoute: ActivatedRoute,
-    private mapService: MapService) {}
+  constructor(private router: Router,
+              private mapRegistry: MapRegistry,
+              private location: Location,
+              private activatedRoute: ActivatedRoute,
+              private tooltipRenderService: TooltipRenderService,
+              private resolver: ComponentFactoryResolver,
+              private mapService: MapService,
+              private injector: Injector) {}
 
   ngOnInit() {
     debug(`App loaded - environment = ${environment.name} `);
@@ -60,6 +67,17 @@ export class AppComponent implements OnInit {
     this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(style => {
       this.mapLoadedHandler(style);
     });
+
+    this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
+      const popupContent = this.getTooltipInnerHtml(tooltipData);
+
+      const popup = new mapboxgl.Popup()
+        .setLngLat(tooltipData['lngLat'])
+        .setHTML(`<div>${popupContent}</div>`)
+        .addTo(this.map);
+
+      popup.on('close', () => this.tooltipRenderService.componentInstance.destroy() );
+    });
   }
 
   ngOnDestroy() {
@@ -69,6 +87,9 @@ export class AppComponent implements OnInit {
 
   ngAfterViewInit() {
     this.mapRegistry.getMap('main-map').then(map => {
+
+      this.map = map;
+
       map.on('moveend', event => {
         this.setURLFromMap(event.target);
       });
@@ -90,7 +111,6 @@ export class AppComponent implements OnInit {
   closeRightBar() {
     this.router.navigate([{ outlets: { rightBar: null }}]);
   }
-
 
   private mapLoadedHandler(style: Style) {
     this.mapRegistry.getMap('main-map').then(map => {
@@ -130,5 +150,61 @@ export class AppComponent implements OnInit {
     }
 
     return true;
+  }
+
+  onMapClick(event): void {
+    const mapStyle = this.map.getStyle();
+    const dataFeature = this.map.queryRenderedFeatures(event.point, {layers: mapStyle['metadata']['dataLayers']})[0];
+
+    if (!dataFeature) {
+      return;
+    }
+
+    const attributes = this.getAttributesWithValues(mapStyle, dataFeature);
+    this.tooltipRenderService.setTooltip(attributes, event.lngLat);
+  }
+
+  /**
+   * Given the map style and the data-layer feature of a clicked point,
+   * return an object combining human-readable information about each property
+   * with each actual property value.
+   * @param {mapboxgl.Style} mapStyle
+   * @param {Object} dataFeature
+   * @returns {AttributeRow[]}
+   */
+  private getAttributesWithValues(mapStyle: mapboxgl.Style, dataFeature: object): AttributeRow[] {
+    let properties = dataFeature['properties'];
+    const dataSourceId = dataFeature['layer']['source'];
+    const attributes = mapStyle.metadata.datasets.filter(dataset => dataset.id === dataSourceId)[0].attributes;
+
+    return attributes.map(attribute => {
+      const propertyId = Object.keys(properties).filter(id => attribute.id === id)[0];
+
+      const property = (propertyId) ? properties[propertyId] : null;
+
+      return {
+        name: attribute['name'],
+        description: attribute['description'],
+        id: attribute['id'],
+        value: property,
+        unit: attribute['unit']
+      };
+
+    });
+  }
+
+  /**
+   * Given an object containing data to be displayed, generate the tooltip HTML
+   * by passing the object into a tooltip render component.
+   * @param {Object} tooltipData
+   * @returns {string}
+   */
+  getTooltipInnerHtml(tooltipData: object): string {
+    const factory = this.resolver.resolveComponentFactory(TooltipRenderComponent);
+    const component = factory.create(this.injector);
+    component.instance.data = {...tooltipData['attributes']};
+    component.changeDetectorRef.detectChanges();
+    this.tooltipRenderService.componentInstance = component;
+    return component.location.nativeElement.innerHTML;
   }
 }

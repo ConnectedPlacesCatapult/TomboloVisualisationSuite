@@ -24,8 +24,13 @@ import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from "./map-export/map-export.component";
+import {MatInputModule, MatTableModule} from "@angular/material";
 import {BookmarkService} from "./bookmark-service/bookmark.service";
 import {MapService} from './map-service/map.service';
+import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
+import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
+import {CdkTableModule} from "@angular/cdk/table";
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -37,13 +42,17 @@ export function AppConfigFactory(configService: ConfigService) {
 }
 
 @NgModule({
+  entryComponents: [
+    TooltipRenderComponent
+  ],
   declarations: [
     AppComponent,
     CyclingDemoComponent,
     BasemapDemoComponent,
     MapsDemoComponent,
     MapInfoComponent,
-    MapExportComponent
+    MapExportComponent,
+    TooltipRenderComponent
   ],
   imports: [
     BrowserModule,
@@ -56,6 +65,9 @@ export function AppConfigFactory(configService: ConfigService) {
     AppRoutingModule,
     MaterialModule,
     MapboxModule,
+    MatTableModule,
+    CdkTableModule,
+    MatTooltipModule,
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
       storageType: 'localStorage'
@@ -68,6 +80,7 @@ export function AppConfigFactory(configService: ConfigService) {
     ConfigService,
     MapRegistry,
     MapService,
+    TooltipRenderService,
     {
       // Load app config at startup
       provide: APP_INITIALIZER,
