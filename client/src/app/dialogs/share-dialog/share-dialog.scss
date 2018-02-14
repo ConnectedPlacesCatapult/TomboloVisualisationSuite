@@ -55,14 +55,11 @@
     }
   }
 
-  .copy {
+  .tombolo-button {
     background-color: rgb(68,202,224);
     color: white;
     font-size: 11px;
-  }
-
-  .mat-cornered {
+    text-transform: uppercase;
     corner-radius: 20;
   }
-
 }
