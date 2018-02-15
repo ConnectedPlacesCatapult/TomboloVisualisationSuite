@@ -30,6 +30,9 @@ datasetCaching = false
 slowTileLimit = 500 # ms
 largeTileLimit = 100000 # bytes
 
+[fileUpload]
+maxFileSize = 52428800 # 50 MB
+
 [client]
 authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"
