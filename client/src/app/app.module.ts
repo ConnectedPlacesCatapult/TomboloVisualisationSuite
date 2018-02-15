@@ -31,6 +31,7 @@ import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component"
 import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
 import {CdkTableModule} from "@angular/cdk/table";
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {ShareModule} from '@ngx-share/core';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -68,6 +69,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MatTableModule,
     CdkTableModule,
     MatTooltipModule,
+    ShareModule.forRoot(),
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
       storageType: 'localStorage'

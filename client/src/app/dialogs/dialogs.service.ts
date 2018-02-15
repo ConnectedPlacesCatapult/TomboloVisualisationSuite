@@ -7,7 +7,7 @@ import { ConfirmDialog } from './confirm-dialog.component';
 import { MatDialogRef, MatDialog, MatDialogConfig } from '@angular/material';
 import { Injectable } from '@angular/core';
 import {InformationDialog} from "./info-dialog.component";
-import {ShareDialog} from './share-dialog.component';
+import {ShareDialog} from './share-dialog/share-dialog.component';
 
 @Injectable()
 export class DialogsService {

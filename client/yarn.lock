@@ -253,6 +253,10 @@
     tree-kill "^1.0.0"
     webpack-sources "^1.1.0"
 
+"@ngx-share/core@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@ngx-share/core/-/core-5.0.1.tgz#24f75d66992ee073adce1a41eb4bc148e4c80186"
+
 "@schematics/angular@~0.1.16":
   version "0.1.17"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.1.17.tgz#084a7cbe2de6f94a856bd08d95c9d35ef8905e2b"
