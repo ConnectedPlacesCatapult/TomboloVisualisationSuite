@@ -13,6 +13,9 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 export class AppConfig {
   tileUrl: string;
   authEndpoint: string;
+  socialMediaTitle: string;
+  socialMediaDescription: string;
+  socialMediaTags: string;
 }
 
 @Injectable()

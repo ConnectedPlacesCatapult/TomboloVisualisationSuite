@@ -3,9 +3,9 @@
  */
 
 import { MatDialogRef } from '@angular/material';
-import {Component, ViewChild, OnInit} from '@angular/core';
-import {InformationDialog} from '../info-dialog.component';
+import {Component, Inject, ViewChild} from '@angular/core';
 import { ShareButtons } from '@ngx-share/core';
+import {APP_CONFIG, AppConfig} from '../../config.service';
 
 @Component({
   selector: 'share-dialog',
@@ -16,12 +16,18 @@ export class ShareDialog  {
 
   public title: string;
   public url: string;
-  public description = 'Check out this amazing map I built with Tombolo!';
-  public tags = 'tombolo';
+  public description: string;
+  public socialMediaTitle: string;
+  public tags: string;
 
   @ViewChild('urlInput') urlInput;
 
-  constructor(public dialogRef: MatDialogRef<ShareDialog>, public share: ShareButtons) {
+  constructor(public dialogRef: MatDialogRef<ShareDialog>,
+              public share: ShareButtons,
+              @Inject(APP_CONFIG) private config: AppConfig) {
+    this.socialMediaTitle = config.socialMediaTitle;
+    this.description = config.socialMediaDescription;
+    this.tags = config.socialMediaTags;
   }
 
   ngAfterViewInit() {
@@ -35,7 +41,7 @@ export class ShareDialog  {
   }
 
   email() {
-    window.location.href = `mailto:?subject=My Tombolo Map&body=${this.description}%0D%0A%0D%0A${this.url}`;
+    window.location.href = `mailto:?subject=${this.socialMediaTitle}&body=${this.description}%0D%0A%0D%0A${this.url}`;
     return false;
   }
 }
