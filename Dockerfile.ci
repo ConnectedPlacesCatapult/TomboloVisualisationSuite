@@ -2,7 +2,8 @@
 # so build from scratch
 
 FROM mhart/alpine-node:8
-RUN apk --no-cache add libc6-compat tini
+RUN echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+RUN apk --no-cache --update add libc6-compat tini gdal@testing
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --production
