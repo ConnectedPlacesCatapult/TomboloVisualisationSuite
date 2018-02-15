@@ -34,15 +34,14 @@ export class MapInfoComponent implements OnInit {
 
     // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      const style = map.getStyle();
-      this.mapName = style.name;
-      this.mapDescription = style.metadata.description;
+      this.mapName = map.name;
+      this.mapDescription = map.description;
     });
 
     // Update name and description if map is loaded
-    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe((mapStyle: TomboloMapStyle) => {
-      this.mapName = mapStyle.name;
-      this.mapDescription = mapStyle.metadata.description;
+    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+      this.mapName = map.name;
+      this.mapDescription = map.description;
     });
   }
 
@@ -52,8 +51,7 @@ export class MapInfoComponent implements OnInit {
 
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
-      this.dialogsService.share('Share Map', res['shortUrl']);
+      this.dialogsService.share('Share your Map', res['shortUrl']);
     });
   }
-
 }

@@ -2,7 +2,7 @@
  * Top-level app component - just an empty router-outlet to host components
  */
 
-import {Component, OnInit, ComponentFactoryResolver, Injector} from '@angular/core';
+import {Component, ComponentFactoryResolver, Injector, OnInit} from '@angular/core';
 import {Location} from '@angular/common';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
@@ -12,10 +12,11 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
 import {MapService} from './map-service/map.service';
-import {TomboloMapboxMap, TomboloMapStyle} from './mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap} from './mapbox/tombolo-mapbox-map';
 import {Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
-import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
-import {TooltipRenderComponent, AttributeRow} from "./tooltip-render/tooltip-render.component";
+import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
+import {AttributeRow, TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
+import {EmuMapboxMap} from './mapbox/mapbox.component';
 
 const debug = Debug('tombolo:app');
 
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
   rightBarOpen = false;
   routerEventSubscription: Subscription;
   mapServiceSubscription: Subscription;
+  mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
 
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
@@ -63,8 +65,8 @@ export class AppComponent implements OnInit {
       this.positionMapFromURLParams(params);
     });
 
-    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(style => {
-      this.mapLoadedHandler(style);
+    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+      this.mapLoadedHandler(map);
     });
 
     this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
@@ -114,15 +116,14 @@ export class AppComponent implements OnInit {
    *
    * @param {mapboxgl.Style} style
    */
-  private mapLoadedHandler(style: TomboloMapStyle) {
-    this.mapRegistry.getMap('main-map').then(map => {
-      // Fly to default location if not set in URL
-      const url = new URL(window.location.href);
-      let zoom = url.searchParams.get('zoom');
-      if (!zoom) {
-        map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
-      }
-    });
+  private mapLoadedHandler(map: TomboloMapboxMap) {
+    // Fly to default location if not set in URL
+    const url = new URL(window.location.href);
+    let zoom = url.searchParams.get('zoom');
+    if (!zoom) {
+      const style = map.getStyle();
+      map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
+    }
   }
 
   /**
@@ -160,14 +161,13 @@ export class AppComponent implements OnInit {
 
   onMapClick(event): void {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      const mapStyle = map.getStyle();
-      const dataFeature = map.queryRenderedFeatures(event.point, {layers: mapStyle.metadata.dataLayers})[0];
+      const dataFeature = map.queryRenderedFeatures(event.point, {layers: map.dataLayers})[0];
 
       if (!dataFeature) {
         return;
       }
 
-      const attributes = this.getAttributesWithValues(mapStyle, dataFeature);
+      const attributes = this.getAttributesWithValues(map, dataFeature);
       this.tooltipRenderService.setTooltip(attributes, event.lngLat);
     });
   }
@@ -180,25 +180,18 @@ export class AppComponent implements OnInit {
    * @param {Object} dataFeature
    * @returns {AttributeRow[]}
    */
-  private getAttributesWithValues(mapStyle: TomboloMapStyle, dataFeature: object): AttributeRow[] {
-    let properties = dataFeature['properties'];
-    const dataSourceId = dataFeature['layer']['source'];
-    const attributes = mapStyle.metadata.datasets.filter(dataset => dataset.id === dataSourceId)[0].attributes;
+  private getAttributesWithValues(map: TomboloMapboxMap, dataFeature: object): AttributeRow[] {
+    const properties = dataFeature['properties'];
+    const layerID = dataFeature['layer']['id'];
+    const attributes = map.getDataAttributesForLayer(layerID);
 
-    return attributes.map(attribute => {
-      const propertyId = Object.keys(properties).filter(id => attribute.id === id)[0];
-
-      const property = (propertyId) ? properties[propertyId] : null;
-
-      return {
-        name: attribute.name,
-        description: attribute.description,
-        id: attribute.id,
-        value: property,
-        unit: attribute.unit
-      };
-
-    });
+    return attributes.map(attribute => ({
+      name: attribute.name,
+      description: attribute.description,
+      id: attribute.id,
+      value: properties[attribute.id],
+      unit: attribute.unit
+    }));
   }
 
   /**

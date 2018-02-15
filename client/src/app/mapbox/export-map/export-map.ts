@@ -23,7 +23,7 @@ export class ExportMap {
   }
 
   /**
-   * Download the map canvas as a PNG or PDF file. Width and height should be in inches.
+   * Download the map canvas as a PNG or PDF file. Width and height should be in mm.
    *
    * @param {string} name
    * @param {number} width
@@ -102,7 +102,7 @@ export class ExportMap {
   private buildPdf(canvas, name: string, width: number, height: number): void {
     let pdf = new jsPDF({
       orientation: width > height ? 'l' : 'p',
-      unit: 'in',
+      unit: 'mm',
       format: [width, height],
       compress: true
     });
@@ -132,6 +132,10 @@ export class ExportMap {
 
     if (width > this.dimensionsLimit || width < 0 || height > this.dimensionsLimit || height < 0) {
       errors.push(`Width and height be between 0 and ${this.dimensionsLimit}mm.`);
+    }
+
+    if (isNaN(dpi) || isNaN(width) || isNaN(height) ) {
+      errors.push(`Width, height and DPI must be numbers.`);
     }
 
     if (dpi > this.dpiLimit || dpi < 0) {

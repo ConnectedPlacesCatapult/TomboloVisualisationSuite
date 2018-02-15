@@ -6,12 +6,14 @@ import {ConfirmDialog }   from './confirm-dialog.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {InformationDialog} from './info-dialog.component';
 import {NotificationService} from './notification.service';
-import {ShareDialog} from './share-dialog.component';
+import {ShareDialog} from './share-dialog/share-dialog.component';
+import {ShareModule} from "@ngx-share/core";
 
 @NgModule({
   imports: [
     FlexLayoutModule,
-    MaterialModule
+    MaterialModule,
+    ShareModule.forRoot()
   ],
   exports: [
     ConfirmDialog,
