@@ -4472,6 +4472,10 @@ ngx-md@^3.1.1:
     marked "^0.3.9"
     prismjs "^1.9.0"
 
+ngx-uploader@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/ngx-uploader/-/ngx-uploader-4.2.2.tgz#951329cc936fae212a453568ce37a302f94a2c9e"
+
 no-case@^2.2.0:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
