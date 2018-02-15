@@ -16,11 +16,12 @@ export class ShareDialog  {
 
   public title: string;
   public url: string;
+  public description = 'Check out this amazing map I built with Tombolo!';
+  public tags = 'tombolo';
 
   @ViewChild('urlInput') urlInput;
 
   constructor(public dialogRef: MatDialogRef<ShareDialog>, public share: ShareButtons) {
-
   }
 
   ngAfterViewInit() {
@@ -34,7 +35,7 @@ export class ShareDialog  {
   }
 
   email() {
-    window.location.href = `mailto:?subject=My Tombolo Map&body=${this.url}`;
+    window.location.href = `mailto:?subject=My Tombolo Map&body=${this.description}%0D%0A%0D%0A${this.url}`;
     return false;
   }
 }
