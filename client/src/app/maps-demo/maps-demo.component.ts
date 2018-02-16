@@ -19,7 +19,7 @@ const debug = Debug('tombolo:maps-demo');
 export class MapsDemoComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
-
+  sliderValue: number = 4;
   maps$: Observable<object[]> = null;
 
   constructor(private mapRegistry: MapRegistry,
@@ -41,7 +41,9 @@ export class MapsDemoComponent implements OnInit {
     debug('mapID:', mapID);
     if (!mapID) return;
 
-    this.mapService.loadMap(mapID);
+    this.mapService.loadMap(mapID).then(map => {
+      map.setBasemapDetail(this.sliderValue);
+    });
   }
 
   /* TODO - Following code is temporary demo!!!! */
