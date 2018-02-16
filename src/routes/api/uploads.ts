@@ -14,13 +14,15 @@ import * as config from 'config';
 import {Container} from 'typedi';
 import {LoggerService} from '../../lib/logger';
 import {FileUpload} from '../../db/models/FileUpload';
+import {FileIngester} from '../../lib/file-uploader/file-injester';
 
 const logger = Container.get(LoggerService);
+const fileUploader = Container.get(FileIngester);
 
 const router = express.Router();
 
 const upload = multer({
-  dest: '/Users/robin/Projects/tombolo/uploads/',
+  dest: config.get('fileUpload.uploadPath'),
   limits: {
     files: 1,
     fileSize: config.get('fileUpload.maxFileSize')
@@ -37,6 +39,7 @@ router.get('/', (req, res) => {
 router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const file = req.file;
+
     const fileUpload = await FileUpload.create<FileUpload>({
       id: file.filename,
       mimeType: file.mimetype,
@@ -45,6 +48,11 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       path: file.path,
       status: 'uploaded'
     });
+
+    // Do not wait for processing to finish.
+    // Processing will continue after this route returns
+    fileUploader.processFile(fileUpload);
+
     res.json(fileUpload);
   }
   catch (e) {

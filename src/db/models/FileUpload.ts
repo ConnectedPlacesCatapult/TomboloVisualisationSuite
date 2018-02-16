@@ -38,5 +38,16 @@ export class FileUpload extends Model<FileUpload> {
   @Column({
     type: DataType.TEXT,
   })
-  status: 'uploaded' | 'rejected';
+  status: 'uploaded' | 'validating' | 'ingesting' | 'done' | 'error';
+
+  @Column({
+    type: DataType.JSON,
+    field: 'ogr_info'
+  })
+  ogrInfo: object;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  error: string;
 }
