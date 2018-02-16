@@ -128,6 +128,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return attribute;
   }
 
+  clearCache(): void {
+    this._cachedStyle = null;
+  }
+
   setBasemapDetail(level: number): void {
     const basemapDetail = this.basemapDetail;
 

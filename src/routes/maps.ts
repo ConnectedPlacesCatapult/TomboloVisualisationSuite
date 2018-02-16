@@ -18,7 +18,7 @@ const baseUrl = config.get('server.baseUrl');
 
 router.get('/', async (req, res, next) => {
   try {
-    const maps = await TomboloMap.findAll<TomboloMap>();
+    const maps = await TomboloMap.findAll<TomboloMap>({order: ['name']});
     const results = maps.map(map => ({
       id: map.id,
       name: map.name,
