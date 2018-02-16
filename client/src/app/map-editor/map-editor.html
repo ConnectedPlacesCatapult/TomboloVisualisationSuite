@@ -8,27 +8,14 @@
 
 
 <div class="sidebar-footer">
-  <div class="drop-container" ngFileDrop [options]="options" (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput"[ngClass]="{dragOver: dragOver}">
+  <div class="drop-container" ngFileDrop [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput"[ngClass]="{dragOver: dragOver}">
     <p>
-      Drag a file here or
+      Drag a file here or<br>
       <label class="upload-button">
-        <input type="file" ngFileSelect [options]="options" (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
+        <input type="file" ngFileSelect [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput">
         browse
       </label>
       to upload.
     </p>
-  </div>
-
-  <div class="upload-items">
-    <div class="upload-item" *ngFor="let f of files; let i = index;">
-              <span class="filename">
-                <span>{{ f.name }} ({{ f.id }}) - {{ f.progress?.data?.percentage }}%</span>
-                <span>uploading at {{ f.progress?.data?.speedHuman }}</span>
-                <span>ETA {{ f.progress?.data?.etaHuman }}</span>
-              </span>
-      <div class="progress">
-        <span class="bar" [style.width]="f?.progress?.data?.percentage + '%'"></span>
-      </div>
-    </div>
   </div>
 </div>

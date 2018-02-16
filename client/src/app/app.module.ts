@@ -34,6 +34,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ShareModule} from '@ngx-share/core';
 import {MapEditorComponent} from './map-editor/map-editor.component';
 import {NgUploaderModule} from 'ngx-uploader';
+import {UploadDialogComponent} from './map-editor/upload-dialog/upload-dialog.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -46,7 +47,8 @@ export function AppConfigFactory(configService: ConfigService) {
 
 @NgModule({
   entryComponents: [
-    TooltipRenderComponent
+    TooltipRenderComponent,
+    UploadDialogComponent
   ],
   declarations: [
     AppComponent,
@@ -56,6 +58,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapEditorComponent,
     MapInfoComponent,
     MapExportComponent,
+    UploadDialogComponent,
     TooltipRenderComponent
   ],
   imports: [
