@@ -1,4 +1,5 @@
-import {Column, DataType, Model, Table} from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
+import {User} from './User';
 
 @Table({
   tableName: 'file_uploads',
@@ -50,4 +51,14 @@ export class FileUpload extends Model<FileUpload> {
     type: DataType.TEXT,
   })
   error: string;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    field: 'owner_id'
+  })
+  ownerId: string;
+
+  @BelongsTo(() => User)
+  owner: User;
 }

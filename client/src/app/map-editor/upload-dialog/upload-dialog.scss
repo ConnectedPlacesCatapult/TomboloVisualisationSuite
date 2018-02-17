@@ -1,0 +1,35 @@
+
+
+.wizard-page-component {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+}
+
+.wizard-button {
+  float: right;
+}
+
+ul.substeps {
+
+  li.pending {
+    color: darkgray;
+  }
+
+  li.inprogress {
+    color: blue;
+  }
+
+  li.done {
+    color: green;
+  }
+
+  li.error {
+    color: red;
+  }
+}
+
+
+.full-width {
+  width: 100%;
+}

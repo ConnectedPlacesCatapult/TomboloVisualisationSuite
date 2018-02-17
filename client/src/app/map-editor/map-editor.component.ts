@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
@@ -19,7 +19,7 @@ const debug = Debug('tombolo:map-editor');
   templateUrl: './map-editor.html',
   styleUrls: ['./map-editor.scss']
 })
-export class MapEditorComponent implements OnInit {
+export class MapEditorComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
@@ -51,44 +51,34 @@ export class MapEditorComponent implements OnInit {
   handleUploadOutput(output: UploadOutput): void {
     if (output.type === 'allAddedToQueue') {
       debug('All added', output);
-      const dialogRef = this.matDialog.open(UploadDialogComponent, {});
+      this.showUploadDialog();
+    }
+  }
 
+  showUploadDialog(startUpload: boolean = true) {
+    const dialogRef = this.matDialog.open<UploadDialogComponent>(UploadDialogComponent, {
+      disableClose: startUpload,
+      minWidth: '400px',
+      minHeight: '300px',
+      data: {
+        uploadInput$: this.uploadInput,
+        uploadOutput$: this.uploadOutput
+      }
+    });
+
+    if (startUpload) {
       dialogRef.afterOpen().subscribe(() => {
-        // Start upload *after( dialog has opened to give it chance
+        // Start upload *after* dialog has opened to give it chance
         // to subscript to upload events
 
-        //this.startUpload();
+        this.startUpload();
       });
+    }
 
-      dialogRef.afterClosed().subscribe((dialogResults) => {
-        // Optionally create a new map based on the upload and
-        // open it in editor
-      });
-
-      //this.startUpload();
-    }
-    /*
-    else if (output.type === 'addedToQueue'  && typeof output.file !== 'undefined') { // add file to array when added
-      debug('Adding file', output);
-      this.files.push(output.file);
-    }
-    else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
-      // update current data in files array for uploading file
-      const index = this.files.findIndex(file => typeof output.file !== 'undefined' && file.id === output.file.id);
-      this.files[index] = output.file;
-    }
-    else if (output.type === 'removed') {
-      // remove file from array when removed
-      this.files = this.files.filter((file: UploadFile) => file !== output.file);
-    }
-    else if (output.type === 'dragOver') {
-      this.dragOver = true;
-    }
-    else if (output.type === 'dragOut') {
-      this.dragOver = false;
-    } else if (output.type === 'drop') {
-      this.dragOver = false;
-    }*/
+    dialogRef.afterClosed().subscribe((dialogResults) => {
+      // Optionally create a new map based on the upload and
+      // open it in editor
+    });
   }
 
   startUpload(): void {

@@ -1,0 +1,7 @@
+<ul class="substeps">
+  <li *ngFor="let step of steps" [ngClass]="step.status">{{step.text}}</li>
+</ul>
+
+<mat-progress-bar *ngIf="!successMessage && !errorMessage" [mode]="progressMode" [value]="progressValue"></mat-progress-bar>
+<div *ngIf="successMessage" class="message message-success">{{successMessage}}</div>
+<div *ngIf="errorMessage" class="message message-error">{{errorMessage}}</div>

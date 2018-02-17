@@ -1,8 +1,21 @@
-<h1 mat-dialog-title>Upload File</h1>
-
-<div mat-dialog-content>
-  Hello
-</div>
-<div mat-dialog-actions fxLayoutAlign="end">
-  <button type="button" mat-button>Next</button>
-</div>
+<mat-horizontal-stepper linear #stepper="matHorizontalStepper">
+  <mat-step label="Upload Dataset" editable="false">
+    <upload-page1 [context]="context"></upload-page1>
+    <button mat-button class="wizard-button" (click)="next()" [disabled]="!pageCompleted(0)">Next</button>
+    <button mat-button class="wizard-button" (click)="cancel()">Cancel</button>
+  </mat-step>
+  <mat-step label="Dataset Details" editable="false">
+    <upload-page2 [context]="context"></upload-page2>
+    <button mat-button class="wizard-button" (click)="next()" [disabled]="!pageCompleted(1)">Next</button>
+    <button mat-button class="wizard-button" (click)="cancel()">Cancel</button>
+  </mat-step>
+  <mat-step label="Data Attribute Details" editable="false">
+    <upload-page3 [context]="context"></upload-page3>
+    <button mat-button class="wizard-button" (click)="next()" [disabled]="!pageCompleted(2)">Next</button>
+    <button mat-button class="wizard-button" (click)="cancel()">Cancel</button>
+  </mat-step>
+  <mat-step label="Done" editable="false">
+    <upload-page4 [context]="context"></upload-page4>
+    <button mat-button class="wizard-button" (click)="finish()">OK</button>
+  </mat-step>
+</mat-horizontal-stepper>

@@ -5,12 +5,33 @@ import {Subject} from 'rxjs/Subject';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../dialogs/notification.service';
-
 import 'rxjs/add/operator/do';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 
 const debug = Debug('tombolo:MapService');
+
+export interface FileUpload {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  path: string;
+  status: 'uploaded' | 'validating' | 'ingesting' | 'done' | 'error';
+  ogrInfo: OgrInfo;
+  error: string;
+  ownerId: string;
+}
+
+interface OgrInfo {
+  id: string;
+  path: string;
+  driver: string;
+  geometryType: string;
+  featureCount: number;
+  srs: string;
+  attributes: {[key: string]: string | number}[];
+}
 
 export class OptimisticLockingError extends Error {
   constructor(message: string, public error: any) {
@@ -59,6 +80,9 @@ export class MapService {
       .catch(e => this.handleError(e));
   }
 
+  pollIngest(uploadID: string): Observable<FileUpload> {
+    return this.http.get<FileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+  }
 
   /**
    * Set a map style and wait for the 'style.load' event to fire. Used to prevent race conditions seen when

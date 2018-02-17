@@ -14,7 +14,7 @@ import * as config from 'config';
 import {Container} from 'typedi';
 import {LoggerService} from '../../lib/logger';
 import {FileUpload} from '../../db/models/FileUpload';
-import {FileIngester} from '../../lib/file-uploader/file-injester';
+import {FileIngester} from '../../lib/file-ingester/file-ingester';
 
 const logger = Container.get(LoggerService);
 const fileUploader = Container.get(FileIngester);
@@ -32,8 +32,20 @@ const upload = multer({
 /**
  * Get client config
  */
-router.get('/', (req, res) => {
-  res.send('hello');
+router.get('/:uploadId', async (req, res, next) => {
+  try {
+    const upload = await FileUpload.findById<FileUpload>(req.params.uploadId);
+
+    if (!upload) {
+      return next({status: 404, message: 'Upload not found'});
+    }
+
+    res.json(upload);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
 });
 
 router.post('/', upload.single('file'), async (req, res, next) => {
