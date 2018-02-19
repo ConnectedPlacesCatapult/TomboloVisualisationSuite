@@ -16,6 +16,7 @@ $typography: mat-typography-config();
   display: block;
   width: 100%;
   height: 400px;
+  overflow-y: auto;
 }
 
 mat-table {
@@ -48,6 +49,10 @@ ul.substeps {
   li.error {
     color: mat-color($mat-red, 500);
   }
+}
+
+upload-page2 /deep/ .mat-form-field {
+  margin-bottom: 1em;
 }
 
 mat-progress-bar, div.message {
