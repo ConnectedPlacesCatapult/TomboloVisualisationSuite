@@ -16,6 +16,7 @@ export interface OgrFileInfo {
   path: string;
   name?: string;
   description?: string;
+  attribution?: string;
   removed?: boolean;
   driver: string;
   geometryType: string;
@@ -129,6 +130,7 @@ export class FileIngester {
     const dataset = await Dataset.create<Dataset>({
       name: file.ogrInfo.name,
       description: file.ogrInfo.description,
+      attribution: file.ogrInfo.attribution,
       sourceType: 'table',
       source: file.tableName(),
       geometryColumn: 'wkb_geometry',

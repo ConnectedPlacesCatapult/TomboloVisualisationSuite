@@ -26,7 +26,8 @@ export class UploadPage2Component implements OnInit, OnDestroy {
   ngOnInit() {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      description: new FormControl('')
+      description: new FormControl(''),
+      attribution: new FormControl('')
     });
 
     this._subs.push(this.form.statusChanges.subscribe(() => {
@@ -37,6 +38,7 @@ export class UploadPage2Component implements OnInit, OnDestroy {
       if (pageIndex === 1) {
         this.context.file.ogrInfo.name = this.form.get('name').value;
         this.context.file.ogrInfo.description  = this.form.get('description').value;
+        this.context.file.ogrInfo.attribution  = this.form.get('attribution').value;
       }
     }));
   }

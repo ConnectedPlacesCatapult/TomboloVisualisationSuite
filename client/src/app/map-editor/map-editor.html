@@ -6,9 +6,7 @@
   </mat-nav-list>
 </div>
 
-
 <div class="sidebar-footer">
-  <button mat-button (click)="showUploadDialog(false)">Show Upload Dialog</button>
   <div class="drop-container" ngFileDrop [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput"[ngClass]="{dragOver: dragOver}">
     <p>
       Drag a file here or<br>

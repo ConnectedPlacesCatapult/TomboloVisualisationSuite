@@ -9,8 +9,6 @@ const debug = Debug('tombolo:upload-page1');
 
 const INGEST_POLL_INTERVAL = 2000;
 
-
-
 @Component({
   selector: 'upload-page1',
   templateUrl: './upload-page1.html',
@@ -59,6 +57,19 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     debug('Destroying page 1');
     clearTimeout(this.ingestPollTimer);
     this._subs.forEach(sub => sub.unsubscribe());
+  }
+
+  iconForStep(step: SubStep) {
+    switch (step.status) {
+      case 'pending':
+        return 'fa-circle';
+      case 'inprogress':
+        return 'fa-play-circle';
+      case 'done':
+        return 'fa-check-circle';
+      case 'error':
+        return 'fa-times-circle';
+    }
   }
 
   private setStep(stepIndex: number) {
@@ -149,7 +160,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     }
     else {
       this.steps.forEach(step => step.status = 'done');
-      this.successMessage = `${fileUpload.ogrInfo.featureCount} features ingested. Click 'Next' to continue.`;
+      this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
       this.context.file = fileUpload;
       this.context.setNextEnabled(0);
     }

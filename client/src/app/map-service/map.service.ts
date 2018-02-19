@@ -37,6 +37,7 @@ export interface OgrInfo {
   id: string;
   name?: string;
   description?: string;
+  attribution?: string;
   path: string;
   driver: string;
   geometryType: string;

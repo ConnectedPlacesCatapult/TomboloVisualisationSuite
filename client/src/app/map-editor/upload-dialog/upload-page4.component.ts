@@ -51,6 +51,19 @@ export class UploadPage4Component implements OnInit, OnDestroy {
     this._subs.forEach(sub => sub.unsubscribe());
   }
 
+  iconForStep(step: SubStep) {
+    switch (step.status) {
+      case 'pending':
+        return 'fa-circle';
+      case 'inprogress':
+        return 'fa-play-circle';
+      case 'done':
+        return 'fa-check-circle';
+      case 'error':
+        return 'fa-times-circle';
+    }
+  }
+
   private setStep(stepIndex: number) {
 
     for (let i = 0; i < stepIndex; i++) {
@@ -86,7 +99,7 @@ export class UploadPage4Component implements OnInit, OnDestroy {
     }
     else {
       this.steps.forEach(step => step.status = 'done');
-      this.successMessage = 'Done';
+      this.successMessage = `<p>Congratulations! Your dataset is now ready for use.</p><p>Click 'OK' to continue.</p> `;
       this.context.setNextEnabled(3);
     }
   }

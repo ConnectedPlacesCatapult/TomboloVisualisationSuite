@@ -51,16 +51,21 @@ export class MapEditorComponent implements OnInit, OnDestroy {
   handleUploadOutput(output: UploadOutput): void {
     if (output.type === 'allAddedToQueue') {
       debug('All added', output);
+      this.dragOver = false;
       this.showUploadDialog();
+    }
+    else if (output.type === 'dragOver') {
+      this.dragOver = true;
+    }
+    else if (output.type === 'dragOut') {
+      this.dragOver = false;
     }
   }
 
   showUploadDialog(startUpload: boolean = true) {
     const dialogRef = this.matDialog.open<UploadDialogComponent>(UploadDialogComponent, {
       disableClose: startUpload,
-      minWidth: '400px',
-      maxWidth: '800px',
-      minHeight: '300px',
+      maxWidth: '900px',
       data: {
         uploadInput$: this.uploadInput,
         uploadOutput$: this.uploadOutput
