@@ -23,14 +23,26 @@ export interface FileUpload {
   ownerId: string;
 }
 
-interface OgrInfo {
+export interface OgrAttribute {
   id: string;
+  type: string;
+  precision?: number;
+  name?: string;
+  description?: string;
+  unit?: string;
+  removed?: boolean;
+}
+
+export interface OgrInfo {
+  id: string;
+  name?: string;
+  description?: string;
   path: string;
   driver: string;
   geometryType: string;
   featureCount: number;
   srs: string;
-  attributes: {[key: string]: string | number}[];
+  attributes: OgrAttribute[];
 }
 
 export class OptimisticLockingError extends Error {
@@ -82,6 +94,14 @@ export class MapService {
 
   pollIngest(uploadID: string): Observable<FileUpload> {
     return this.http.get<FileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+  }
+
+  finalizeIngest(uploadID: string, ogrInfo: OgrInfo): Observable<FileUpload> {
+    return this.http.post<FileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`, ogrInfo);
+  }
+
+  createDataset(uploadID: string): Observable<any> {
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/dataset`);
   }
 
   /**

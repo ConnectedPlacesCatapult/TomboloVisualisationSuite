@@ -73,4 +73,43 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   }
 });
 
+router.post('/:uploadId', async (req, res, next) => {
+  try {
+    let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId);
+
+    if (!fileUpload) {
+      return next({status: 404, message: 'Upload not found'});
+    }
+
+    await fileUploader.finalizeFile(fileUpload, req.body);
+
+    fileUpload.ogrInfo = req.body;
+    fileUpload = await fileUpload.save();
+
+    res.json(fileUpload);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+router.get('/:uploadId/dataset', async (req, res, next) => {
+  try {
+    let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId);
+
+    if (!fileUpload) {
+      return next({status: 404, message: 'Upload not found'});
+    }
+
+    const dataset = await fileUploader.generateDataset(fileUpload);
+
+    res.json(dataset);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
 export default router;

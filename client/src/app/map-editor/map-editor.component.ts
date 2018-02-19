@@ -59,6 +59,7 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     const dialogRef = this.matDialog.open<UploadDialogComponent>(UploadDialogComponent, {
       disableClose: startUpload,
       minWidth: '400px',
+      maxWidth: '800px',
       minHeight: '300px',
       data: {
         uploadInput$: this.uploadInput,

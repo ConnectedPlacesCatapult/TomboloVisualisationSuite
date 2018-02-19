@@ -18,26 +18,39 @@ import {FileUpload} from '../../map-service/map.service';
 
 const debug = Debug('tombolo:upload-dialog');
 
+export interface SubStep {
+  text: string;
+  status: 'pending' | 'inprogress' | 'done' | 'error';
+}
+
 export class UploadDialogContext  {
 
   constructor (private parentDialog: UploadDialogComponent) {}
 
-  private _cancel$ = new Subject<void>();
-  private _next$ = new Subject<void>();
+  private _cancel$ = new Subject<number>();
+  private _next$ = new Subject<number>();
+  private _enter$ = new Subject<number>();
 
   uploadInput$: EventEmitter<UploadInput>;
   uploadOutput$: Observable<UploadOutput>;
   file: FileUpload;
   datasetName: string;
   datasetDescription: string;
+  dataset: object;
 
   // Observable to signal page should cancel pending operations
-  get cancel$(): Observable<void> {
+  get cancel$(): Observable<number> {
     return this._cancel$.asObservable();
   }
+
   // Observable to signal page that next was pressed
-  get next$(): Observable<void> {
+  get next$(): Observable<number> {
     return this._next$.asObservable();
+  }
+
+  // Observable to signal page was entered
+  get enter$(): Observable<number> {
+    return this._enter$.asObservable();
   }
 
   setNextEnabled(page: number, enabled: boolean = true) {
@@ -45,13 +58,18 @@ export class UploadDialogContext  {
   }
 
   // Notify pages to cancel pending operations
-  cancel() {
-    this._cancel$.next();
+  cancel(pageIndex: number) {
+    this._cancel$.next(pageIndex);
   }
 
   // Notify page that next was clicked
-  next() {
-    this._next$.next();
+  next(pageIndex: number) {
+    this._next$.next(pageIndex);
+  }
+
+  // Notify that page was entered
+  enter(pageIndex: number) {
+    this._enter$.next(pageIndex);
   }
 }
 
@@ -96,13 +114,14 @@ export class UploadDialogComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   cancel() {
-    this.context.cancel();
+    this.context.cancel(this.stepper.selectedIndex);
     this.dialogRef.close();
   }
 
   next() {
-    this.context.next();
+    this.context.next(this.stepper.selectedIndex);
     this.stepper.next();
+    this.context.enter(this.stepper.selectedIndex);
   }
 
   finish() {

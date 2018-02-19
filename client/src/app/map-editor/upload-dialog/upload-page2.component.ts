@@ -33,9 +33,11 @@ export class UploadPage2Component implements OnInit, OnDestroy {
       this.context.setNextEnabled(1, this.form.valid)
     }));
 
-    this._subs.push(this.context.next$.subscribe(event => {
-      this.context.datasetName = this.form.get('name').value;
-      this.context.datasetDescription = this.form.get('description').value;
+    this._subs.push(this.context.next$.subscribe(pageIndex => {
+      if (pageIndex === 1) {
+        this.context.file.ogrInfo.name = this.form.get('name').value;
+        this.context.file.ogrInfo.description  = this.form.get('description').value;
+      }
     }));
   }
 

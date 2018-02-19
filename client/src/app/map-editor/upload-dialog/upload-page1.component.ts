@@ -1,19 +1,15 @@
-import {Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Component, HostBinding, Input, OnDestroy, OnInit} from '@angular/core';
 import {UploadOutput} from 'ngx-uploader';
 import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
-import {MapService, FileUpload} from '../../map-service/map.service';
-import {UploadDialogContext} from './upload-dialog.component';
+import {FileUpload, MapService} from '../../map-service/map.service';
+import {SubStep, UploadDialogContext} from './upload-dialog.component';
 
 const debug = Debug('tombolo:upload-page1');
 
 const INGEST_POLL_INTERVAL = 2000;
 
-interface Step {
-  text: string;
-  status: 'pending' | 'inprogress' | 'done' | 'error';
-}
+
 
 @Component({
   selector: 'upload-page1',
@@ -28,7 +24,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   private _subs: Subscription[] = [];
 
   currentStepIndex = -1;
-  steps: Step[] = [
+  steps: SubStep[] = [
     {
       text: 'Uploading dataset',
       status: 'pending'
@@ -54,7 +50,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   constructor(private mapService: MapService) {}
 
   ngOnInit() {
-    this._subs.push(this.context.cancel$.subscribe(event => this.cancel()));
+    this._subs.push(this.context.cancel$.subscribe(pageIndex => this.cancel(pageIndex)));
     this._subs.push(this.context.uploadOutput$.subscribe(event => this.handleUploadEvent(event)));
     this.setStep(0);
   }
@@ -159,8 +155,10 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     }
   }
 
-  private cancel() {
-    debug('Cancelling Page 1');
-    this.context.uploadInput$.next({type: 'cancel'});
+  private cancel(pageIndex: number) {
+    if (pageIndex === 0) {
+      debug('Cancelling Page 1');
+      this.context.uploadInput$.next({type: 'cancel'});
+    }
   }
 }

@@ -14,7 +14,7 @@
     <button mat-button class="wizard-button" (click)="next()" [disabled]="!pageCompleted(2)">Next</button>
     <button mat-button class="wizard-button" (click)="cancel()">Cancel</button>
   </mat-step>
-  <mat-step label="Done" editable="false">
+  <mat-step label="Finish" editable="false">
     <upload-page4 [context]="context"></upload-page4>
     <button mat-button class="wizard-button" (click)="finish()">OK</button>
   </mat-step>

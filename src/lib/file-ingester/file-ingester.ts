@@ -4,17 +4,34 @@ import {FileUpload} from '../../db/models/FileUpload';
 import * as config from 'config';
 import * as path from 'path';
 import * as fs from 'fs';
+import {Dataset} from '../../db/models/Dataset';
+import {DataAttribute} from '../../db/models/DataAttribute';
 
 const exec = require('child_process').exec;
 
-interface FileInfo {
+export const DATATABLE_SUFFIX = '_data';
+
+export interface OgrFileInfo {
   id: string;
   path: string;
+  name?: string;
+  description?: string;
+  removed?: boolean;
   driver: string;
   geometryType: string;
   featureCount: number;
   srs: string;
-  attributes: {[key: string]: string | number}[];
+  attributes: OgrAttribute[];
+}
+
+export interface OgrAttribute {
+  id: string;
+  type: string;
+  precision?: number;
+  name?: string;
+  description?: string;
+  unit?: string;
+  removed?: boolean;
 }
 
 /**
@@ -30,7 +47,7 @@ export class FileIngester {
 
   constructor(private logger: Logger, private dbConfig: object) {}
 
-  async processFile(file: FileUpload): Promise<FileInfo> {
+  async processFile(file: FileUpload): Promise<OgrFileInfo> {
     try {
 
       // Handle zip file uploads using GDAL virtual file system
@@ -65,12 +82,96 @@ export class FileIngester {
     }
   }
 
+  async finalizeFile(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
+
+
+    // Remove unwanted columns
+    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
+      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
+      return file.sequelize.query(dropColumnSql);
+    }));
+
+    // Change column types
+    await Promise.all(newOgrInfo.attributes
+      .filter(attr => attr.type !== file.attributeType(attr.id))
+      .map(attr => {
+
+        let dataType;
+        switch (attr.type) {
+          case 'string':
+            dataType = 'TEXT';
+            break;
+          case 'real':
+            dataType = 'DOUBLE PRECISION';
+            break;
+          case 'integer':
+            dataType = 'INTEGER';
+            break;
+          case 'datetime':
+            dataType = 'TIMESTAMP WITH TIMEZONE';
+            break;
+          default:
+            throw new Error(`Unsupported field type: ${attr.type}`);
+        }
+
+        const columnTypeSql = `
+          ALTER TABLE ${file.sqlSafeTableName()} 
+          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType};`;
+        return file.sequelize.query(columnTypeSql);
+      }));
+
+    return;
+  }
+
+  async generateDataset(file: FileUpload): Promise<Dataset> {
+
+    // Create dataset
+    const dataset = await Dataset.create<Dataset>({
+      name: file.ogrInfo.name,
+      description: file.ogrInfo.description,
+      sourceType: 'table',
+      source: file.tableName(),
+      geometryColumn: 'wkb_geometry',
+      geometryType: file.ogrInfo.geometryType,
+      originalBytes: file.size,
+      isPrivate: false
+    });
+
+    // Create data attributes
+    await Promise.all(file.ogrInfo.attributes.filter(attr => !attr.removed).map((attr, index) => {
+
+      // Convert attr type to javascript type
+      const datasetType = (attr.type === 'real' || attr.type === 'integer') ? 'number' : attr.type;
+
+      return DataAttribute.create<DataAttribute>({
+        datasetId: dataset.id,
+        field: attr.id,
+        type: datasetType,
+        name: attr.name,
+        description: attr.description,
+        unit: attr.unit,
+        order: index
+      });
+    }));
+
+    await dataset.reload({include: [DataAttribute]});
+
+    // Calculate dataset stats, extent and dataset size
+    await dataset.calculateDataAttributeStats();
+    await dataset.calculateGeometryExtent();
+    await dataset.calculateDatasetBytes();
+
+    await dataset.reload({include: [DataAttribute]});
+
+    return dataset;
+  }
+
   /**
    * Validate given file is a supported geospatial file using ogrinfo
    *
    * @param {string} path
    */
-  private validateFile(file: FileUpload): Promise<FileInfo> {
+  private validateFile(file: FileUpload): Promise<OgrFileInfo> {
 
     const cmd = `ogrinfo -ro -al -so -oo FLATTEN_NESTED_ATTRIBUTES=yes ${file.path}`;
 
@@ -83,7 +184,7 @@ export class FileIngester {
           reject(new Error(stdout));
         }
 
-        let fileInfo: FileInfo = {} as any;
+        let fileInfo: OgrFileInfo = {} as any;
 
         try {
           // Extract driver type
@@ -117,7 +218,7 @@ export class FileIngester {
               const value = keyValues[key];
               const type = value.match(/^(\w*)/)[1].toLowerCase();
               const precision = +(value.match(/\((.*)\)/)[1]);
-              attributes.push({id: keys[i], type, precision});
+              attributes.push({id: keys[i].toLowerCase(), type, precision});
             }
           }
 
@@ -141,7 +242,7 @@ export class FileIngester {
     const password = this.dbConfig['password'];
 
     const cmd = `ogr2ogr -f "PostgreSQL" PG:"dbname='${database}' host='${host}' port='${port}' user='${username}' password='${password}'" \
-    ${file.path} -t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -nln ${file.id}-data`;
+    ${file.path} -t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -nln ${file.id}${DATATABLE_SUFFIX}`;
 
     this.logger.info(`Executing ogr2ogr for upload: ${file.id}`, cmd);
 

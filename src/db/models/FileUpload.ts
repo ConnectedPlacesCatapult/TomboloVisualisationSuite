@@ -1,5 +1,6 @@
 import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import {User} from './User';
+import {DATATABLE_SUFFIX, OgrFileInfo} from '../../lib/file-ingester/file-ingester';
 
 @Table({
   tableName: 'file_uploads',
@@ -45,7 +46,7 @@ export class FileUpload extends Model<FileUpload> {
     type: DataType.JSON,
     field: 'ogr_info'
   })
-  ogrInfo: object;
+  ogrInfo: OgrFileInfo;
 
   @Column({
     type: DataType.TEXT,
@@ -61,4 +62,21 @@ export class FileUpload extends Model<FileUpload> {
 
   @BelongsTo(() => User)
   owner: User;
+
+  tableName() {
+    return this.id + DATATABLE_SUFFIX;
+  }
+
+  sqlSafeTableName() {
+    return this.sequelize.getQueryInterface().quoteIdentifier(this.tableName(), true);
+  }
+
+  sqlSafeAttributeColumn(column: string) {
+    return this.sequelize.getQueryInterface().quoteIdentifier(column, true);
+  }
+
+  attributeType(attrId: string): string | null {
+    const attr = this.ogrInfo.attributes.find(attr => attr.id === attrId);
+    return attr ? attr.type : null;
+  }
 }
