@@ -1,7 +1,7 @@
 import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {MapService} from '../map-service/map.service';
 import {UploaderOptions, UploadFile, UploadInput, UploadOutput} from 'ngx-uploader';
@@ -9,7 +9,7 @@ import {environment} from '../../environments/environment';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {MatDialog} from '@angular/material';
-import {UploadDialogComponent} from './upload-dialog/upload-dialog.component';
+import {UploadDialogComponent, UploadDialogContext} from './upload-dialog/upload-dialog.component';
 import {DialogsService} from '../dialogs/dialogs.service';
 
 const debug = Debug('tombolo:map-editor');
@@ -31,7 +31,9 @@ export class MapEditorComponent implements OnInit, OnDestroy {
   dragOver: boolean;
   private subs: Subscription[] = [];
 
-  constructor(private mapRegistry: MapRegistry,
+  constructor(
+              private router: Router,
+              private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
               private mapService: MapService,
@@ -81,9 +83,12 @@ export class MapEditorComponent implements OnInit, OnDestroy {
       });
     }
 
-    dialogRef.afterClosed().subscribe((dialogResults) => {
-      // Optionally create a new map based on the upload and
-      // open it in editor
+    dialogRef.afterClosed().filter(d => !!d).subscribe((context: UploadDialogContext) => {
+      if (context.openInMap) {
+        this.mapService.createMapForUpload(context.file.id).subscribe(map => {
+          this.router.navigate(['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]);
+        });
+      }
     });
   }
 

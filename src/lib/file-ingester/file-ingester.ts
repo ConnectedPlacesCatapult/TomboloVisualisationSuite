@@ -6,6 +6,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {Dataset} from '../../db/models/Dataset';
 import {DataAttribute} from '../../db/models/DataAttribute';
+import {TomboloMap} from '../../db/models/TomboloMap';
+import {BaseMap} from '../../db/models/BaseMap';
+import {TomboloMapLayer} from '../../db/models/TomboloMapLayer';
+import {Palette} from '../../db/models/Palette';
+import * as sequelize from 'sequelize';
 
 const exec = require('child_process').exec;
 
@@ -83,8 +88,7 @@ export class FileIngester {
     }
   }
 
-  async finalizeFile(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
-
+  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
 
     // Remove unwanted columns
     await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
@@ -126,6 +130,9 @@ export class FileIngester {
 
   async generateDataset(file: FileUpload): Promise<Dataset> {
 
+    const geometryType = await this.queryGeometryType(file);
+
+
     // Create dataset
     const dataset = await Dataset.create<Dataset>({
       name: file.ogrInfo.name,
@@ -134,10 +141,12 @@ export class FileIngester {
       sourceType: 'table',
       source: file.tableName(),
       geometryColumn: 'wkb_geometry',
-      geometryType: file.ogrInfo.geometryType,
+      geometryType: geometryType,
       originalBytes: file.size,
       isPrivate: false
     });
+
+    await file.$set('dataset', dataset);
 
     // Create data attributes
     await Promise.all(file.ogrInfo.attributes.filter(attr => !attr.removed).map((attr, index) => {
@@ -145,9 +154,9 @@ export class FileIngester {
       // Convert attr type to javascript type
       const datasetType = (attr.type === 'real' || attr.type === 'integer') ? 'number' : attr.type;
 
-      return DataAttribute.create<DataAttribute>({
+      return dataset.$create('dataAttribute', {
         datasetId: dataset.id,
-        field: attr.id,
+          field: attr.id,
         type: datasetType,
         name: attr.name,
         description: attr.description,
@@ -156,16 +165,52 @@ export class FileIngester {
       });
     }));
 
-    await dataset.reload({include: [DataAttribute]});
-
     // Calculate dataset stats, extent and dataset size
     await dataset.calculateDataAttributeStats();
     await dataset.calculateGeometryExtent();
     await dataset.calculateDatasetBytes();
-
     await dataset.reload({include: [DataAttribute]});
 
     return dataset;
+  }
+
+  async generateMap(file: FileUpload): Promise<TomboloMap> {
+
+    const basemap = await BaseMap.getDefault();
+    const palette = await Palette.getDefault();
+
+    const [lng, lat, zoom] = this.centerAndZoomFromExtent(file.dataset.extent);
+
+    // Create map
+    const map = await TomboloMap.create<TomboloMap>({
+      name: file.dataset.name,
+      description: file.dataset.description,
+      center: [lng, lat],
+      zoom: zoom,
+      basemapId: (basemap) ? basemap.id : null
+    });
+
+    await file.$set('map', map);
+
+    // Sort attributes with 'number' attributes first and then by order
+    const sortedAttributes = file.dataset.dataAttributes.sort((a, b) => {
+      if (a.type === b.type) return a.order - b.order;
+      if (a.type === 'number') return -1;
+      if (b.type === 'number') return 1;
+
+      return a.order - b.order;
+    });
+
+    // Create map layer
+    const layer = await map.$create<TomboloMapLayer>('layer', {
+      name: file.dataset.name,
+      datasetId: file.dataset.id,
+      paletteId: (palette) ? palette.id : null,
+      datasetAttribute: (sortedAttributes.length) ? sortedAttributes[0].field : null,
+      layerType: this.layerTypeForGeometryType(file.dataset.geometryType)
+    });
+
+    return map;
   }
 
   /**
@@ -261,5 +306,34 @@ export class FileIngester {
         resolve();
       });
     });
+  }
+
+  private queryGeometryType(file: FileUpload) {
+    const geometryTypeSql = `SELECT ST_GeometryType("wkb_geometry") as geometrytype from ${file.sqlSafeTableName()} limit 1;`;
+    return file.sequelize.query(geometryTypeSql, {type: sequelize.QueryTypes.SELECT}).then(result => {
+
+      console.log(result);
+      return result[0]['geometrytype'];
+    });
+  }
+
+  private layerTypeForGeometryType(geometryType: string): string {
+    switch (geometryType) {
+      case 'ST_MultiPoint': return 'circle';
+      case 'ST_Point': return 'circle';
+      case 'ST_MultiLineString': return 'line';
+      case 'ST_LineString': return 'line';
+      case 'ST_MultiPolygon': return 'fill';
+      case 'ST_Polygon': return 'fill';
+    }
+  }
+
+  private centerAndZoomFromExtent(extent: number[]): number[] {
+    const centerLng = (extent[2] - extent[0]) / 2 + extent[0];
+    const centerLat = (extent[3] - extent[1]) / 2 + extent[1];
+
+    // TODO Calculate zoom
+
+    return [centerLng, centerLat, 8];
   }
 }

@@ -1,6 +1,8 @@
 import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import {User} from './User';
 import {DATATABLE_SUFFIX, OgrFileInfo} from '../../lib/file-ingester/file-ingester';
+import {Dataset} from './Dataset';
+import {TomboloMap} from './TomboloMap';
 
 @Table({
   tableName: 'file_uploads',
@@ -48,6 +50,8 @@ export class FileUpload extends Model<FileUpload> {
   })
   ogrInfo: OgrFileInfo;
 
+
+
   @Column({
     type: DataType.TEXT,
   })
@@ -60,8 +64,28 @@ export class FileUpload extends Model<FileUpload> {
   })
   ownerId: string;
 
-  @BelongsTo(() => User)
+  @ForeignKey(() => Dataset)
+  @Column({
+    type: DataType.UUID,
+    field: 'dataset_id'
+  })
+  datasetId: string;
+
+  @ForeignKey(() => TomboloMap)
+  @Column({
+    type: DataType.UUID,
+    field: 'map_id'
+  })
+  mapId: string;
+
+  @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
+
+  @BelongsTo(() => Dataset, {onDelete: 'SET NULL'})
+  dataset: Dataset;
+
+  @BelongsTo(() => TomboloMap, {onDelete: 'SET NULL'})
+  map: TomboloMap;
 
   tableName() {
     return this.id + DATATABLE_SUFFIX;

@@ -103,7 +103,7 @@ export class DataAttribute extends Model<DataAttribute> {
   @Column(DataType.INTEGER)
   order: number;
 
-  @BelongsTo(() => Dataset)
+  @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;
 
   // Instance methods

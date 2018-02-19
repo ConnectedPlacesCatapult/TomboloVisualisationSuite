@@ -15,6 +15,9 @@ import {Container} from 'typedi';
 import {LoggerService} from '../../lib/logger';
 import {FileUpload} from '../../db/models/FileUpload';
 import {FileIngester} from '../../lib/file-ingester/file-ingester';
+import {Dataset} from '../../db/models/Dataset';
+import {TomboloMap} from '../../db/models/TomboloMap';
+import {DataAttribute} from '../../db/models/DataAttribute';
 
 const logger = Container.get(LoggerService);
 const fileUploader = Container.get(FileIngester);
@@ -81,7 +84,7 @@ router.post('/:uploadId', async (req, res, next) => {
       return next({status: 404, message: 'Upload not found'});
     }
 
-    await fileUploader.finalizeFile(fileUpload, req.body);
+    await fileUploader.finalizeUpload(fileUpload, req.body);
 
     fileUpload.ogrInfo = req.body;
     fileUpload = await fileUpload.save();
@@ -105,6 +108,59 @@ router.get('/:uploadId/dataset', async (req, res, next) => {
     const dataset = await fileUploader.generateDataset(fileUpload);
 
     res.json(dataset);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+router.get('/:uploadId/dataset', async (req, res, next) => {
+  try {
+    let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId, {include: [Dataset]});
+
+    if (!fileUpload) {
+      return next({status: 404, message: 'Upload not found'});
+    }
+
+    // Dataset already generated for this upload. Return it directly
+    if (fileUpload.dataset) {
+      return res.json(fileUpload.dataset);
+    }
+
+    // Generate a new dataset from this upload
+    const dataset = await fileUploader.generateDataset(fileUpload);
+
+    res.json(dataset);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+router.get('/:uploadId/map', async (req, res, next) => {
+  try {
+    let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId, {
+      include: [{model: Dataset, include: [{model: DataAttribute}]}, TomboloMap]
+    });
+
+    if (!fileUpload) {
+      return next({status: 404, message: 'Upload not found'});
+    }
+
+    if (!fileUpload.dataset) {
+      return next({status: 404, message: 'Dataset not found for upload'});
+    }
+
+    // Map already generated for this upload. Return it directly
+    if (fileUpload.map) {
+      return res.json(fileUpload.map);
+    }
+
+    const map = await fileUploader.generateMap(fileUpload);
+
+    res.json(map);
   }
   catch (e) {
     logger.error(e);

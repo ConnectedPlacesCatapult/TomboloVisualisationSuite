@@ -22,5 +22,14 @@ export class Palette extends Model<Palette> {
   })
   colorStops: string[];
 
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'is_default'
+  })
+  isDefault: boolean;
+
+  static getDefault() {
+    return Palette.findOne<Palette>({where: { isDefault: true} as any});
+  }
 
 }

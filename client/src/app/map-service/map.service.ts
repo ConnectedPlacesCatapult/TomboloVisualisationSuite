@@ -105,6 +105,10 @@ export class MapService {
     return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/dataset`);
   }
 
+  createMapForUpload(uploadID: string): Observable<any> {
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/map`);
+  }
+
   /**
    * Set a map style and wait for the 'style.load' event to fire. Used to prevent race conditions seen when
    * Trying to call getStyle() soon after setStyle()

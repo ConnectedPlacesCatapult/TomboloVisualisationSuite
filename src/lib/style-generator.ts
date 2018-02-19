@@ -148,7 +148,7 @@ export class StyleGenerator {
     }
   }
 
-  private colorRampForLayer(layer: TomboloMapLayer): object {
+  private colorRampForLayer(layer: TomboloMapLayer): any {
 
     const dataAttribute = layer.dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
 
@@ -159,14 +159,21 @@ export class StyleGenerator {
     const colorStops = layer.palette.colorStops;
     if (layer.paletteInverted) colorStops.reverse();
 
-    const stops = dataAttribute.quantiles5.map((val, i) => [val, layer.palette.colorStops[i]]).reduce((a, b) => a.concat(b), []);
+    // TODO - support fixed colors
+    if (dataAttribute.quantiles5) {
+      const stops = dataAttribute.quantiles5.map((val, i) => [val, layer.palette.colorStops[i]]).reduce((a, b) => a.concat(b), []);
 
-    return [
-      'interpolate',
-      ['linear'],
-      ['get', layer.datasetAttribute],
-      ...stops
-    ];
+      return [
+        'interpolate',
+        ['linear'],
+        ['get', layer.datasetAttribute],
+        ...stops
+      ];
+    }
+    else {
+      return 'red';
+    }
+
   }
 
   private radiusRampForLayer(layer: TomboloMapLayer): object {

@@ -57,7 +57,7 @@ export class DB {
   async checkConnection(): Promise<void> {
     try {
       await this.sequelize.authenticate();
-      await this.sequelize.sync({force: true, match: /tombolo_dev/});
+      await this.sequelize.sync({force: false});
 
       this.logger.info('Connected to DB');
     } catch (e) {

@@ -44,6 +44,12 @@ export class UploadPage4Component implements OnInit, OnDestroy {
         this.setStep(0);
       }
     }));
+
+    this._subs.push(this.context.next$.subscribe(page => {
+      if (page === 3) {
+        this.context.openInMap = this.openInMap;
+      }
+    }));
   }
 
   ngOnDestroy() {

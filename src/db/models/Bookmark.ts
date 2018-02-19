@@ -1,4 +1,5 @@
-import {Column, DataType, Model, Table} from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
+import {User} from './User';
 const base58 = require('base58');
 
 @Table({
@@ -21,6 +22,17 @@ export class Bookmark extends Model<Bookmark> {
     allowNull: false
   })
   url: string;
+
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    field: 'owner_id'
+  })
+  ownerId: string;
+
+  @BelongsTo(() => User, {onDelete: 'CASCADE'})
+  owner: User;
 
   get shortId() {
     return base58.encode(this.id);

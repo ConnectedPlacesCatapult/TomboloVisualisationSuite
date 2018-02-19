@@ -34,9 +34,8 @@ export class UploadDialogContext  {
   uploadInput$: EventEmitter<UploadInput>;
   uploadOutput$: Observable<UploadOutput>;
   file: FileUpload;
-  datasetName: string;
-  datasetDescription: string;
   dataset: object;
+  openInMap: boolean;
 
   // Observable to signal page should cancel pending operations
   get cancel$(): Observable<number> {
@@ -125,6 +124,7 @@ export class UploadDialogComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   finish() {
-    this.dialogRef.close();
+    this.context.next(this.stepper.selectedIndex);
+    this.dialogRef.close(this.context);
   }
 }
