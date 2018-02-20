@@ -32,6 +32,13 @@ import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
 import {CdkTableModule} from "@angular/cdk/table";
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ShareModule} from '@ngx-share/core';
+import {MapEditorComponent} from './map-editor/map-editor.component';
+import {NgUploaderModule} from 'ngx-uploader';
+import {UploadDialogComponent} from './map-editor/upload-dialog/upload-dialog.component';
+import {UploadPage1Component} from './map-editor/upload-dialog/upload-page1.component';
+import {UploadPage2Component} from './map-editor/upload-dialog/upload-page2.component';
+import {UploadPage3Component} from './map-editor/upload-dialog/upload-page3.component';
+import {UploadPage4Component} from './map-editor/upload-dialog/upload-page4.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -44,16 +51,23 @@ export function AppConfigFactory(configService: ConfigService) {
 
 @NgModule({
   entryComponents: [
-    TooltipRenderComponent
+    TooltipRenderComponent,
+    UploadDialogComponent
   ],
   declarations: [
     AppComponent,
     CyclingDemoComponent,
     BasemapDemoComponent,
     MapsDemoComponent,
+    MapEditorComponent,
     MapInfoComponent,
     MapExportComponent,
-    TooltipRenderComponent
+    UploadDialogComponent,
+    TooltipRenderComponent,
+    UploadPage1Component,
+    UploadPage2Component,
+    UploadPage3Component,
+    UploadPage4Component
   ],
   imports: [
     BrowserModule,
@@ -66,6 +80,7 @@ export function AppConfigFactory(configService: ConfigService) {
     AppRoutingModule,
     MaterialModule,
     MapboxModule,
+    NgUploaderModule,
     MatTableModule,
     CdkTableModule,
     MatTooltipModule,

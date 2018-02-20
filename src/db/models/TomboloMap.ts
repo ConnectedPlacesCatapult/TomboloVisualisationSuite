@@ -74,9 +74,9 @@ export class TomboloMap extends Model<TomboloMap> {
   @HasMany(() => TomboloMapLayer)
   layers: TomboloMapLayer[];
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
 
-  @BelongsTo(() => BaseMap)
+  @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;
 }

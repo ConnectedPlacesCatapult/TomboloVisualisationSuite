@@ -6,6 +6,7 @@ mbtiles/
 doc/
 client/
 docker/
+data/
 
 bitbucket-pipelines.yml
 *.iml

@@ -27,6 +27,7 @@ import {DB} from './db';
 
 // Router imports
 import ConfigRouter from './routes/api/config';
+import UploadsRouter from './routes/api/uploads';
 import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
 import BookmarksRouter from './routes/api/bookmarks';
@@ -73,6 +74,7 @@ app.use(jwt({
 // Register Routes
 app.use('/api/v1/config', ConfigRouter);
 app.use('/api/v1/bookmarks', BookmarksRouter);
+app.use('/api/v1/uploads', UploadsRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);

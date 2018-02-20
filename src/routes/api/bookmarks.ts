@@ -20,7 +20,7 @@ const logger = Container.get(LoggerService);
 router.post('/', async (req, res, next) => {
   try {
     const bookmark = await Bookmark.create<Bookmark>({url: req.body.url});
-    res.send({shortUrl: `${baseUrl}/b/${bookmark.shortId}`});
+    res.json({shortUrl: `${baseUrl}/b/${bookmark.shortId}`});
   }
   catch (e) {
     logger.error(e);
