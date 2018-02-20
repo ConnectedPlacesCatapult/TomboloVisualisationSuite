@@ -2,11 +2,42 @@
 
 <div mat-dialog-content>
   <div class="share-buttons">
-    <button mat-icon-button shareButton="facebook" [sbUrl]="url" [sbDescription]="description" [sbTags]="tags" class="share-button"><mat-icon fontSet="fa" fontIcon="fa-facebook-square" [style.color]="share.prop.facebook.color"></mat-icon></button>
-    <button mat-icon-button shareButton="twitter" [sbUrl]="url" [sbDescription]="description" [sbTags]="tags" class="share-button"><mat-icon fontSet="fa" fontIcon="fa-twitter-square" [style.color]="share.prop.twitter.color"></mat-icon></button>
-    <button mat-icon-button shareButton="linkedin" [sbUrl]="url" [sbDescription]="description" [sbTags]="tags" class="share-button"><mat-icon fontSet="fa" fontIcon="fa-linkedin-square" [style.color]="share.prop.linkedin.color"></mat-icon></button>
-    <button mat-icon-button shareButton="google" [sbUrl]="url" [sbDescription]="description" [sbTags]="tags" class="share-button"><mat-icon fontSet="fa" fontIcon="fa-google-plus-square" [style.color]="share.prop.google.color"></mat-icon></button>
-    <button mat-icon-button class="share-button" (click)="email()"><mat-icon fontSet="fa" fontIcon="fa-envelope-square" [style.color]="share.prop.email.color"></mat-icon></button>
+    <button mat-icon-button shareButton="facebook"
+            [sbUrl]="url"
+            [sbDescription]="description"
+            [sbTags]="tags"
+            class="share-button"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareFacebook"><mat-icon fontSet="fa" fontIcon="fa-facebook-square" [style.color]="share.prop.facebook.color"></mat-icon></button>
+    <button mat-icon-button shareButton="twitter"
+            [sbUrl]="url"
+            [sbDescription]="description"
+            [sbTags]="tags"
+            class="share-button"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareTwitter"><mat-icon fontSet="fa" fontIcon="fa-twitter-square" [style.color]="share.prop.twitter.color"></mat-icon></button>
+    <button mat-icon-button shareButton="linkedin"
+            [sbUrl]="url"
+            [sbDescription]="description"
+            [sbTags]="tags"
+            class="share-button"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareLinkedin"><mat-icon fontSet="fa" fontIcon="fa-linkedin-square" [style.color]="share.prop.linkedin.color"></mat-icon></button>
+    <button mat-icon-button shareButton="google"
+            [sbUrl]="url"
+            [sbDescription]="description"
+            [sbTags]="tags"
+            class="share-button"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareGooglePlus"><mat-icon fontSet="fa" fontIcon="fa-google-plus-square" [style.color]="share.prop.google.color"></mat-icon></button>
+    <button mat-icon-button class="share-button" (click)="email()"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareEmail"><mat-icon fontSet="fa" fontIcon="fa-envelope-square" [style.color]="share.prop.email.color"></mat-icon></button>
    </div>
 
   <mat-form-field class="full-width">
