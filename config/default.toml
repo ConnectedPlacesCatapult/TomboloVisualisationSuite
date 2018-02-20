@@ -35,6 +35,7 @@ uploadPath = "/uploads"
 maxFileSize = 52428800 # 50 MB
 
 [client]
+googleAnalyticsUserId = "UA-79725616-5"
 authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"
 socialMediaDescription = "Check out this amazing map I built with Tombolo!"

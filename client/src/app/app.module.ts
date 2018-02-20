@@ -40,6 +40,9 @@ import {UploadPage2Component} from './map-editor/upload-dialog/upload-page2.comp
 import {UploadPage3Component} from './map-editor/upload-dialog/upload-page3.component';
 import {UploadPage4Component} from './map-editor/upload-dialog/upload-page4.component';
 
+import {Angulartics2Module} from 'angulartics2';
+import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
+
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
   return () => configService.load(`${environment.apiEndpoint}/config`);
@@ -84,6 +87,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MatTableModule,
     CdkTableModule,
     MatTooltipModule,
+    Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
@@ -93,6 +97,7 @@ export function AppConfigFactory(configService: ConfigService) {
   ],
   providers: [
     BookmarkService,
+    CustomGoogleTagManager,
     NotificationService,
     ConfigService,
     MapRegistry,

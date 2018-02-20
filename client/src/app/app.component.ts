@@ -17,6 +17,7 @@ import {Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
 import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
 import {AttributeRow, TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
 import {EmuMapboxMap} from './mapbox/mapbox.component';
+import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
 
 const debug = Debug('tombolo:app');
 
@@ -49,7 +50,8 @@ export class AppComponent implements OnInit {
               private tooltipRenderService: TooltipRenderService,
               private resolver: ComponentFactoryResolver,
               private mapService: MapService,
-              private injector: Injector) {}
+              private injector: Injector,
+              private customGoogleTagManager: CustomGoogleTagManager) {}
 
   ngOnInit() {
     debug(`App loaded - environment = ${environment.name} `);

@@ -45,8 +45,14 @@
 
 <div class="sidebar-footer">
   <div class="button-box">
-    <button mat-button (click)="routeBack()">Cancel</button>
-    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || exportLoading">Export</button>
+    <button mat-button (click)="routeBack()"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="CancelExportMap">Cancel</button>
+    <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || exportLoading"
+            angulartics2On="click"
+            angularticsCategory="ExportShare"
+            angularticsAction="DownloadMap">Export</button>
   </div>
 </div>
 

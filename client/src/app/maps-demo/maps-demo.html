@@ -3,7 +3,13 @@
 <div class="sidebar-content">
   <mat-nav-list>
   <mat-radio-group>
-    <a mat-list-item *ngFor="let map of maps$ | async" [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]" routerLinkActive="active">
+    <a mat-list-item *ngFor="let map of maps$ | async"
+       [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]"
+       routerLinkActive="active"
+       angulartics2On="click"
+       angularticsCategory="CityIndices"
+       angularticsAction="NavigateCityIndexDataset"
+       [angularticsLabel]="map.name">
       {{map.name}}
     </a>
   </mat-radio-group>
