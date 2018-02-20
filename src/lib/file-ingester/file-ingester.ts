@@ -11,6 +11,7 @@ import {BaseMap} from '../../db/models/BaseMap';
 import {TomboloMapLayer} from '../../db/models/TomboloMapLayer';
 import {Palette} from '../../db/models/Palette';
 import * as sequelize from 'sequelize';
+import {FileUploadBase} from '../../../shared/fileupload-base';
 
 const exec = require('child_process').exec;
 
@@ -54,8 +55,10 @@ export class FileIngester {
   constructor(private logger: Logger, private dbConfig: object) {}
 
   async processFile(file: FileUpload): Promise<OgrFileInfo> {
-    try {
 
+    if (!file) throw new Error('file required');
+
+    try {
       // Handle zip file uploads using GDAL virtual file system
       const ext = path.extname(file.originalName);
       if (ext === '.zip') {
@@ -84,7 +87,7 @@ export class FileIngester {
       // Do not return a rejected promise because no-one is listening
       // This is running detached and an unhandled rejected promise will
       // be fatal in future versions of node.
-      return null;
+      throw e;
     }
   }
 
@@ -128,10 +131,110 @@ export class FileIngester {
     return;
   }
 
+  /**
+   * Validate given file is a supported geospatial file using ogrinfo
+   *
+   * @param {string} path
+   */
+  validateFile(file: FileUploadBase): Promise<OgrFileInfo> {
+
+    if (!file) return Promise.reject(new Error('file required'));
+
+    const cmd = `ogrinfo -ro -al -so -oo FLATTEN_NESTED_ATTRIBUTES=yes ${file.path}`;
+
+    this.logger.info(`Executing ogrinfo for upload: ${file.id}`, cmd);
+
+    return new Promise((resolve, reject) => {
+      exec(cmd, (err, stdout) => {
+        if (err) {
+          // ogrinfo error message is actually returned through stdout
+          reject(new Error(stdout));
+        }
+
+        let fileInfo: OgrFileInfo = {} as any;
+
+        try {
+          // Extract driver type
+          const driverRegex = /using driver `(.*)'/;
+          const driver = stdout.match(driverRegex);
+          fileInfo.driver = driver ? driver[1] : null;
+
+          // Extract key/value pairs
+          const keyValueRegex = /([\w\d ]*):\s(.*)/gm;
+          let keys = [];
+          let keyValues = {};
+          let temp;
+          while ((temp = keyValueRegex.exec(stdout)) !== null) {
+            keys.push(temp[1]);
+            keyValues[temp[1]] = temp[2];
+          }
+
+          // Extract layer info
+          fileInfo.geometryType = keyValues['Geometry'];
+          fileInfo.featureCount = +keyValues['Feature Count'];
+
+          let srs = keyValues['Layer SRS WKT'].match(/"(.*)"/);
+          if (srs) fileInfo.srs = srs[1];
+
+          // Extract data attributes
+          let attributes = [];
+          const attributeStartIndex = keys.indexOf('Layer SRS WKT');
+          if (attributeStartIndex > -1) {
+            for (let i = attributeStartIndex + 1; i < keys.length; i++) {
+              const key = keys[i];
+              const value = keyValues[key];
+              const type = value.match(/^(\w*)/)[1].toLowerCase();
+              const precision = +(value.match(/\((.*)\)/)[1]);
+              attributes.push({id: keys[i].toLowerCase(), type, precision});
+            }
+          }
+
+          fileInfo.attributes = attributes;
+
+          resolve(fileInfo);
+        }
+        catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  ingestFile(file: FileUploadBase): Promise<void> {
+
+    if (!file) return Promise.reject(Error('file required'));
+
+    const database = this.dbConfig['database'];
+    const host = this.dbConfig['host'];
+    const port = this.dbConfig['port'];
+    const username = this.dbConfig['username'];
+    const password = this.dbConfig['password'];
+
+    const cmd = `ogr2ogr -f "PostgreSQL" PG:"dbname='${database}' host='${host}' port='${port}' user='${username}' password='${password}'" \
+    ${file.path} -t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -nln ${file.id}${DATATABLE_SUFFIX}`;
+
+    this.logger.info(`Executing ogr2ogr for upload: ${file.id}`, cmd);
+
+    return new Promise((resolve, reject) => {
+      let env = {...process.env};
+      env['PG_USE_COPY'] = 'YES';
+      exec(cmd, {env}, (err, stdout) => {
+        if (err) {
+          // ogr2ogr error message is actually returned through stdout
+          reject(new Error(stdout));
+        }
+
+        // ogr2ogr gives no output if successful
+        resolve();
+      });
+    });
+  }
+
   async generateDataset(file: FileUpload): Promise<Dataset> {
 
-    const geometryType = await this.queryGeometryType(file);
+    if (!file) return Promise.reject(Error('file required'));
 
+    const geometryType = await this.queryGeometryType(file);
 
     // Create dataset
     const dataset = await Dataset.create<Dataset>({
@@ -211,101 +314,6 @@ export class FileIngester {
     });
 
     return map;
-  }
-
-  /**
-   * Validate given file is a supported geospatial file using ogrinfo
-   *
-   * @param {string} path
-   */
-  private validateFile(file: FileUpload): Promise<OgrFileInfo> {
-
-    const cmd = `ogrinfo -ro -al -so -oo FLATTEN_NESTED_ATTRIBUTES=yes ${file.path}`;
-
-    this.logger.info(`Executing ogrinfo for upload: ${file.id}`, cmd);
-
-    return new Promise((resolve, reject) => {
-      exec(cmd, (err, stdout) => {
-        if (err) {
-          // ogrinfo error message is actually returned through stdout
-          reject(new Error(stdout));
-        }
-
-        let fileInfo: OgrFileInfo = {} as any;
-
-        try {
-          // Extract driver type
-          const driverRegex = /using driver `(.*)'/;
-          const driver = stdout.match(driverRegex);
-          fileInfo.driver = driver ? driver[1] : null;
-
-          // Extract key/value pairs
-          const keyValueRegex = /([\w\d ]*):\s(.*)/gm;
-          let keys = [];
-          let keyValues = {};
-          let temp;
-          while ((temp = keyValueRegex.exec(stdout)) !== null) {
-            keys.push(temp[1]);
-            keyValues[temp[1]] = temp[2];
-          }
-
-          // Extract layer info
-          fileInfo.geometryType = keyValues['Geometry'];
-          fileInfo.featureCount = +keyValues['Feature Count'];
-
-          let srs = keyValues['Layer SRS WKT'].match(/"(.*)"/);
-          if (srs) fileInfo.srs = srs[1];
-
-          // Extract data attributes
-          let attributes = [];
-          const attributeStartIndex = keys.indexOf('Layer SRS WKT');
-          if (attributeStartIndex > -1) {
-            for (let i = attributeStartIndex + 1; i < keys.length; i++) {
-              const key = keys[i];
-              const value = keyValues[key];
-              const type = value.match(/^(\w*)/)[1].toLowerCase();
-              const precision = +(value.match(/\((.*)\)/)[1]);
-              attributes.push({id: keys[i].toLowerCase(), type, precision});
-            }
-          }
-
-          fileInfo.attributes = attributes;
-
-          resolve(fileInfo);
-        }
-        catch (e) {
-          reject(e);
-        }
-      });
-    });
-  }
-
-  private ingestFile(file: FileUpload): Promise<void> {
-
-    const database = this.dbConfig['database'];
-    const host = this.dbConfig['host'];
-    const port = this.dbConfig['port'];
-    const username = this.dbConfig['username'];
-    const password = this.dbConfig['password'];
-
-    const cmd = `ogr2ogr -f "PostgreSQL" PG:"dbname='${database}' host='${host}' port='${port}' user='${username}' password='${password}'" \
-    ${file.path} -t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -nln ${file.id}${DATATABLE_SUFFIX}`;
-
-    this.logger.info(`Executing ogr2ogr for upload: ${file.id}`, cmd);
-
-    return new Promise((resolve, reject) => {
-      let env = {...process.env};
-      env['PG_USE_COPY'] = 'YES';
-      exec(cmd, {env}, (err, stdout) => {
-        if (err) {
-          // ogr2ogr error message is actually returned through stdout
-          reject(new Error(stdout));
-        }
-
-        // ogr2ogr gives no output if successful
-        resolve();
-      });
-    });
   }
 
   private queryGeometryType(file: FileUpload) {

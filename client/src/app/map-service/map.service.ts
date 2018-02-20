@@ -8,43 +8,10 @@ import {NotificationService} from '../dialogs/notification.service';
 import 'rxjs/add/operator/do';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {FileUploadBase} from '../../../../shared/fileupload-base';
+import {OgrFileInfoBase} from '../../../../shared/ogrfileinfo-base';
 
 const debug = Debug('tombolo:MapService');
-
-export interface FileUpload {
-  id: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
-  path: string;
-  status: 'uploaded' | 'validating' | 'ingesting' | 'done' | 'error';
-  ogrInfo: OgrInfo;
-  error: string;
-  ownerId: string;
-}
-
-export interface OgrAttribute {
-  id: string;
-  type: string;
-  precision?: number;
-  name?: string;
-  description?: string;
-  unit?: string;
-  removed?: boolean;
-}
-
-export interface OgrInfo {
-  id: string;
-  name?: string;
-  description?: string;
-  attribution?: string;
-  path: string;
-  driver: string;
-  geometryType: string;
-  featureCount: number;
-  srs: string;
-  attributes: OgrAttribute[];
-}
 
 export class OptimisticLockingError extends Error {
   constructor(message: string, public error: any) {
@@ -93,12 +60,12 @@ export class MapService {
       .catch(e => this.handleError(e));
   }
 
-  pollIngest(uploadID: string): Observable<FileUpload> {
-    return this.http.get<FileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+  pollIngest(uploadID: string): Observable<FileUploadBase> {
+    return this.http.get<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`);
   }
 
-  finalizeIngest(uploadID: string, ogrInfo: OgrInfo): Observable<FileUpload> {
-    return this.http.post<FileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`, ogrInfo);
+  finalizeIngest(uploadID: string, ogrInfo: OgrFileInfoBase): Observable<FileUploadBase> {
+    return this.http.post<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`, ogrInfo);
   }
 
   createDataset(uploadID: string): Observable<any> {

@@ -14,7 +14,7 @@ import {UploadInput, UploadOutput} from 'ngx-uploader';
 import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
 import {Subject} from 'rxjs/Subject';
-import {FileUpload} from '../../map-service/map.service';
+import {FileUploadBase} from '../../../../../shared/fileupload-base';
 
 const debug = Debug('tombolo:upload-dialog');
 
@@ -33,7 +33,7 @@ export class UploadDialogContext  {
 
   uploadInput$: EventEmitter<UploadInput>;
   uploadOutput$: Observable<UploadOutput>;
-  file: FileUpload;
+  file: FileUploadBase;
   dataset: object;
   openInMap: boolean;
 

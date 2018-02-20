@@ -8,6 +8,7 @@ import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
 import {MapService} from '../map-service/map.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {Angulartics2} from 'angulartics2';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -25,7 +26,8 @@ export class MapsDemoComponent implements OnInit {
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
-              private mapService: MapService) {}
+              private mapService: MapService,
+              private angulartics2: Angulartics2) {}
 
   ngOnInit() {
     this.maps$ = this.httpClient.get<object[]>('/maps');

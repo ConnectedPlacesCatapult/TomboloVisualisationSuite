@@ -1,20 +1,21 @@
 import {Component, HostBinding, Input, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
-import {MapService, OgrAttribute} from '../../map-service/map.service';
+import {MapService} from '../../map-service/map.service';
 import {UploadDialogContext} from './upload-dialog.component';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
+import {OgrAttributeBase} from '../../../../../shared/ogrfileinfo-base';
 
 const debug = Debug('tombolo:upload-page2');
 
 
-export class AttributeDataSource extends DataSource<OgrAttribute> {
-  constructor(private staticData: OgrAttribute[]) {
+export class AttributeDataSource extends DataSource<OgrAttributeBase> {
+  constructor(private staticData: OgrAttributeBase[]) {
     super();
   }
 
-  connect(): Observable<OgrAttribute[]> {
+  connect(): Observable<OgrAttributeBase[]> {
     return Observable.of(this.staticData);
   }
 

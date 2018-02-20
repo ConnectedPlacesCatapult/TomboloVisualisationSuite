@@ -42,8 +42,7 @@ export class DataAttribute extends Model<DataAttribute> {
   type: string;
 
   @Column({
-    type: DataType.TEXT,
-    allowNull: false
+    type: DataType.TEXT
   })
   name: string;
 

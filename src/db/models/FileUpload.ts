@@ -3,13 +3,15 @@ import {User} from './User';
 import {DATATABLE_SUFFIX, OgrFileInfo} from '../../lib/file-ingester/file-ingester';
 import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
+import {OgrAttributeBase} from '../../../shared/ogrfileinfo-base';
+import {FileUploadBase} from '../../../shared/fileupload-base';
 
 @Table({
   tableName: 'file_uploads',
   timestamps: true,
   version: true
 })
-export class FileUpload extends Model<FileUpload> {
+export class FileUpload extends Model<FileUpload> implements FileUploadBase {
 
   @Column({
     type: DataType.TEXT,
@@ -49,8 +51,6 @@ export class FileUpload extends Model<FileUpload> {
     field: 'ogr_info'
   })
   ogrInfo: OgrFileInfo;
-
-
 
   @Column({
     type: DataType.TEXT,

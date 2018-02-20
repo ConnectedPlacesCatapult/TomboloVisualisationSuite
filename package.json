@@ -10,7 +10,7 @@
     "start": "pm2-docker --web 3001 process.yml",
     "dev": "DEBUG=tombolo:* nodemon --inspect=3001 --ext ts --watch src --exec './node_modules/.bin/ts-node' src/www.ts",
     "lint": "tsconfig-lint",
-    "test": "nodemon --ext ts --watch src --exec 'jasmine-ts' JASMINE_CONFIG_PATH=./jasmine.json",
+    "test": "NODE_ENV=test nodemon --ext ts --watch src --watch test --exec 'jasmine-ts' JASMINE_CONFIG_PATH=./jasmine.json",
     "gen-doc": "typedoc --out doc --mode modules --readme README.md",
     "view-doc": "http-server doc -p 8001 -o"
   },

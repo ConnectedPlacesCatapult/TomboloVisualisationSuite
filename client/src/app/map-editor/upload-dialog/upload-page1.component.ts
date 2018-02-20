@@ -2,8 +2,9 @@ import {Component, HostBinding, Input, OnDestroy, OnInit} from '@angular/core';
 import {UploadOutput} from 'ngx-uploader';
 import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
-import {FileUpload, MapService} from '../../map-service/map.service';
+import {MapService} from '../../map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
+import {FileUploadBase} from '../../../../../shared/fileupload-base';
 
 const debug = Debug('tombolo:upload-page1');
 
@@ -152,7 +153,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     });
   }
 
-  private finish(error: any, fileUpload?: FileUpload) {
+  private finish(error: any, fileUpload?: FileUploadBase) {
 
     if (error) {
       this.steps[this.currentStepIndex].status = 'error';
