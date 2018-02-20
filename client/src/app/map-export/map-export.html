@@ -47,12 +47,12 @@
   <div class="button-box">
     <button mat-button (click)="routeBack()"
             angulartics2On="click"
-            angularticsCategory="Navigation"
+            angularticsCategory="ExportShare"
             angularticsAction="CancelExportMap">Cancel</button>
     <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || exportLoading"
             angulartics2On="click"
-            angularticsCategory="Download"
-            angularticsAction="ExportMap">Export</button>
+            angularticsCategory="ExportShare"
+            angularticsAction="DownloadMap">Export</button>
   </div>
 </div>
 

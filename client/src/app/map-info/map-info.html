@@ -11,14 +11,14 @@
     <button mat-button
             [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]"
             angulartics2On="click"
-            angularticsCategory="Navigation"
-            angularticsAction="ExportPageClick">Export Map
+            angularticsCategory="ExportShare"
+            angularticsAction="NavigateExportMap">Export Map
     </button>
     <button mat-button
             (click)="postBookmark()"
             angulartics2On="click"
-            angularticsCategory="Popup"
-            angularticsAction="ShareMapClick">Share Map
+            angularticsCategory="ExportShare"
+            angularticsAction="ShareMap">Share Map
     </button>
   </div>
 </div>

@@ -4,6 +4,7 @@ import { Angulartics2, GoogleTagManagerSettings } from 'angulartics2';
 import {APP_CONFIG, AppConfig} from "../config.service";
 
 declare var dataLayer: any;
+declare var gtag;
 
 export class GoogleTagManagerDefaults implements GoogleTagManagerSettings {
   userId = null;
