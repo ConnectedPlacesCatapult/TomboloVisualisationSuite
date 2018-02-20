@@ -20,4 +20,8 @@
 | NavigateCityIndexDataset | CityIndices | Navigate to a city index dataset.
 | NavigatePlaygroundDataset | TomboloPlayground | Navigate to a Tombolo Playground dataset.
 | NavigateAccessToServicesDataset | AccessToServices | Navigate to an Access to Services dataset.
-
+| ShareFacebook | ExportShare | Share a map on Facebook
+| ShareTwitter | ExportShare | Share a map on Twitter
+| ShareLinkedin | ExportShare | Share a map on Linkedin
+| ShareGooglePlus | ExportShare | Share a map on Google+
+| ShareEmail | ExportShare | Share a map through Email.
