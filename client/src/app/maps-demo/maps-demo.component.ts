@@ -26,8 +26,7 @@ export class MapsDemoComponent implements OnInit {
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
-              private mapService: MapService,
-              private angulartics2: Angulartics2) {}
+              private mapService: MapService) {}
 
   ngOnInit() {
     this.maps$ = this.httpClient.get<object[]>('/maps');
