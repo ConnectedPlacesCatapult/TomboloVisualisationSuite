@@ -31,6 +31,7 @@ slowTileLimit = 500 # ms
 largeTileLimit = 100000 # bytes
 
 [client]
+googleAnalyticsUserId = "UA-79725616-5"
 authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"
 socialMediaDescription = "Check out this amazing map I built with Tombolo!"
