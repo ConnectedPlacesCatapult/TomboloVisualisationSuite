@@ -41,7 +41,7 @@ export class CustomGoogleTagManager {
   pageTrack(path: string) {
     if (typeof dataLayer !== 'undefined' && dataLayer) {
       gtag('config', this.config.googleAnalyticsUserId, {
-        'page_title' : 'Tombolo',
+        'page_title' : document.title,
         'page_path': path
       });
     }
