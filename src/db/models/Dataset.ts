@@ -1,8 +1,7 @@
-import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, DefaultScope, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
 import {User} from './User';
 import {DataAttribute} from './DataAttribute';
 import * as sequelize from 'sequelize';
-import {Sequelize} from 'sequelize';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
@@ -117,7 +116,7 @@ export class Dataset extends Model<Dataset> {
   })
   ownerId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
 
   @HasMany(() => DataAttribute)

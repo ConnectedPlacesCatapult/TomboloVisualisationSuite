@@ -5,10 +5,11 @@ import {Subject} from 'rxjs/Subject';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../dialogs/notification.service';
-
 import 'rxjs/add/operator/do';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {FileUploadBase} from '../../../../src/shared/fileupload-base';
+import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
 
 const debug = Debug('tombolo:MapService');
 
@@ -59,6 +60,21 @@ export class MapService {
       .catch(e => this.handleError(e));
   }
 
+  pollIngest(uploadID: string): Observable<FileUploadBase> {
+    return this.http.get<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+  }
+
+  finalizeIngest(uploadID: string, ogrInfo: OgrFileInfoBase): Observable<FileUploadBase> {
+    return this.http.post<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`, ogrInfo);
+  }
+
+  createDataset(uploadID: string): Observable<any> {
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/dataset`);
+  }
+
+  createMapForUpload(uploadID: string): Observable<any> {
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/map`);
+  }
 
   /**
    * Set a map style and wait for the 'style.load' event to fire. Used to prevent race conditions seen when

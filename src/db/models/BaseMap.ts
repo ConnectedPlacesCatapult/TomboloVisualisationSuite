@@ -1,5 +1,6 @@
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import * as sequelize from 'sequelize';
+import {literal} from 'sequelize';
 
 @Table({
   tableName: 'base_maps',
@@ -28,9 +29,19 @@ export class BaseMap extends Model<BaseMap> {
   description: string;
 
   @Column({
+    type: DataType.BOOLEAN,
+    field: 'is_default'
+  })
+  isDefault: boolean;
+
+  @Column({
     type: DataType.JSON,
     allowNull: true
   })
   style: object;
+
+  static getDefault() {
+    return BaseMap.findOne<BaseMap>({where: { isDefault: true} as any});
+  }
 
 }

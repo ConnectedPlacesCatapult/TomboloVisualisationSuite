@@ -54,15 +54,21 @@ export class DB {
   /**
    * Check DB connection is alive and well
    */
-  async checkConnection(): Promise<void> {
+  async checkConnection(force: boolean = false): Promise<void> {
     try {
       await this.sequelize.authenticate();
-      await this.sequelize.sync({force: false});
+      await this.sequelize.sync({force: force, match: /test/});
 
-      this.logger.info('Connected to DB');
+      this.logger.info(`Connected to DB: ${this.sequelize.options.database}`);
     } catch (e) {
-      this.logger.error('Error connecting to DB:', e);
-      throw e;
+      if (e.message === 'Database does not match sync match parameter') {
+        // Ignore db name not matching sync parameter
+        this.logger.info(`Connected to DB: ${this.sequelize.options.database}`);
+      }
+      else {
+        this.logger.error('Error connecting to DB:', e);
+        throw e;
+      }
     }
   }
 

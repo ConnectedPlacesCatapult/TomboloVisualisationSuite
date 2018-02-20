@@ -20,7 +20,8 @@ import {
   MatSelectModule,
   MatTableModule,
   MatProgressBarModule,
-  MatSliderModule
+  MatSliderModule,
+  MatStepperModule
 } from '@angular/material';
 
 const materialModules = [
@@ -42,7 +43,8 @@ const materialModules = [
   MatSelectModule,
   MatTableModule,
   CdkTableModule,
-  MatSliderModule
+  MatSliderModule,
+  MatStepperModule
 ];
 
 @NgModule({

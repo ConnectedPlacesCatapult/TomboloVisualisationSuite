@@ -41,8 +41,8 @@ mbtiles/
 .DS_Store
 
 # Local config overrides that shouldn't be commited
-local.toml
+local*.toml
 
 client-dist/
-docker-compose-local.yml
+docker-compose-local*.yml
 data/
