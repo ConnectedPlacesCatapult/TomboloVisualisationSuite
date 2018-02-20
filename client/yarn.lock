@@ -414,6 +414,12 @@ angular-2-local-storage@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/angular-2-local-storage/-/angular-2-local-storage-1.0.1.tgz#3b846c90b2fffc9124f7bacc347f22d043a1e3a4"
 
+angulartics2@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/angulartics2/-/angulartics2-5.1.1.tgz#f4becf2ccaa97b5ef8925922a224f44af56870ec"
+  dependencies:
+    tslib "^1.7.1"
+
 ansi-html@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/ansi-html/-/ansi-html-0.0.7.tgz#813584021962a9e9e6fd039f940d12f56ca7859e"

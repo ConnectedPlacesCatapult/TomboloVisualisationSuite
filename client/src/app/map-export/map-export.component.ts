@@ -20,8 +20,7 @@ export class MapExportComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private mapRegistry: MapRegistry,
+  constructor(private mapRegistry: MapRegistry,
               private location: Location,
               private notificationService: NotificationService) {}
 

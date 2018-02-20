@@ -33,6 +33,9 @@ import {CdkTableModule} from "@angular/cdk/table";
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ShareModule} from '@ngx-share/core';
 
+import {Angulartics2Module} from 'angulartics2';
+import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
+
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
   return () => configService.load(`${environment.apiEndpoint}/config`);
@@ -69,6 +72,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MatTableModule,
     CdkTableModule,
     MatTooltipModule,
+    Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
@@ -78,6 +82,7 @@ export function AppConfigFactory(configService: ConfigService) {
   ],
   providers: [
     BookmarkService,
+    CustomGoogleTagManager,
     NotificationService,
     ConfigService,
     MapRegistry,
