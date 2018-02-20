@@ -4,7 +4,7 @@ import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
 import {MapService} from '../../map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
-import {FileUploadBase} from '../../../../../shared/fileupload-base';
+import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
 
 const debug = Debug('tombolo:upload-page1');
 
@@ -134,7 +134,8 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
   private pollIngest(): void {
     this.mapService.pollIngest(this.uploadID).subscribe(fileUpload => {
-      debug(fileUpload);
+
+      debug('file upload:', fileUpload);
 
       if (fileUpload.status === 'validating') {
         this.setStep(1);
@@ -160,6 +161,9 @@ export class UploadPage1Component implements OnInit, OnDestroy {
       this.errorMessage = error.toString();
     }
     else {
+
+      console.log(fileUpload);
+
       this.steps.forEach(step => step.status = 'done');
       this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
       this.context.file = fileUpload;

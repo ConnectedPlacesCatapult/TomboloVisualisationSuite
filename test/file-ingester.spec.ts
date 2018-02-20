@@ -3,7 +3,7 @@ import * as config from 'config';
 import {Logger} from '../src/lib/logger';
 import {Container} from 'typedi';
 import {DB} from '../src/db/index';
-import {FileUploadBase} from '../shared/fileupload-base';
+import {FileUploadBase} from '../src/shared/fileupload-base';
 import * as sequelize from 'sequelize';
 import {FileUpload} from '../src/db/models/FileUpload';
 

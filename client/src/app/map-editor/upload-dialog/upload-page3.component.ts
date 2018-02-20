@@ -5,7 +5,7 @@ import {UploadDialogContext} from './upload-dialog.component';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
-import {OgrAttributeBase} from '../../../../../shared/ogrfileinfo-base';
+import {OgrAttributeBase} from '../../../../../src/shared/ogrfileinfo-base';
 
 const debug = Debug('tombolo:upload-page2');
 

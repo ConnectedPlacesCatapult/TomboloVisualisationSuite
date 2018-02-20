@@ -44,5 +44,5 @@ mbtiles/
 local*.toml
 
 client-dist/
-docker-compose-local.yml
+docker-compose-local*.yml
 data/

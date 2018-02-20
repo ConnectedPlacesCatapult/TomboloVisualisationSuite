@@ -14,7 +14,7 @@ import {UploadInput, UploadOutput} from 'ngx-uploader';
 import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
 import {Subject} from 'rxjs/Subject';
-import {FileUploadBase} from '../../../../../shared/fileupload-base';
+import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
 
 const debug = Debug('tombolo:upload-dialog');
 

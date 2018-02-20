@@ -3,7 +3,7 @@
 
 FROM mhart/alpine-node:8
 RUN echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
-RUN apk --no-cache --update add libc6-compat tini gdal@testing
+RUN apk --no-cache --update add libc6-compat tini gdal@testing proj4@testing proj4-dev@testing
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --production

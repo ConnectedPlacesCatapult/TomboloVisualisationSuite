@@ -11,7 +11,7 @@ import {BaseMap} from '../../db/models/BaseMap';
 import {TomboloMapLayer} from '../../db/models/TomboloMapLayer';
 import {Palette} from '../../db/models/Palette';
 import * as sequelize from 'sequelize';
-import {FileUploadBase} from '../../../shared/fileupload-base';
+import {FileUploadBase} from '../../shared/fileupload-base';
 
 const exec = require('child_process').exec;
 

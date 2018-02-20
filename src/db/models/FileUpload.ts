@@ -3,8 +3,8 @@ import {User} from './User';
 import {DATATABLE_SUFFIX, OgrFileInfo} from '../../lib/file-ingester/file-ingester';
 import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
-import {OgrAttributeBase} from '../../../shared/ogrfileinfo-base';
-import {FileUploadBase} from '../../../shared/fileupload-base';
+import {OgrAttributeBase} from '../../shared/ogrfileinfo-base';
+import {FileUploadBase} from '../../shared/fileupload-base';
 
 @Table({
   tableName: 'file_uploads',

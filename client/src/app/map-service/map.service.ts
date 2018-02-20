@@ -8,8 +8,8 @@ import {NotificationService} from '../dialogs/notification.service';
 import 'rxjs/add/operator/do';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
-import {FileUploadBase} from '../../../../shared/fileupload-base';
-import {OgrFileInfoBase} from '../../../../shared/ogrfileinfo-base';
+import {FileUploadBase} from '../../../../src/shared/fileupload-base';
+import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
 
 const debug = Debug('tombolo:MapService');
 
