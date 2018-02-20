@@ -107,6 +107,10 @@ $sidebar-padding: 0.5em 0.75em;
     p {
       @include mat-typography-level-to-styles($typography, body-1);
     }
+
+    ul {
+      padding-left: 1em;
+    }
   }
 
   /* Slider box */

@@ -17,7 +17,7 @@
   <div class="slider-box">
     <h3>Basemap Detail</h3>
     <div class="slider-container">
-      off <mat-slider min="0" max="4" step="1" value="4" tickInterval="1" (change)="basemapSliderChanged($event)" (input)="basemapSliderChanged($event)"></mat-slider> full
+      off <mat-slider min="0" max="4" step="1" value="4" tickInterval="1" (change)="basemapSliderChanged($event)" (input)="basemapSliderChanged($event)" [(ngModel)]="sliderValue"></mat-slider> full
     </div>
   </div>
 
