@@ -45,14 +45,39 @@ export class StyleGenerator {
       insertionPoints[key] = layerIndex;
     });
 
+    const labelAttributeStyle =  style['metadata']['labelAttributeStyle'];
+
     // Create and insert map layers
     map.layers.forEach(layer => {
       const layerStyle = this.generateMapLayer(layer);
       const insertionPoint = insertionPoints[layer.layerType] || -1;
       this.insertMapLayer(insertionPoint, style, layerStyle);
+
+      const labelStyle = this.generateLabelLayer(layer, labelAttributeStyle);
+      if (labelStyle !== null) this.insertMapLayer(-1, style, labelStyle);
     });
 
+
+
     return style;
+  }
+
+  private generateLabelLayer(layer: TomboloMapLayer, labelAttributeStyle: object): object {
+
+    if (layer.labelAttribute === null) return null;
+
+    const layout = {...labelAttributeStyle['layout'], 'text-field': `{${layer.labelAttribute}}`};
+    const paint = {...labelAttributeStyle['paint']};
+
+    const labelAttributeLayer = {
+      layout: layout, paint: paint,
+      source: layer.datasetId,
+      'source-layer':  DATA_LAYER_ID,
+      type: 'symbol',
+      id: `attribute-layer-${layer.layerId}`,
+    };
+
+    return labelAttributeLayer;
   }
 
   private generateSources(map: TomboloMap): object {
@@ -104,7 +129,7 @@ export class StyleGenerator {
       minzoom: layer.dataset.minZoom,
       maxzoom: layer.dataset.maxZoom,
       paint: this.paintStyleForLayer(layer),
-      filter: ['has', layer.datasetAttribute]
+      filter: ['has', layer.datasetAttribute] || []
     };
   }
 
@@ -119,7 +144,7 @@ export class StyleGenerator {
         'fill-outline-color': 'white',
         'fill-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity
         ]
       };
     }
@@ -129,7 +154,7 @@ export class StyleGenerator {
         'circle-radius': this.radiusRampForLayer(layer),
         'circle-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity
         ]
       };
     }
@@ -140,9 +165,16 @@ export class StyleGenerator {
           base: 1.3,
           stops: [[10, 2], [20, 20]]
         },
+
+
+
+
+
+
+
         'line-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity
         ]
       };
     }

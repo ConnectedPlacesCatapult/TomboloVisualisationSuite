@@ -25,6 +25,24 @@
         "highway_motorway_bridge_inner": 1,
         "highway_name_motorway": 1
       }
+    },
+    "labelAttributeStyle": {
+      "layout": {
+        "symbol-placement": "line",
+        "text-rotation-alignment": "map",
+        "symbol-spacing": 500,
+        "text-font": [
+          "Metropolis Medium Italic"
+        ],
+        "text-size": 12,
+        "visibility": "visible"
+      },
+      "paint": {
+        "text-color": "red",
+        "text-halo-color": "rgb(242,243,240)",
+        "text-halo-width": 1,
+        "text-halo-blur": 1
+      }
     }
   },
   "center": [

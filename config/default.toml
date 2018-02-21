@@ -35,3 +35,6 @@ authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"
 socialMediaDescription = "Check out this amazing map I built with Tombolo!"
 socialMediaTags = "tombolo, emuanalytics"
+googleAnalyticsUserId = "UA-79725616-5"
+
+
