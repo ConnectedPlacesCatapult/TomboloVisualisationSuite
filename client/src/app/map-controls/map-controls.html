@@ -1,0 +1,11 @@
+<div class="button-box">
+  <button mat-icon-button disableRipple><mat-icon svgIcon="edit"></mat-icon>Edit</button>
+  <button mat-icon-button disableRipple><mat-icon svgIcon="info"></mat-icon>Recipe</button>
+  <button mat-icon-button disableRipple [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]"><mat-icon svgIcon="export"></mat-icon>Export</button>
+  <button mat-icon-button disableRipple (click)="postBookmark()"><mat-icon svgIcon="share"></mat-icon>Share</button>
+</div>
+
+<div class="basemap-detail-slider">
+  <span class="mat-caption">Basemap Detail</span>
+  <mat-slider min="0" max="4" step="1" value="4" tickInterval="1" (change)="basemapSliderChanged($event)" (input)="basemapSliderChanged($event)" [(ngModel)]="sliderValue"></mat-slider>
+</div>

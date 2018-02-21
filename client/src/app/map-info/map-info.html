@@ -1,24 +1,9 @@
 <h3 class="sidebar-header">
-  <mat-icon fontSet="fa" fontIcon="fa-info-circle"></mat-icon>
-  Map Info
+  Map Information
 </h3>
 
 <div class="sidebar-content with-padding" Markdown [data]="mapDescription"></div>
 
 <div class="sidebar-footer">
 
-  <div class="button-box">
-    <button mat-button
-            [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]"
-            angulartics2On="click"
-            angularticsCategory="ExportShare"
-            angularticsAction="NavigateExportMap">Export Map
-    </button>
-    <button mat-button
-            (click)="postBookmark()"
-            angulartics2On="click"
-            angularticsCategory="ExportShare"
-            angularticsAction="ShareMap">Share Map
-    </button>
-  </div>
 </div>

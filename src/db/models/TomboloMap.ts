@@ -48,6 +48,11 @@ export class TomboloMap extends Model<TomboloMap> {
   description: string;
 
   @Column({
+    type: DataType.TEXT
+  })
+  icon: string;
+
+  @Column({
     type: DataType.DOUBLE
   })
   zoom: number;
