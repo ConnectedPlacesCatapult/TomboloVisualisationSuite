@@ -2,31 +2,21 @@
 
 <div class="sidebar-content">
   <mat-nav-list>
-    <a mat-list-item *ngFor="let map of maps$ | async"
+    <a mat-list-item *ngFor="let map of maps$ | async" [matTooltip]="map.name" matTooltipPosition="right"
        [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]"
        routerLinkActive="active"
        angulartics2On="click"
        angularticsCategory="CityIndices"
        angularticsAction="NavigateCityIndexDataset"
        [angularticsLabel]="map.name">
-      <mat-icon svgIcon="map" color="accent"></mat-icon>{{map.name}}
+      <mat-icon [svgIcon]="map.icon || 'map'" color="accent"></mat-icon>{{map.name}}
     </a>
   </mat-nav-list>
 </div>
 
 
 <div class="sidebar-footer">
-
-
-  <div class="slider-box">
-    <h3>Basemap Detail</h3>
-    <div class="slider-container">
-      off <mat-slider min="0" max="4" step="1" value="4" tickInterval="1" (change)="basemapSliderChanged($event)" (input)="basemapSliderChanged($event)" [(ngModel)]="sliderValue"></mat-slider> full
-    </div>
-  </div>
-
   <div class="tombolo-branding">
     <a href="http://www.tombolo.org.uk/" target="_blank">Tombolo</a>
   </div>
-
 </div>

@@ -8,8 +8,10 @@
 
   <div class="color-overlay"></div>
 
+  <map-controls></map-controls>
+
   <mat-sidenav class="sidebar sidebar-right" align="end" mode="over" [opened]="rightBarOpen">
-    <div class="sidebar-tab"><button mat-icon-button (click)="rightBarOpen = !rightBarOpen"><mat-icon svgIcon="info" color="accent"></mat-icon></button></div>
+    <div class="sidebar-tab"><button mat-icon-button (click)="rightBarOpen = !rightBarOpen" disableRipple><mat-icon [svgIcon]="iconForSidebarTab()" color="accent"></mat-icon></button></div>
     <router-outlet name="rightBar"></router-outlet>
   </mat-sidenav>
 

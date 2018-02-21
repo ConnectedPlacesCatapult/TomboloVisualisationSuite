@@ -1,18 +1,6 @@
 @import '~@angular/material/theming';
 @import 'gradients';
-
-
-// standard grid size
-$g: 20px;
-
-// standard border radius for rounded corners
-$br: 4px;
-
-$sidebar-left-width: $g * 12 !default;
-$sidebar-right-width: $g * 15 !default;
-$sidebar-padding: $g;
-
-$map-zoom-button-size: $g * 1.5;
+@import '../../variables';
 
 @mixin tombolo-theme($theme, $typography: null) {
 
@@ -63,8 +51,14 @@ $map-zoom-button-size: $g * 1.5;
     width: $g * 2;
     height: $g * 2;
 
-    background-color: mat-color($background, background);
+    background-color: white;
     border-radius: 0 0 0 $br;
+
+    .mat-icon-button:hover {
+      mat-icon {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+    }
   }
 
   /* Filters map color to sit underneath blue background of translucent left sidebar */
@@ -96,14 +90,26 @@ $map-zoom-button-size: $g * 1.5;
   .sidebar-left .mat-nav-list {
 
     a.mat-list-item {
+      color: mat-color($accent, 200);
+      font-size: 14px;
       padding: 0;
 
       .mat-list-item-content {
-        padding: 0 $g;
+        padding: 0 $g * 2 0 $g;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        line-height: 48px;
 
         mat-icon {
           // Add right padding to move text onto grid position
           padding-right: $g - 4px;
+
+          position: relative;
+          top: 6px;
+          color: mat-color($accent, 200);
         }
       }
     }
@@ -112,44 +118,97 @@ $map-zoom-button-size: $g * 1.5;
     .mat-list-item, .mat-list-item:hover {
       background-image:  url(/assets/icons/radio-off.svg) !important;
       background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 24px - $g center !important;
+      background-position: $sidebar-left-width - 20px - $g center !important;
     }
 
     .mat-list-item.active, .mat-list-item.active:hover {
       background-image:  url(/assets/icons/radio-on.svg) !important;
       background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 29px - $g center !important;
+      background-position: $sidebar-left-width - 25px - $g center !important;
     }
 
   }
 
+  /* Mapbox zoom buttons and attribution */
 
-
-  /* Map Controls */
-
-  tombolo-mapbox .zoom-button {
-    // Turn from circle to rounded square
-    border-radius: $br !important;
-
-    // Shrink from default FAB button size
-    width: $map-zoom-button-size;
-    height: $map-zoom-button-size;
-
-    // Reposition at bottom left of map
-    top: auto !important;
-    bottom: $g * 1.5 !important;
-    left: $sidebar-left-width + $g * 1.5 !important;
-    &.zoom-button-plus {
-      bottom: $g * 1.5 + $map-zoom-button-size + 5px !important;
+  tombolo-mapbox {
+    .mapboxgl-ctrl-bottom-left {
+      left: $sidebar-left-width;
     }
 
-    // Center the icons
-    .mat-button-wrapper {
-      display: block;
-      padding: 2px 0;
+    .zoom-button {
+      // Turn from circle to rounded square
+      border-radius: $br !important;
+
+      // Shrink from default FAB button size
+      width: $map-zoom-button-size;
+      height: $map-zoom-button-size;
+
+      // Reposition at bottom left of map
+      top: auto !important;
+      bottom: $g * 1.5 !important;
+      left: $sidebar-left-width + $g * 1.5 !important;
+      &.zoom-button-plus {
+        bottom: $g * 1.5 + $map-zoom-button-size + 5px !important;
+      }
+
+      // Center the icons
+      .mat-button-wrapper {
+        display: block;
+        padding: 2px 0;
+      }
     }
   }
 
+  // Map controls component
+  map-controls {
+    background-color: mat-color($accent);
+    color: $light-primary-text;
+
+    .basemap-detail-slider {
+      @include mat-typography-level-to-styles($typography, caption);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      background-color: mat-color($accent, darker);
+      color: $light-primary-text;
+
+      .mat-slider-horizontal {
+        padding: 0;
+        height: $g * 1.5;
+
+        .mat-slider-wrapper {
+          top: 14px;
+          left: 16px;
+        }
+      }
+
+      .mat-slider-track-fill,  .mat-slider-thumb {
+        background-color: mat-color($accent, 50);
+      }
+    }
+
+    .button-box {
+
+      .mat-icon-button {
+        @include mat-typography-level-to-styles($typography, caption);
+        border-radius: 0;
+        border-left: 1px solid mat-color($accent, lighter);
+        border-right: 1px solid mat-color($accent, darker);
+      }
+
+      .mat-icon-button:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+
+      .mat-button-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 20px;
+      }
+    }
+  }
 
   //a.mat-list-item.active, a.mat-list-item.active:hover, a.mat-list-item.active:visited, a.mat-list-item.active:focus {
   //  background-color: mat-color($accent);
@@ -180,6 +239,17 @@ $map-zoom-button-size: $g * 1.5;
     @include mat-typography-level-to-styles($typography, display-1);
   }
 
+  h3.sidebar-header {
+    @include mat-typography-level-to-styles($typography, title);
+
+    color: mat-color($primary, darker);
+
+    margin: 0 $g;
+    height: $g * 2;
+    line-height: $g * 2;
+    border-bottom: 1px solid #D7E4E4;
+  }
+
   .sidebar-content {
     @include mat-typography-level-to-styles($typography, body-1);
 
@@ -195,17 +265,13 @@ $map-zoom-button-size: $g * 1.5;
 
   }
 
-  .button-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: $sidebar-padding;
-  }
+
 
   /* Markdown styling */
   div[markdown] {
     h1 {
       @include mat-typography-level-to-styles($typography, subheading-2);
+      margin-top: 0;
     }
 
     h2 {

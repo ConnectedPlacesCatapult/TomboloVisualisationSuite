@@ -23,6 +23,7 @@ router.get('/', async (req, res, next) => {
       id: map.id,
       name: map.name,
       description: map.description,
+      icon: map.icon,
       styleUrl: `${baseUrl}/maps/${map.id}/style.json`
     }));
 

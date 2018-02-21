@@ -3,13 +3,19 @@ import {MatIconRegistry} from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 
 export  const ICONS = [
+  'air-quality',
   'backarrow',
+  'bike',
   'cross',
   'disclosure',
   'dropdown',
+  'edit',
   'export',
   'eye',
+  'gps',
+  'green-space',
   'info',
+  'leisure-centres',
   'line',
   'login',
   'map',
@@ -20,8 +26,11 @@ export  const ICONS = [
   'radio-off',
   'radio-on',
   'save',
+  'schools',
   'share',
   'signup',
+  'social-isolation',
+  'transport',
   'trash',
   'user'
 ];

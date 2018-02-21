@@ -44,6 +44,7 @@ import {Angulartics2Module} from 'angulartics2';
 import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
 import {ICONS, RegisterIcons} from './tombolo-theme/icons';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
+import {MapControlsComponent} from './map-controls/map-controls.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -73,7 +74,8 @@ export function AppConfigFactory(configService: ConfigService) {
     UploadPage2Component,
     UploadPage3Component,
     UploadPage4Component,
-    IconsDemoComponent
+    IconsDemoComponent,
+    MapControlsComponent
   ],
   imports: [
     BrowserModule,

@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 import 'rxjs/add/operator/auditTime';
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {MapRegistry} from "./map-registry.service";
-import {Map, LngLat, MapMouseEvent} from 'mapbox-gl';
+import {Map, LngLat, MapMouseEvent, AttributionControl} from 'mapbox-gl';
 import MapDataEvent = mapboxgl.MapDataEvent;
 import {ExportMap} from "./export-map/export-map";
 
@@ -197,10 +197,12 @@ export class MapboxComponent implements OnInit {
 
   ngOnInit() {
     const options = {
-      container: this.mapContainer.nativeElement
+      container: this.mapContainer.nativeElement,
+      attributionControl: false
     };
 
     this.map = new this.mapClass(options);
+    this.map.addControl(new AttributionControl(), 'bottom-left');
 
     if (this.pendingStyle) {
       this.map.setStyle(this.pendingStyle);
