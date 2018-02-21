@@ -2,7 +2,7 @@
  * Main app module
  */
 import 'hammerjs';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {APP_CONFIG, ConfigService} from "./config.service";
@@ -24,7 +24,7 @@ import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from "./map-export/map-export.component";
-import {MatInputModule, MatTableModule} from "@angular/material";
+import {MatIconRegistry, MatInputModule, MatTableModule} from '@angular/material';
 import {BookmarkService} from "./bookmark-service/bookmark.service";
 import {MapService} from './map-service/map.service';
 import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
@@ -42,6 +42,8 @@ import {UploadPage4Component} from './map-editor/upload-dialog/upload-page4.comp
 
 import {Angulartics2Module} from 'angulartics2';
 import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
+import {ICONS, RegisterIcons} from './tombolo-theme/icons';
+import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -70,7 +72,8 @@ export function AppConfigFactory(configService: ConfigService) {
     UploadPage1Component,
     UploadPage2Component,
     UploadPage3Component,
-    UploadPage4Component
+    UploadPage4Component,
+    IconsDemoComponent
   ],
   imports: [
     BrowserModule,
@@ -108,6 +111,13 @@ export function AppConfigFactory(configService: ConfigService) {
       provide: APP_INITIALIZER,
       useFactory: ConfigLoader,
       deps: [ConfigService],
+      multi: true
+    },
+    {
+      // Load app config at startup
+      provide: APP_INITIALIZER,
+      useFactory: RegisterIcons,
+      deps: [MatIconRegistry, DomSanitizer],
       multi: true
     },
     {

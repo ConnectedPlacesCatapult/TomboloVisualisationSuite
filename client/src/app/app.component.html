@@ -1,12 +1,15 @@
 <mat-sidenav-container [@fadeIn]>
 
-  <mat-sidenav class="sidebar sidebar-left" align="start" mode="side" [opened]="leftBarOpen">
+  <mat-sidenav class="sidebar sidebar-left" align="start" mode="over" [opened]="leftBarOpen">
     <router-outlet></router-outlet>
   </mat-sidenav>
 
   <tombolo-mapbox id="main-map" [mapClass]="mapClass" (mapClick)="onMapClick($event)" style="https://maps.emu-analytics.net:4430/styles/fjord.json"></tombolo-mapbox>
 
+  <div class="color-overlay"></div>
+
   <mat-sidenav class="sidebar sidebar-right" align="end" mode="over" [opened]="rightBarOpen">
+    <div class="sidebar-tab"><button mat-icon-button (click)="rightBarOpen = !rightBarOpen"><mat-icon svgIcon="info" color="accent"></mat-icon></button></div>
     <router-outlet name="rightBar"></router-outlet>
   </mat-sidenav>
 

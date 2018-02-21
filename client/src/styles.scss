@@ -4,13 +4,61 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~@angular/material/theming';
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import 'app/app-theme';
+@import 'app/tombolo-theme/tombolo-theme';
 @import 'app/dialogs/dialog-theme.scss';
 
 @include mat-core();
 
 // Define theme
-$app-primary: mat-palette($mat-blue-grey);
-$app-accent:  mat-palette($mat-light-green, 400);
+
+$tombolo-darkblue: (
+  50: #efebe9,
+  100: #d7ccc8,
+  200: #bcaaa4,
+  300: #a1887f,
+  400: #8d6e63,
+  500: #12394c,
+  600: #6d4c41,
+  700: #0e2c3b,
+  800: #4e342e,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text
+  )
+);
+
+$tombolo-cyan: (
+  50: #efebe9,
+  100: #d7ccc8,
+  200: #bcaaa4,
+  300: #a1887f,
+  400: #8d6e63,
+  500: #3bcae2,
+  600: #6d4c41,
+  700: #5d4037,
+  800: #4e342e,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text
+  )
+);
+
+$app-primary: mat-palette($tombolo-darkblue);
+$app-accent:  mat-palette($tombolo-cyan);
 $app-warn:    mat-palette($mat-red);
 $dark-theme:  mat-dark-theme($app-primary, $app-accent, $app-warn);
 $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
@@ -18,13 +66,13 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 // Apply theme to base components
 @include angular-material-theme($light-theme);
 
-// Apply theme to dialogs
-@include dialog-theme($light-theme);
+// Apply tombolo theme
+@include tombolo-theme($light-theme);
 
-// Apply theme to main
-tombolo-root {
+// Apply dark theme variant to left sidebar
+.sidebar-left {
   @include angular-material-theme($dark-theme);
-  @include app-theme($dark-theme, mat-typography-config());
+  @include tombolo-theme($dark-theme);
 }
 
 html {
@@ -49,8 +97,6 @@ body {
   margin: 0;
 }
 
-// Ensure 'hidden' is really hidden
-[hidden] { display: none !important;}
 
 /////////////////////////////////////
 // App loader screen
@@ -67,11 +113,13 @@ body {
 //////////////////////////////////////////
 // Global Angular Material style overrides
 
+// Ensure 'hidden' is really hidden
+[hidden] { display: none !important;}
+
 .mat-drawer-backdrop {
   display: none !important;
 }
 
-/* Wizard */
 .mat-horizontal-stepper-header{
- // pointer-events: none !important;
+  pointer-events: none !important;
 }
