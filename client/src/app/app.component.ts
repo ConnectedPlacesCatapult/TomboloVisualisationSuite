@@ -112,6 +112,10 @@ export class AppComponent implements OnInit {
     this.router.navigate([{ outlets: { rightBar: null }}]);
   }
 
+  iconForSidebarTab() {
+    return this.rightBarOpen ? 'cross' : 'info';
+  }
+
   /**
    * Handler called when a map is loaded.
    * Fly to to default position for the map unless zoom and centre are set in the URL to override the default
