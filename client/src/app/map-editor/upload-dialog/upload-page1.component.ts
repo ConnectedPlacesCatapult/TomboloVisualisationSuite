@@ -162,8 +162,6 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     }
     else {
 
-      console.log(fileUpload);
-
       this.steps.forEach(step => step.status = 'done');
       this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
       this.context.file = fileUpload;
