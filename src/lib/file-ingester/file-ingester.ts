@@ -148,7 +148,7 @@ export class FileIngester {
       exec(cmd, (err, stdout) => {
         if (err) {
           // ogrinfo error message is actually returned through stdout
-          reject(new Error(stdout));
+          reject(new Error(this.interpretOgInfo(stdout)));
         }
 
         let fileInfo: OgrFileInfo = {} as any;
@@ -320,7 +320,6 @@ export class FileIngester {
     const geometryTypeSql = `SELECT ST_GeometryType("wkb_geometry") as geometrytype from ${file.sqlSafeTableName()} limit 1;`;
     return file.sequelize.query(geometryTypeSql, {type: sequelize.QueryTypes.SELECT}).then(result => {
 
-      console.log(result);
       return result[0]['geometrytype'];
     });
   }
@@ -343,5 +342,12 @@ export class FileIngester {
     // TODO Calculate zoom
 
     return [centerLng, centerLat, 8];
+  }
+
+  private interpretOgInfo(ogInfo) {
+    if (ogInfo.search('with the following drivers') !== -1) {
+      return 'The datasource is not in a supported format.';
+    }
+    return ogInfo;
   }
 }

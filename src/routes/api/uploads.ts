@@ -52,7 +52,8 @@ router.get('/:uploadId', async (req, res, next) => {
 });
 
 router.post('/', upload.single('file'), async (req, res, next) => {
-  try {
+
+ try {
     const file = req.file;
 
     const fileUpload = await FileUpload.create<FileUpload>({
