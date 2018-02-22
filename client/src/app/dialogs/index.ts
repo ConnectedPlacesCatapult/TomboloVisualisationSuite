@@ -8,9 +8,13 @@ import {InformationDialog} from './info-dialog.component';
 import {NotificationService} from './notification.service';
 import {ShareDialog} from './share-dialog/share-dialog.component';
 import {ShareModule} from "@ngx-share/core";
+import {RecipeDialog} from "./recipe-dialog/recipe-dialog.component";
+import {CodeMirrorComponent} from "../codemirror/codemirror.component";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   imports: [
+    FormsModule,
     FlexLayoutModule,
     MaterialModule,
     ShareModule.forRoot()
@@ -18,12 +22,15 @@ import {ShareModule} from "@ngx-share/core";
   exports: [
     ConfirmDialog,
     InformationDialog,
-    ShareDialog
+    ShareDialog,
+    RecipeDialog
   ],
   declarations: [
     ConfirmDialog,
     InformationDialog,
-    ShareDialog
+    ShareDialog,
+    RecipeDialog,
+    CodeMirrorComponent
   ],
   providers: [
     DialogsService,
@@ -32,7 +39,8 @@ import {ShareModule} from "@ngx-share/core";
   entryComponents: [
     ConfirmDialog,
     InformationDialog,
-    ShareDialog
+    ShareDialog,
+    RecipeDialog
   ],
 })
 export class DialogsModule { }

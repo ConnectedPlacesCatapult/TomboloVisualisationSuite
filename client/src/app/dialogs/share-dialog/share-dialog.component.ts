@@ -1,5 +1,5 @@
 /**
- * General purpose information dialog
+ * Share dialog
  */
 
 import { MatDialogRef } from '@angular/material';

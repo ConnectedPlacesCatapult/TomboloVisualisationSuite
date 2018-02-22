@@ -29,6 +29,13 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
   @include tombolo-theme($dark-theme);
 }
 
+// Codemirror styles
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/addon/lint/lint.css';
+@import '~codemirror/theme/dracula.css';
+@import '~codemirror/theme/material.css';
+@import '~codemirror/theme/ambiance.css';
+
 html {
     // Disable 'bounce' overscroll on Chrome
     overflow: hidden;

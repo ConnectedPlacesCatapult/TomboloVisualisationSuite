@@ -9,6 +9,8 @@ import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {BookmarkService} from '../bookmark-service/bookmark.service';
 import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
+import {RecipeDialog} from "../dialogs/recipe-dialog/recipe-dialog.component";
+import {MatDialog} from "@angular/material";
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -25,7 +27,8 @@ export class MapControlsComponent implements OnInit {
     private mapRegistry: MapRegistry,
     private bookmarkService: BookmarkService,
     private dialogsService: DialogsService,
-    private location: Location) {}
+    private location: Location,
+    private dialog: MatDialog) {}
 
   ngOnInit() {
 
@@ -44,6 +47,13 @@ export class MapControlsComponent implements OnInit {
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
       this.dialogsService.share('Share your Map', res['shortUrl']);
+    });
+  }
+
+  showRecipeDialog(): void {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      const recipe = JSON.stringify(map.getStyle()['metadata']['recipe']);
+      let dialogRef = this.dialog.open(RecipeDialog, {data: {recipe: recipe}, width: '400px'});
     });
   }
 }
