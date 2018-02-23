@@ -42,6 +42,7 @@ export class AppComponent implements OnInit {
   routerEventSubscription: Subscription;
   mapServiceSubscription: Subscription;
   mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
+  showHover = true;
 
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
@@ -175,6 +176,13 @@ export class AppComponent implements OnInit {
 
       const attributes = this.getAttributesWithValues(map, dataFeature);
       this.tooltipRenderService.setTooltip(attributes, event.lngLat);
+    });
+  }
+
+  onMapMouseMoved(ev): void {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      const features = map.queryRenderedFeatures(ev.point, {layers: map.dataLayers});
+      this.showHover = features.length > 0;
     });
   }
 
