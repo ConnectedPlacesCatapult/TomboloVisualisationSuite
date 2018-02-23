@@ -9,6 +9,7 @@ import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {BookmarkService} from '../bookmark-service/bookmark.service';
 import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
+import {Subscription} from 'rxjs/Subscription';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -22,22 +23,39 @@ export class MapControlsComponent implements OnInit {
   sliderValue = 4;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private mapRegistry: MapRegistry,
     private bookmarkService: BookmarkService,
     private dialogsService: DialogsService,
-    private location: Location) {}
+    private location: Location,
+    private mapService: MapService) {}
+
+  private _subs: Subscription[] = [];
 
   ngOnInit() {
 
+    // Ensure basemap detail is applied whenever a map is loaded
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
+      map.setBasemapDetail(this.sliderValue);
+      this.updateURLforBasemapDetail();
+    }));
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params.basemapDetail) {
+        this.sliderValue = +params.basemapDetail;
+      }
+    });
   }
 
   ngOnDestroy() {
+    this._subs.forEach(sub => sub.unsubscribe());
   }
 
   basemapSliderChanged(event) {
 
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       map.setBasemapDetail(event.value);
+      this.updateURLforBasemapDetail();
     });
   }
 
@@ -46,4 +64,12 @@ export class MapControlsComponent implements OnInit {
       this.dialogsService.share('Share your Map', res['shortUrl']);
     });
   }
+
+  private updateURLforBasemapDetail() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('basemapDetail', this.sliderValue.toString());
+    this.location.replaceState(url.pathname, url.search);
+  }
+
+
 }
