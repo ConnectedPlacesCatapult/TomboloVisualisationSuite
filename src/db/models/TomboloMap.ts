@@ -14,6 +14,7 @@ import {Palette} from './Palette';
 })
 @Scopes({
   full: {
+    order: [['layers', 'order']],
     include: [
       () => User,
       () => BaseMap,

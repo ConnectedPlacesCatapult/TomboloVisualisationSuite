@@ -80,9 +80,13 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
 
   @Column({
     type: DataType.FLOAT,
-    field: 'opacity'
   })
-  opacity: string;
+  opacity: number;
+
+  @Column({
+    type: DataType.FLOAT,
+  })
+  order: number;
 
   @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;

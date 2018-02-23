@@ -45,16 +45,11 @@ export class StyleGenerator {
 
     // Find layer indices of insertion points
     let insertionPoints = {...(style['metadata'] && style['metadata']['insertionPoints'])};
-    Object.keys(insertionPoints).forEach(key => {
-      const layers: object[] = style['layers'];
-      const layerIndex = layers.findIndex(l => l['id'] === insertionPoints[key]);
-      insertionPoints[key] = layerIndex;
-    });
 
     // Create and insert map layers
     map.layers.forEach(layer => {
       const layerStyle = this.generateMapLayer(layer);
-      const insertionPoint = insertionPoints[layer.layerType] || -1;
+      const insertionPoint = insertionPoints[layer.layerType];
       this.insertMapLayer(insertionPoint, style, layerStyle);
     });
 
@@ -66,7 +61,7 @@ export class StyleGenerator {
     else {
       map.layers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
         const labelLayerStyle = this.generateLabelLayer(layer, labelAttributeStyle);
-        const insertionPoint = insertionPoints['label'] || -1;
+        const insertionPoint = insertionPoints['label'];
         this.insertMapLayer(insertionPoint, style, labelLayerStyle);
       });
     }
@@ -157,7 +152,8 @@ export class StyleGenerator {
     return labelAttributeLayer;
   }
 
-  private insertMapLayer(index: number, style: object, layer: object): void {
+  private insertMapLayer(insertionPoint: string, style: object, layer: object): void {
+    const index = style['layers'].findIndex(l => l['id'] === insertionPoint);
     style['layers'].splice(index, 0, layer);
   }
 
@@ -289,7 +285,7 @@ export class StyleGenerator {
           minValue: attr.minValue,
           maxValue: attr.maxValue,
           quantiles5: attr.quantiles5,
-          quantiels10: attr.quantiles10,
+          quantiles10: attr.quantiles10,
           type: attr.type,
           categories: attr.categories
         }))
