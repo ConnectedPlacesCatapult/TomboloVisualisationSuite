@@ -52,8 +52,9 @@ export class MapControlsComponent implements OnInit {
 
   showRecipeDialog(): void {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      const recipe = JSON.stringify(map.getStyle()['metadata']['recipe']);
-      let dialogRef = this.dialog.open(RecipeDialog, {data: {recipe: recipe}, width: '400px'});
+      const mapStyle = map.getStyle();
+      const recipe = JSON.stringify(mapStyle['metadata']['recipe'], null, 2);
+      let dialogRef = this.dialog.open(RecipeDialog, {data: {recipe: recipe}, width: '500px'});
     });
   }
 }
