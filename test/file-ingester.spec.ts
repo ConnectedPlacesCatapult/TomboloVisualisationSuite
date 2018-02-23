@@ -72,7 +72,7 @@ describe('File Ingester', () => {
     it('should reject an unsupported file', async (done) => {
 
       const file: FileUploadBase = {
-        path: 'test/fixtures/not_spatial.txt'
+        path: 'test/fixtures/not_spacial.txt'
       };
 
       fileIngester.validateFile(file).catch(e => {
