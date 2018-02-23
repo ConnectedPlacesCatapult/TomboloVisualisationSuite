@@ -1,0 +1,20 @@
+<h3 class="sidebar-header"><mat-icon fontSet="fa" fontIcon="fa-pencil"></mat-icon> Map Editor</h3>
+
+<div class="sidebar-content">
+  <mat-nav-list>
+
+  </mat-nav-list>
+</div>
+
+<div class="sidebar-footer">
+  <div class="drop-container" ngFileDrop [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput"[ngClass]="{dragOver: dragOver}">
+    <p>
+      Drag a file here or<br>
+      <label class="upload-button">
+        <input type="file" ngFileSelect [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput">
+        browse
+      </label>
+      to upload.
+    </p>
+  </div>
+</div>

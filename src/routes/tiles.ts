@@ -132,6 +132,7 @@ router.get('/:datasetId/calculatestats', async (req, res, next) => {
  */
 async function loadDataset(datasetId: string): Promise<Dataset> {
 
+
   if (!datasetCaching || !datasetCache.has(datasetId)) {
     const dataset = await Dataset.findById<Dataset>(datasetId, {include: [DataAttribute]});
 

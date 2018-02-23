@@ -1,9 +1,8 @@
 import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
-import {DATA_LAYER_ID} from '../../lib/tile-renderers/postgis-tile-renderer';
 import {Palette} from './Palette';
-
+import * as sequelize from 'sequelize';
 
 @Table({
   tableName: 'map_layers',
@@ -25,6 +24,7 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
     type: DataType.TEXT,
     primaryKey: true,
     field: 'layer_id',
+    defaultValue: sequelize.literal('uuid_generate_v4()')
   })
   layerId: string;
 
@@ -84,13 +84,13 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
   })
   opacity: string;
 
-  @BelongsTo(() => Dataset)
+  @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;
 
-  @BelongsTo(() => Palette)
+  @BelongsTo(() => Palette, {onDelete: 'SET NULL'})
   palette: Palette;
 
-  @BelongsTo(() => TomboloMap)
+  @BelongsTo(() => TomboloMap, {onDelete: 'CASCADE'})
   map: TomboloMap;
 }
 

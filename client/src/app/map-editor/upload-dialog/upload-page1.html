@@ -1,0 +1,9 @@
+<p class="mat-body-2">Your dataset is being uploaded:</p>
+
+<ul class="substeps">
+  <li *ngFor="let step of steps" [ngClass]="step.status"><mat-icon fontSet="fa" [fontIcon]="iconForStep(step)"></mat-icon> {{step.text}}</li>
+</ul>
+
+<mat-progress-bar *ngIf="!successMessage && !errorMessage" [mode]="progressMode" [value]="progressValue"></mat-progress-bar>
+<div *ngIf="successMessage" class="message message-success" [innerHTML]="successMessage"></div>
+<div *ngIf="errorMessage" class="message message-error" [innerHTML]="errorMessage"></div>

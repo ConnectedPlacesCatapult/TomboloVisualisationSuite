@@ -48,6 +48,11 @@ export class TomboloMap extends Model<TomboloMap> {
   description: string;
 
   @Column({
+    type: DataType.TEXT
+  })
+  icon: string;
+
+  @Column({
     type: DataType.DOUBLE
   })
   zoom: number;
@@ -74,9 +79,9 @@ export class TomboloMap extends Model<TomboloMap> {
   @HasMany(() => TomboloMapLayer)
   layers: TomboloMapLayer[];
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
 
-  @BelongsTo(() => BaseMap)
+  @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;
 }

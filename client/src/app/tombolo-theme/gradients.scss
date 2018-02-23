@@ -1,0 +1,4 @@
+@mixin gradient-sidebar-left($palette) {
+  background: linear-gradient(to bottom, mat-color($palette) 0%,  mat-color($palette) 10%, mat-color($palette, 0.86) 50%, mat-color($palette) 90%,  mat-color($palette) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='mat-color($palette)', endColorstr='mat-color($palette)',GradientType=0 );
+}

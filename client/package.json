@@ -40,6 +40,7 @@
     "mapbox-gl": "^0.43.0",
     "ng2-dragula": "^1.5.0",
     "ngx-md": "^3.1.1",
+    "ngx-uploader": "^4.2.2",
     "rxjs": "^5.5.2",
     "sort-object": "^3.0.2",
     "webgl-to-canvas2d": "^1.1.0",

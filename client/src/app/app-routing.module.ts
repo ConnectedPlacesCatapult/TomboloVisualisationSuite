@@ -9,6 +9,8 @@ import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
 import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MapExportComponent} from "./map-export/map-export.component";
+import {MapEditorComponent} from './map-editor/map-editor.component';
+import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 
 const routes: Routes = [
   {
@@ -24,8 +26,20 @@ const routes: Routes = [
     component: MapsDemoComponent
   },
   {
+    path: 'icons',
+    component: IconsDemoComponent
+  },
+  {
     path: 'mapdemo/:mapID',
     component: MapsDemoComponent
+  },
+  {
+    path: 'edit',
+    component: MapEditorComponent
+  },
+  {
+    path: 'edit/:mapID',
+    component: MapEditorComponent
   },
   {
     path: 'mapinfo',
