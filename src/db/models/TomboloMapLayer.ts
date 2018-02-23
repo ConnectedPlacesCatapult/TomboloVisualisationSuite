@@ -72,6 +72,18 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
   })
   datasetAttribute: string;
 
+  @Column({
+    type: DataType.TEXT,
+    field: 'label_attribute'
+  })
+  labelAttribute: string;
+
+  @Column({
+    type: DataType.FLOAT,
+    field: 'opacity'
+  })
+  opacity: string;
+
   @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;
 
