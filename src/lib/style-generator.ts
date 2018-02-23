@@ -5,7 +5,12 @@ import {TomboloMapLayer} from '../db/models/TomboloMapLayer';
 import {DATA_LAYER_ID} from './tile-renderers/postgis-tile-renderer';
 
 const { URL } = require('url');
-const LAYER_PREFIX = 'datalayer-';
+
+const DATA_LAYER_PREFIX = 'datalayer-';
+const LABEL_LAYER_PREFIX = 'labellayer-';
+
+const MIN_POINT_RADIUS = 3;
+const MAX_POINT_RADIUS = 20;
 
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
@@ -24,12 +29,13 @@ export class StyleGenerator {
   }
 
   generateMapStyle(map: TomboloMap, baseUrl: string): object {
+
     let style = map.basemap.style;
 
     style['name'] = map.name;
     style['metadata']['description'] = map.description;
     style['metadata']['datasets'] = this.datasetsMetadataForMap(map);
-    style['metadata']['dataLayers'] = map.layers.map(layer => LAYER_PREFIX + layer.layerId);
+    style['metadata']['dataLayers'] = map.layers.map(layer => DATA_LAYER_PREFIX + layer.layerId);
 
     style['zoom'] = map.zoom || style['zoom'];
     style['center'] = map.center || style['center'];
@@ -51,6 +57,19 @@ export class StyleGenerator {
       const insertionPoint = insertionPoints[layer.layerType] || -1;
       this.insertMapLayer(insertionPoint, style, layerStyle);
     });
+
+    // Create and insert label layers
+    const labelAttributeStyle =  style['metadata']['labelLayerStyle'];
+    if (!labelAttributeStyle) {
+      this.logger.warn(`No label layer style for basemap ${map.basemap.name}`);
+    }
+    else {
+      map.layers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
+        const labelLayerStyle = this.generateLabelLayer(layer, labelAttributeStyle);
+        const insertionPoint = insertionPoints['label'] || -1;
+        this.insertMapLayer(insertionPoint, style, labelLayerStyle);
+      });
+    }
 
     return style;
   }
@@ -96,7 +115,7 @@ export class StyleGenerator {
 
   private generateMapLayer(layer: TomboloMapLayer): object {
     return {
-      id: LAYER_PREFIX + layer.layerId,
+      id: DATA_LAYER_PREFIX + layer.layerId,
       metadata: this.metadataForMapLayer(layer),
       source: layer.datasetId,
       'source-layer':  DATA_LAYER_ID,
@@ -106,6 +125,36 @@ export class StyleGenerator {
       paint: this.paintStyleForLayer(layer),
       filter: ['has', layer.datasetAttribute]
     };
+  }
+
+  private generateLabelLayer(layer: TomboloMapLayer, labelAttributeStyle: object): object {
+
+    if (layer.labelAttribute === null) return null;
+
+    let layout = {...labelAttributeStyle['layout'], 'text-field': `{${layer.labelAttribute}}`};
+    let paint = {...labelAttributeStyle['paint']};
+
+
+    switch (layer.layerType) {
+      case 'circle':
+        // TODO - make label offset based on circle radius when expressions returning arrays are supported by mapboxgl.
+        layout['text-offset'] = [0, 2.5];
+        break;
+      case 'line':
+        layout['symbol-placement'] = 'line';
+        break;
+    }
+
+    const labelAttributeLayer = {
+      layout: layout, paint: paint,
+      source: layer.datasetId,
+      'source-layer': DATA_LAYER_ID,
+      type: 'symbol',
+      id: LABEL_LAYER_PREFIX + layer.layerId,
+      filter: ['has', layer.datasetAttribute]
+    };
+
+    return labelAttributeLayer;
   }
 
   private insertMapLayer(index: number, style: object, layer: object): void {
@@ -119,7 +168,7 @@ export class StyleGenerator {
         'fill-outline-color': 'white',
         'fill-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity || 1
         ]
       };
     }
@@ -129,7 +178,7 @@ export class StyleGenerator {
         'circle-radius': this.radiusRampForLayer(layer),
         'circle-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity || 1
         ]
       };
     }
@@ -142,7 +191,7 @@ export class StyleGenerator {
         },
         'line-opacity': ['interpolate', ['linear'], ['zoom'],
           layer.dataset.minZoom, 0,
-          layer.dataset.minZoom + 0.5, 1
+          layer.dataset.minZoom + 0.5, layer.opacity || 1
         ]
       };
     }
@@ -184,12 +233,34 @@ export class StyleGenerator {
       throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
     }
 
-    const minRadius = 3;
-    const maxRadius = 20;
-    const radiusRange = maxRadius - minRadius;
+
+    const radiusRange = MAX_POINT_RADIUS - MIN_POINT_RADIUS;
     const radiusPerStop = radiusRange / 5;
 
-    const stops = dataAttribute.quantiles5.map((val, i) => [val, minRadius + radiusPerStop * i]).reduce((a, b) => a.concat(b), []);
+    const stops = dataAttribute.quantiles5.map((val, i) => [val, MIN_POINT_RADIUS + radiusPerStop * i]).reduce((a, b) => a.concat(b), []);
+
+    return [
+      'interpolate',
+      ['linear'],
+      ['get', layer.datasetAttribute],
+      ...stops
+    ];
+  }
+
+  private lineHeightRampForLayer(layer: TomboloMapLayer): object {
+
+    const dataAttribute = layer.dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
+
+    if (!dataAttribute) {
+      throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
+    }
+
+    const minLineHeight = 1;
+    const maxLineHeight = 5;
+    const lineheightRange = maxLineHeight - minLineHeight;
+    const lineheightPerStop = lineheightRange / 5;
+
+    const stops = dataAttribute.quantiles5.map((val, i) => [val, minLineHeight + lineheightPerStop * i]).reduce((a, b) => a.concat(b), []);
 
     return [
       'interpolate',
@@ -204,7 +275,7 @@ export class StyleGenerator {
     // Reduce datasets from all map layers to remove duplicates
     const reducedDatasets =  map.layers.reduce((accum, layer) => {
       const ds = layer.dataset;
-      accum['id'] = {
+      accum[ds.id] = {
         id: ds.id,
         name: ds.name,
         description: ds.description,
