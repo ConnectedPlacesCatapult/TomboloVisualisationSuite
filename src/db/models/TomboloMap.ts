@@ -44,6 +44,11 @@ export class TomboloMap extends Model<TomboloMap> {
 
   @Column({
     type: DataType.TEXT,
+  })
+  recipe: string;
+
+  @Column({
+    type: DataType.TEXT,
     allowNull: true
   })
   description: string;

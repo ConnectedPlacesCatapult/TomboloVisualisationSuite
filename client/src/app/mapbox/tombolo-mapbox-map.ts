@@ -16,6 +16,7 @@ export interface TomboloStyleMetadata {
   basemapDetail: TombolBasemapDetailMetadata;
   datasets: TomboloDatasetMetadata[],
   dataLayers: string[];
+  recipe: string;
 }
 
 export interface TombolBasemapDetailMetadata {
@@ -100,6 +101,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
   get basemapDetail(): TombolBasemapDetailMetadata {
     return this.getStyle().metadata.basemapDetail;
+  }
+
+  get recipe(): string {
+    return this.getStyle().metadata.recipe;
   }
 
   getDatasetForLayer(layerID: string): TomboloDatasetMetadata {

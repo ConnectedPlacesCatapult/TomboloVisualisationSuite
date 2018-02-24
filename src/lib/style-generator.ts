@@ -37,6 +37,10 @@ export class StyleGenerator {
     style['metadata']['datasets'] = this.datasetsMetadataForMap(map);
     style['metadata']['dataLayers'] = map.layers.map(layer => DATA_LAYER_PREFIX + layer.layerId);
 
+    if (map.recipe && map.recipe !== null) {
+      style['metadata']['recipe'] = map.recipe;
+    }
+
     style['zoom'] = map.zoom || style['zoom'];
     style['center'] = map.center || style['center'];
 

@@ -1,14 +1,13 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
 import {MapService} from '../map-service/map.service';
-import {ICONS} from '../tombolo-theme/icons';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {BookmarkService} from '../bookmark-service/bookmark.service';
 import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
+import {MatDialog} from '@angular/material';
 import {Subscription} from 'rxjs/Subscription';
 
 const debug = Debug('tombolo:maps-demo');
@@ -28,6 +27,7 @@ export class MapControlsComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private dialogsService: DialogsService,
     private location: Location,
+    private dialog: MatDialog,
     private mapService: MapService) {}
 
   private _subs: Subscription[] = [];
@@ -65,11 +65,16 @@ export class MapControlsComponent implements OnInit {
     });
   }
 
+  showRecipeDialog(): void {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      this.dialogsService.recipe(map.recipe);
+    });
+  }
+
   private updateURLforBasemapDetail() {
     const url = new URL(window.location.href);
     url.searchParams.set('basemapDetail', this.sliderValue.toString());
     this.location.replaceState(url.pathname, url.search);
   }
-
 
 }
