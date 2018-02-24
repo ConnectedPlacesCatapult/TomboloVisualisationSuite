@@ -3,7 +3,7 @@ tombolo-mapbox {
   height: 100%;
   background-color: white;
 
-  &.hover .mapboxgl-canvas-container {
+  .map-container.hover .mapboxgl-canvas-container {
     cursor: pointer;
   }
 

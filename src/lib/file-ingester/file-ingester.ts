@@ -160,7 +160,7 @@ export class FileIngester {
           fileInfo.driver = driver ? driver[1] : null;
 
           // Extract key/value pairs
-          const keyValueRegex = /([\w\d ]*):\s(.*)/gm;
+          const keyValueRegex = /^(.*):\s(.*)$/gm;
           let keys = [];
           let keyValues = {};
           let temp;

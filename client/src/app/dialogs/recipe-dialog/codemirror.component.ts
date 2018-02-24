@@ -7,9 +7,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 import * as CodeMirror from 'codemirror';
 import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/sql/sql'
-import 'codemirror/addon/lint/lint.js';
-import 'codemirror/addon/lint/json-lint.js';
 
 /**
  * CodeMirror component
@@ -62,7 +59,6 @@ export class CodeMirrorComponent implements AfterViewInit, OnDestroy, ControlVal
   ngAfterViewInit() {
     this.config = this.config || {};
     this.initCodeMirror(this.config);
-    this.enableLinting();
 
     // Redraw to calculate size correctly
     setTimeout(() => this.instance.refresh(), 0);
@@ -76,7 +72,6 @@ export class CodeMirrorComponent implements AfterViewInit, OnDestroy, ControlVal
     this.instance.setValue(this._value);
 
     this.instance.on('change', () => {
-      this.enableLinting();
       this.updateValue(this.instance.getValue());
     });
 
@@ -91,11 +86,6 @@ export class CodeMirrorComponent implements AfterViewInit, OnDestroy, ControlVal
     this.instance.on('blur', (instance, event) => {
       this.blur.emit({instance, event});
     });
-  }
-
-  private enableLinting() {
-    // Enable linting if value is not empty
-    this.instance.setOption('lint', this.instance.getValue().trim());
   }
 
   /**

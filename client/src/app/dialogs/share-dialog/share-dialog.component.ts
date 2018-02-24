@@ -2,8 +2,8 @@
  * Share dialog
  */
 
-import { MatDialogRef } from '@angular/material';
-import {Component, Inject, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
 import { ShareButtons } from '@ngx-share/core';
 import {APP_CONFIG, AppConfig} from '../../config.service';
 
@@ -12,7 +12,7 @@ import {APP_CONFIG, AppConfig} from '../../config.service';
   templateUrl: './share-dialog.html',
   styleUrls: ['./share-dialog.scss']
 })
-export class ShareDialog  {
+export class ShareDialog implements AfterViewInit {
 
   public title: string;
   public url: string;
@@ -24,7 +24,11 @@ export class ShareDialog  {
 
   constructor(public dialogRef: MatDialogRef<ShareDialog>,
               public share: ShareButtons,
+              @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(APP_CONFIG) private config: AppConfig) {
+
+    this.title = data.title;
+    this.url = data.url;
     this.socialMediaTitle = config.socialMediaTitle;
     this.description = config.socialMediaDescription;
     this.tags = config.socialMediaTags;

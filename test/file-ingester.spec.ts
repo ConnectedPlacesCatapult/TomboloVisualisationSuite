@@ -111,6 +111,27 @@ describe('File Ingester', () => {
       expect(results[0].property1).toEqual('text');
       expect(geomType[0].geomtype).toEqual('ST_MultiPoint');
     });
+
+    it('should handle colons in attribute names', async () => {
+
+      const file: FileUploadBase = {
+        id: 'colon_in_attributes',
+        path: 'test/fixtures/colon_in_attributes.json'
+      };
+
+      await fileIngester.ingestFile(file);
+
+      const results = await db.sequelize.query(`SELECT * FROM  "${file.id}_data";`, {type: sequelize.QueryTypes.SELECT});
+      const geomType = await db.sequelize.query(
+        `SELECT ST_GeometryType("wkb_geometry") as geomtype 
+        FROM  "${file.id}_data" LIMIT 1;`, {type: sequelize.QueryTypes.SELECT});
+
+      await db.sequelize.query(`DROP TABLE "${file.id}_data";`);
+
+      expect(results.length).toEqual(1);
+      expect(results[0]['component:sum_of_green_space_areas']).toEqual(1.1);
+      expect(geomType[0].geomtype).toEqual('ST_MultiPoint');
+    });
   });
 
   describe('Dataset creation', () => {

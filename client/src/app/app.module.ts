@@ -5,32 +5,30 @@ import 'hammerjs';
 import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
-import {APP_CONFIG, ConfigService} from "./config.service";
-import {environment} from "../environments/environment";
-import {HttpClientModule} from "@angular/common/http";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AppRoutingModule} from "./app-routing.module";
-import {DialogsModule} from "./dialogs/index";
+import {APP_CONFIG, ConfigService} from './config.service';
+import {environment} from '../environments/environment';
+import {HttpClientModule} from '@angular/common/http';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AppRoutingModule} from './app-routing.module';
+import {DialogsModule} from './dialogs/index';
 import {LocalStorageModule} from 'angular-2-local-storage';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MaterialModule} from "./material/index";
-import {NotificationService} from "./dialogs/notification.service";
-import {MapRegistry} from "./mapbox/map-registry.service";
+import {MaterialModule} from './material/index';
+import {NotificationService} from './dialogs/notification.service';
+import {MapRegistry} from './mapbox/map-registry.service';
 import {MapboxModule} from './mapbox/index';
 import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
 import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
 import {MapsDemoComponent} from './maps-demo/maps-demo.component';
 import {MapInfoComponent} from './map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
-import {MapExportComponent} from "./map-export/map-export.component";
-import {MatIconRegistry, MatInputModule, MatTableModule} from '@angular/material';
-import {BookmarkService} from "./bookmark-service/bookmark.service";
+import {MapExportComponent} from './map-export/map-export.component';
+import {MatIconRegistry} from '@angular/material';
+import {BookmarkService} from './bookmark-service/bookmark.service';
 import {MapService} from './map-service/map.service';
-import {TooltipRenderComponent} from "./tooltip-render/tooltip-render.component";
-import {TooltipRenderService} from "./tooltip-render/tooltip-render.service";
-import {CdkTableModule} from "@angular/cdk/table";
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
+import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
 import {ShareModule} from '@ngx-share/core';
 import {MapEditorComponent} from './map-editor/map-editor.component';
 import {NgUploaderModule} from 'ngx-uploader';
@@ -41,11 +39,10 @@ import {UploadPage3Component} from './map-editor/upload-dialog/upload-page3.comp
 import {UploadPage4Component} from './map-editor/upload-dialog/upload-page4.component';
 
 import {Angulartics2Module} from 'angulartics2';
-import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
-import {ICONS, RegisterIcons} from './tombolo-theme/icons';
+import {CustomGoogleTagManager} from './custom-google-tag-manager/custom-google-tag-manager';
+import {RegisterIcons} from './tombolo-theme/icons';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {MapControlsComponent} from './map-controls/map-controls.component';
-import {CodeMirrorComponent} from "./codemirror/codemirror.component";
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -90,9 +87,6 @@ export function AppConfigFactory(configService: ConfigService) {
     MaterialModule,
     MapboxModule,
     NgUploaderModule,
-    MatTableModule,
-    CdkTableModule,
-    MatTooltipModule,
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({

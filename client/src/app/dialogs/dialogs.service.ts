@@ -8,6 +8,7 @@ import { MatDialogRef, MatDialog, MatDialogConfig } from '@angular/material';
 import { Injectable } from '@angular/core';
 import {InformationDialog} from "./info-dialog.component";
 import {ShareDialog} from './share-dialog/share-dialog.component';
+import {RecipeDialog} from './recipe-dialog/recipe-dialog.component';
 
 @Injectable()
 export class DialogsService {
@@ -34,9 +35,21 @@ export class DialogsService {
 
   public share(title: string, url: string): Observable<boolean> {
 
-    let dialogRef = this.dialog.open(ShareDialog, {width: '400px'});
-    dialogRef.componentInstance.title = title;
-    dialogRef.componentInstance.url = url;
+    let dialogRef = this.dialog.open(ShareDialog, {
+      width: '400px',
+      data: {title, url}
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  public recipe(recipeText: string): Observable<boolean> {
+
+    let dialogRef = this.dialog.open(RecipeDialog, {
+      width: '600px',
+      data: {
+        recipe: recipeText
+      }});
 
     return dialogRef.afterClosed();
   }

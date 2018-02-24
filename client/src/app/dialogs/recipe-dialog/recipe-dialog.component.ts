@@ -16,15 +16,13 @@ export class RecipeDialog {
   codemirrorConfig = {
     mode: 'application/json',
     autoCloseBrackets: true,
-    //gutters: ['CodeMirror-lint-markers'],
     theme: 'dracula',
     readOnly: true
   };
 
   public recipe: string;
 
-  constructor(public dialogRef: MatDialogRef<RecipeDialog>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+  constructor(public dialogRef: MatDialogRef<RecipeDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.recipe = data.recipe;
   }
 

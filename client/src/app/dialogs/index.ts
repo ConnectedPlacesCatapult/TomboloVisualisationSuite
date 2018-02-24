@@ -9,7 +9,7 @@ import {NotificationService} from './notification.service';
 import {ShareDialog} from './share-dialog/share-dialog.component';
 import {ShareModule} from "@ngx-share/core";
 import {RecipeDialog} from "./recipe-dialog/recipe-dialog.component";
-import {CodeMirrorComponent} from "../codemirror/codemirror.component";
+import {CodeMirrorComponent} from "./recipe-dialog/codemirror.component";
 import {FormsModule} from "@angular/forms";
 
 @NgModule({
