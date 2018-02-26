@@ -107,6 +107,18 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return this.getStyle().metadata.recipe;
   }
 
+  // Return zoom level below which data layers are not displayed
+  get dataMinZoom(): number {
+
+    if (!this.dataLayers) return 0;
+
+    const minZooms = this.dataLayers.map(d => {
+      return this.getLayer(d).minzoom;
+    });
+
+    return Math.max(...minZooms);
+  }
+
   getDatasetForLayer(layerID: string): TomboloDatasetMetadata {
     const layer = this.getLayer(layerID);
     const datasetID = layer.metadata.dataset;
@@ -145,22 +157,22 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     Object.keys(basemapDetail.layers).forEach(key => {
       const layer = this.getLayer(key);
       if (!layer) throw new Error(`Unknown layer ${key}`);
-      let prop: string;
+      const opacity = (basemapDetail.layers[key] <= level) ? 1 : 0;
+
       switch (layer.type) {
         case 'line':
-          prop = 'line-opacity';
+          this.setPaintProperty(key, 'line-opacity', opacity);
           break;
         case 'symbol':
-          prop = 'text-opacity';
+          this.setPaintProperty(key, 'text-opacity', opacity);
+          this.setPaintProperty(key, 'icon-opacity', opacity);
           break;
         case 'fill':
-          prop = 'fill-opacity';
+          this.setPaintProperty(key, 'fill-opacity', opacity);
           break;
         default:
           throw new Error(`Unsupported layer type for basemap detail: ${layer.type}`);
       }
-
-      this.setPaintProperty(key, prop, (basemapDetail.layers[key] <= level) ? 1 : 0);
     });
   }
 }
