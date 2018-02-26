@@ -30,7 +30,10 @@ const debug = Debug('tombolo:app');
       state('*', style({opacity: 1})),
       state('void', style({opacity: 0})),
       transition(':enter', [
-        animate('200ms 500ms'),
+        animate('200ms 500ms')
+      ]),
+      transition(':leave', [
+        animate('200ms 500ms')
       ])
     ])
   ]
@@ -43,8 +46,7 @@ export class AppComponent implements OnInit {
   mapServiceSubscription: Subscription;
   mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
   showHover = true;
-  minZoom: number;
-  minZoomWarning: boolean;
+  minZoomWarning: boolean = false;
 
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
@@ -126,19 +128,17 @@ export class AppComponent implements OnInit {
    * @param {mapboxgl.Style} style
    */
   private mapLoadedHandler(map: TomboloMapboxMap) {
+
     // Fly to default location if not set in URL
     const url = new URL(window.location.href);
     let zoom = url.searchParams.get('zoom');
-    const style = map.getStyle();
-
-    this.minZoom = Math.min(
-      ...style.layers.filter(layer => map.dataLayers.includes(layer.id))
-        .map(layer => layer.minzoom)
-    );
 
     if (!zoom) {
+      const style = map.getStyle();
       map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
     }
+
+    this.minZoomWarning = map.getZoom() < map.dataMinZoom;
   }
 
   /**
@@ -168,7 +168,9 @@ export class AppComponent implements OnInit {
 
     if (zoom && lng && lat) {
       // Position map based on URL query params: zoom, lng, lat
-      this.mapRegistry.getMap('main-map').then(map => map.jumpTo({zoom: +zoom, center: [+lng, +lat]}));
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map =>{
+        map.jumpTo({zoom: +zoom, center: [+lng, +lat]});
+      });
     }
 
     return true;
@@ -195,11 +197,9 @@ export class AppComponent implements OnInit {
   }
 
   onMapMoveEnd(ev): void {
-    if (ev.zoom < this.minZoom) {
-      this.minZoomWarning = true;
-    } else {
-      this.minZoomWarning = false;
-    }
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      this.minZoomWarning = ev.zoom < map.dataMinZoom;
+    });
   }
 
   /**

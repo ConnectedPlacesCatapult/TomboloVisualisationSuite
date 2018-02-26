@@ -4,9 +4,7 @@
     <router-outlet></router-outlet>
   </mat-sidenav>
 
-  <div class="minzoom-warning" [ngClass]="{'minzoom-warning': true, 'hidden': !minZoomWarning, 'visible': minZoomWarning}">
-    Current zoom level below minimum zoom
-  </div>
+  <div class="minzoom-warning" *ngIf="minZoomWarning" [@fadeIn]>Zoom in to see your data</div>
 
   <tombolo-mapbox
     id="main-map"
