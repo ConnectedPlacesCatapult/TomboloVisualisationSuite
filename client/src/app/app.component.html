@@ -4,13 +4,19 @@
     <router-outlet></router-outlet>
   </mat-sidenav>
 
+  <div class="minzoom-warning" [ngClass]="{'minzoom-warning': true, 'hidden': !minZoomWarning, 'visible': minZoomWarning}">
+    Current zoom level below minimum zoom
+  </div>
+
   <tombolo-mapbox
     id="main-map"
     [mapClass]="mapClass"
     (mapClick)="onMapClick($event)"
     (mouseMove)="onMapMouseMoved($event)"
+    (mapMoveEnd)="onMapMoveEnd($event)"
     style="https://maps.emu-analytics.net:4430/styles/fjord.json"
-    [showHover]="showHover"></tombolo-mapbox>
+    [showHover]="showHover">
+  </tombolo-mapbox>
 
   <div class="color-overlay"></div>
 

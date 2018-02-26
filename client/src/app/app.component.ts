@@ -43,6 +43,8 @@ export class AppComponent implements OnInit {
   mapServiceSubscription: Subscription;
   mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
   showHover = true;
+  minZoom: number;
+  minZoomWarning: boolean;
 
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
@@ -127,8 +129,14 @@ export class AppComponent implements OnInit {
     // Fly to default location if not set in URL
     const url = new URL(window.location.href);
     let zoom = url.searchParams.get('zoom');
+    const style = map.getStyle();
+
+    this.minZoom = Math.min(
+      ...style.layers.filter(layer => map.dataLayers.includes(layer.id))
+        .map(layer => layer.minzoom)
+    );
+
     if (!zoom) {
-      const style = map.getStyle();
       map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
     }
   }
@@ -184,6 +192,14 @@ export class AppComponent implements OnInit {
       const features = map.queryRenderedFeatures(ev.point, {layers: map.dataLayers});
       this.showHover = features.length > 0;
     });
+  }
+
+  onMapMoveEnd(ev): void {
+    if (ev.zoom < this.minZoom) {
+      this.minZoomWarning = true;
+    } else {
+      this.minZoomWarning = false;
+    }
   }
 
   /**
