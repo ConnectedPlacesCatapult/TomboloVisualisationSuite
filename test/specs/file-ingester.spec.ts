@@ -1,18 +1,18 @@
-import {FileIngester} from '../src/lib/file-ingester/file-ingester';
+import {FileIngester} from '../../src/lib/file-ingester/file-ingester';
 import * as config from 'config';
-import {Logger} from '../src/lib/logger';
+import {Logger} from '../../src/lib/logger';
 import {Container} from 'typedi';
-import {DB} from '../src/db/index';
-import {FileUploadBase} from '../src/shared/fileupload-base';
+import {DB} from '../../src/db/index';
+import {FileUploadBase} from '../../src/shared/fileupload-base';
 import * as sequelize from 'sequelize';
-import {FileUpload} from '../src/db/models/FileUpload';
+import {FileUpload} from '../../src/db/models/FileUpload';
 
 describe('File Ingester', () => {
 
   let fileIngester: FileIngester;
-  let db: DB;
+  const db =  Container.get(DB);
 
-  const mockLocker: Logger = {
+  const mockLogger: Logger = {
     log: (level: string, msg: string, ...meta: any[]) => {},
     silly: (msg: string, ...meta: any[]) => {},
     debug: (msg: string, ...meta: any[]) => {},
@@ -21,17 +21,8 @@ describe('File Ingester', () => {
     error: (msg: string, ...meta: any[]) => {}
   };
 
-  beforeAll(async () => {
-    db = Container.get(DB);
-    await db.checkConnection(true);
-  });
-
-  afterAll(async () => {
-    Container.get(DB).close();
-  });
-
   beforeEach(() => {
-    fileIngester = new FileIngester(mockLocker, config.get('db'));
+    fileIngester = new FileIngester(mockLogger, config.get('db'));
   });
 
   describe('Ingester', () => {

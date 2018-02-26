@@ -34,6 +34,14 @@ largeTileLimit = 100000 # bytes
 uploadPath = "/uploads"
 maxFileSize = 52428800 # 50 MB
 
+[auth]
+sessionSecret = "fjdkjer994ks"
+
+[auth.facebook]
+clientId = "147217102619899"
+clientSecret = "1deb1f9d17a53f41ddce510a9c47c109"
+callback = "http://localhost:3000/auth/social/facebook/return#home"
+
 [client]
 authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"

@@ -20,6 +20,7 @@ import * as path from 'path';
 import * as cors from 'cors';
 import * as compression from 'compression';
 import * as expressJwtPermissions from 'express-jwt-permissions';
+import * as expressSession from 'express-session';
 
 import {Container} from 'typedi';
 import {LoggerService} from './lib/logger';
@@ -32,14 +33,18 @@ import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
+import AuthRouter from './routes/auth/auth';
+import AuthSocialRouter from './routes/auth/social';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
 import {PostgisTileRenderer} from './lib/tile-renderers/postgis-tile-renderer';
-
+import {AuthService} from './lib/auth';
 
 const logger = Container.get(LoggerService);
 const tileRendererService = Container.get(TileRendererService);
+const auth = Container.get(AuthService);
+
 const app = express();
 const guard = expressJwtPermissions();
 
@@ -64,11 +69,20 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(boolParser());
 app.use(cookieParser());
 app.use(compression());
+
 app.use(jwt({
   secret: config.get('jwt.secret'),
   credentialsRequired: false
 }));
 
+app.use(expressSession({
+  secret: config.get('auth.sessionSecret'),
+  resave: true, saveUninitialized: true
+}));
+
+//////////////////////////////////////////////////////////////////////////
+// Initialise Authentication
+auth.init(app);
 
 //////////////////////////////////////////////////////////////////////////
 // Register Routes
@@ -78,6 +92,8 @@ app.use('/api/v1/uploads', UploadsRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);
+app.use('/auth', AuthRouter);
+app.use('/auth/social', AuthSocialRouter);
 
 // Redirect to index.html for Angular routes
 app.get('/[^\.]+$', function(req, res){

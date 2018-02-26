@@ -19,7 +19,6 @@ export class User extends Model<User> {
   @Column({
     type: DataType.TEXT,
     unique: true,
-    allowNull: false,
     validate: {
       isEmail: true
     }
@@ -28,17 +27,22 @@ export class User extends Model<User> {
 
   @Column({
     type: DataType.TEXT,
-    field: 'first_name',
-    allowNull: false
+    field: 'first_name'
   })
   firstName: string;
 
-  @Column({
+ @Column({
     type: DataType.TEXT,
     field: 'last_name',
     allowNull: true
   })
   lastName: string;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'facebook_id'
+  })
+  facebookId: string;
 
   @HasMany(() => Dataset)
   datasets: Dataset[];
