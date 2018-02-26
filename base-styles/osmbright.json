@@ -12,6 +12,7 @@
     "basemapDetail": {
       "defaultDetailLevel": 4,
       "layers": {
+        "building-top": 4,
         "building": 4,
         "highway-path": 4,
         "highway-shield-us-other": 4,
@@ -24,6 +25,14 @@
         "landcover-wood": 4,
         "park": 4,
         "park-outline": 4,
+        "poi-railway-en": 4,
+        "poi-railway": 4,
+        "poi-level-1-en": 4,
+        "poi-level-1": 4,
+        "poi-level-2-en": 4,
+        "poi-level-2": 4,
+        "poi-level-3-en": 4,
+        "poi-level-3": 4,
         "highway-name-minor": 3,
         "highway-name-minor-en": 3,
         "highway-minor": 3,
