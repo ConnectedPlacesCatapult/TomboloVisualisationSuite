@@ -30,7 +30,10 @@ const debug = Debug('tombolo:app');
       state('*', style({opacity: 1})),
       state('void', style({opacity: 0})),
       transition(':enter', [
-        animate('200ms 500ms'),
+        animate('200ms 500ms')
+      ]),
+      transition(':leave', [
+        animate('200ms 500ms')
       ])
     ])
   ]
@@ -42,6 +45,8 @@ export class AppComponent implements OnInit {
   routerEventSubscription: Subscription;
   mapServiceSubscription: Subscription;
   mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
+  showHover = true;
+  minZoomWarning: boolean = false;
 
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
@@ -123,13 +128,17 @@ export class AppComponent implements OnInit {
    * @param {mapboxgl.Style} style
    */
   private mapLoadedHandler(map: TomboloMapboxMap) {
+
     // Fly to default location if not set in URL
     const url = new URL(window.location.href);
     let zoom = url.searchParams.get('zoom');
+
     if (!zoom) {
       const style = map.getStyle();
       map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
     }
+
+    this.minZoomWarning = map.getZoom() < map.dataMinZoom;
   }
 
   /**
@@ -159,7 +168,9 @@ export class AppComponent implements OnInit {
 
     if (zoom && lng && lat) {
       // Position map based on URL query params: zoom, lng, lat
-      this.mapRegistry.getMap('main-map').then(map => map.jumpTo({zoom: +zoom, center: [+lng, +lat]}));
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map =>{
+        map.jumpTo({zoom: +zoom, center: [+lng, +lat]});
+      });
     }
 
     return true;
@@ -175,6 +186,19 @@ export class AppComponent implements OnInit {
 
       const attributes = this.getAttributesWithValues(map, dataFeature);
       this.tooltipRenderService.setTooltip(attributes, event.lngLat);
+    });
+  }
+
+  onMapMouseMoved(ev): void {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      const features = map.queryRenderedFeatures(ev.point, {layers: map.dataLayers});
+      this.showHover = features.length > 0;
+    });
+  }
+
+  onMapMoveEnd(ev): void {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      this.minZoomWarning = ev.zoom < map.dataMinZoom;
     });
   }
 

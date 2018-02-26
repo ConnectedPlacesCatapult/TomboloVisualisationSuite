@@ -4,7 +4,17 @@
     <router-outlet></router-outlet>
   </mat-sidenav>
 
-  <tombolo-mapbox id="main-map" [mapClass]="mapClass" (mapClick)="onMapClick($event)" style="https://maps.emu-analytics.net:4430/styles/fjord.json"></tombolo-mapbox>
+  <div class="minzoom-warning" *ngIf="minZoomWarning" [@fadeIn]>Zoom in to see your data</div>
+
+  <tombolo-mapbox
+    id="main-map"
+    [mapClass]="mapClass"
+    (mapClick)="onMapClick($event)"
+    (mouseMove)="onMapMouseMoved($event)"
+    (mapMoveEnd)="onMapMoveEnd($event)"
+    style="https://maps.emu-analytics.net:4430/styles/fjord.json"
+    [showHover]="showHover">
+  </tombolo-mapbox>
 
   <div class="color-overlay"></div>
 

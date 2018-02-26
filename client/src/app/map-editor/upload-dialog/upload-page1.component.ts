@@ -109,6 +109,11 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   }
 
   private handleUploadEvent(event: UploadOutput): void {
+    if (event.file.response && event.file.response.success === false) {
+      debug(event.file.response.message);
+      this.finish(event.file.response.message);
+    }
+
     if (event.type === 'start') {
       debug('starting upload');
       this.progressValue = event.file.progress.data.percentage;
@@ -161,8 +166,6 @@ export class UploadPage1Component implements OnInit, OnDestroy {
       this.errorMessage = error.toString();
     }
     else {
-
-      console.log(fileUpload);
 
       this.steps.forEach(step => step.status = 'done');
       this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;

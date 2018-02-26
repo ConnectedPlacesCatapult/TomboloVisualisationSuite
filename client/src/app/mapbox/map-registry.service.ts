@@ -26,7 +26,6 @@ export class MapRegistry {
   }
 
   getMap<T extends EmuMapboxMap = EmuMapboxMap>(id: string): Promise<T> {
-    debug(`Getting map '${id}'`);
     const mapPromise = this.maps.get(id);
     if (!mapPromise) {
       return Promise.reject(new Error(`Map '${id}' not registered`));

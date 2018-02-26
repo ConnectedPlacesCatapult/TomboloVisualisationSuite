@@ -14,6 +14,7 @@ import {Palette} from './Palette';
 })
 @Scopes({
   full: {
+    order: [['layers', 'order']],
     include: [
       () => User,
       () => BaseMap,
@@ -40,6 +41,11 @@ export class TomboloMap extends Model<TomboloMap> {
     allowNull: false
   })
   name: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  recipe: string;
 
   @Column({
     type: DataType.TEXT,
