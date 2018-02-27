@@ -43,6 +43,9 @@ import {CustomGoogleTagManager} from './custom-google-tag-manager/custom-google-
 import {RegisterIcons} from './tombolo-theme/icons';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {MapControlsComponent} from './map-controls/map-controls.component';
+import {LoginControlsComponent} from './auth/login-controls/login-controls.component';
+import {LoginComponent} from './auth/login-component/login.component';
+import {SignupComponent} from './auth/signup-component/signup.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -73,7 +76,10 @@ export function AppConfigFactory(configService: ConfigService) {
     UploadPage3Component,
     UploadPage4Component,
     IconsDemoComponent,
-    MapControlsComponent
+    MapControlsComponent,
+    LoginControlsComponent,
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,9 @@
+<div *ngIf="!user" class="button-box">
+  <button mat-icon-button [routerLink]="['/', {outlets: {'loginBox': 'login'}}]"><mat-icon svgIcon="login"></mat-icon>Log In</button>
+  <button mat-icon-button [routerLink]="['/', {outlets: {'loginBox': 'signup'}}]"><mat-icon svgIcon="signup"></mat-icon>Sign Up</button>
+</div>
+
+<div *ngIf="user" class="button-box">
+  <span class="username">Robin Summerhill</span>
+  <button mat-icon-button [routerLink]="['/', {outlets: {'loginBox': ['signup']}}]"><mat-icon svgIcon="user"></mat-icon>My Account</button>
+</div>

@@ -210,6 +210,39 @@
     }
   }
 
+  /* Login Styling */
+
+  login-controls {
+    background-color: white;
+    color: mat-color($accent);
+
+    .button-box {
+      padding: 0 $g;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .mat-icon-button {
+        @include mat-typography-level-to-styles($typography, caption);
+        width: auto;
+      }
+
+      .mat-icon-button:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+
+      .mat-button-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .mat-icon {
+          padding-right: 0.1em;
+        }
+      }
+    }
+  }
+
   //a.mat-list-item.active, a.mat-list-item.active:hover, a.mat-list-item.active:visited, a.mat-list-item.active:focus {
   //  background-color: mat-color($accent);
   //  color: mat-contrast($accent, 500);

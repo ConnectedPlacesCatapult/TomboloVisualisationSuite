@@ -11,6 +11,8 @@ import {MapInfoComponent} from './map-info/map-info.component';
 import {MapExportComponent} from "./map-export/map-export.component";
 import {MapEditorComponent} from './map-editor/map-editor.component';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
+import {LoginComponent} from './auth/login-component/login.component';
+import {SignupComponent} from './auth/signup-component/signup.component';
 
 const routes: Routes = [
   {
@@ -50,6 +52,16 @@ const routes: Routes = [
     path: 'mapexport',
     component: MapExportComponent,
     outlet: 'rightBar'
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    outlet: 'loginBox'
+  },
+  {
+    path: 'signup',
+    component: SignupComponent,
+    outlet: 'loginBox'
   },
   { path: '',
     redirectTo: '/mapdemo',

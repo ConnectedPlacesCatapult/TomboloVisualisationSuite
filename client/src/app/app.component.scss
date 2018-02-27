@@ -1,3 +1,4 @@
+@import '../variables';
 @import '~@angular/material/theming';
 
 :host {
@@ -28,3 +29,9 @@
   margin-top: 5px;
 }
 
+.login-box {
+  position: absolute;
+  top: 0;
+  width: $g * 9;
+  left: $sidebar-left-width;
+}
