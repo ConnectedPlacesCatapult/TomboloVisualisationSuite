@@ -22,6 +22,14 @@ export class AuthenticationError extends Error {
   }
 }
 
+export interface SignupData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  newsletters: string;
+  password: string;
+}
+
 /**
  * AuthenticationService configuration object
  */
@@ -113,25 +121,29 @@ export class AuthService {
     })(req, res, next);
   }
 
-  async localSignup(email: string, password: string, firstName: string, lastName, newsletters: boolean): Promise<User> {
+  /**
+   * Sign up new user with email and password
+   *
+   */
+  async localSignup(data: SignupData): Promise<User> {
 
-    if (!password) throw new AuthenticationError('Password must not be null');
+    if (!data.password) throw new AuthenticationError('Password must not be null');
 
     try {
-      const encryptedPassword = await this.encryptPassword(password);
-      const user = await User.create<User>({
-        email,
-        password: encryptedPassword,
-        firstName,
-        lastName,
-        newsletters
-      });
+      data.password = await this.encryptPassword(data.password);
+      const user = await User.create<User>(data, {fields: [
+        'email',
+        'password',
+        'firstName',
+        'lastName',
+        'newsletters'
+      ]});
 
       return user;
     }
     catch (e) {
       if (e instanceof UniqueConstraintError) {
-        throw new AuthenticationError(`User with email ${email} is already registered`);
+        throw new AuthenticationError(`User with email ${data.email} is already registered`);
       }
 
       if (e.name === 'SequelizeValidationError') {
@@ -262,7 +274,7 @@ export class AuthService {
    */
   private localCallback(username: string, password: string, done) {
 
-    User.findOne<User>({where: {email: username}})
+    User.findOne<User>({where: {email: username, emailVerified: true} as any})
       .then(user => {
 
         if (!user) return done(null, false);

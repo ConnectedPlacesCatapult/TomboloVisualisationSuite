@@ -15,13 +15,9 @@ router.post('/login', authService.localLogin);
 router.post('/signup', async (req, res, next) => {
 
   const email = req.body.email;
-  const password = req.body.password;
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const newsletters = req.body.newsletters;
 
   try {
-    let user = await authService.localSignup(email, password, firstName, lastName, newsletters);
+    let user = await authService.localSignup(req.body);
     user = await authService.sendSignupConfirmation(email, '/(loginBox:login)');
 
     res.json(user.clientSafeUser);
