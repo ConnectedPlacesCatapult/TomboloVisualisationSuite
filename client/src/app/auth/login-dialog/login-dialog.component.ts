@@ -6,7 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 
-const debug = Debug('tombolo:maps-demo');
+const debug = Debug('tombolo:login-dialog');
 
 @Component({
   selector: 'login-component',
@@ -18,7 +18,6 @@ export class LoginDialogComponent implements OnInit {
   @HostBinding('class.auth-panel-component') authPanelComponentClass = true;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private authService: AuthService) {}
 
@@ -51,13 +50,7 @@ export class LoginDialogComponent implements OnInit {
 
   login() {
     this.authService.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
-      .then(user => {
-        if (user) {
-          this.router.navigate([{outlets: {'loginBox': null}}]);
-        }
-        else {
-          this.errorMessage = 'Invalid email or password';
-        }
-      });
+      .then(user => this.router.navigate([{outlets: {'loginBox': null}}]))
+      .catch(() => this.errorMessage = 'Invalid email or password');
   }
 }

@@ -47,6 +47,7 @@ import {LoginControlsComponent} from './auth/login-controls/login-controls.compo
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
 import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
 import {AuthService} from './auth/auth.service';
+import {SignupConfirmationComponent} from './auth/signup-confirmation/signup-confirmation.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -80,7 +81,8 @@ export function AppConfigFactory(configService: ConfigService) {
     MapControlsComponent,
     LoginControlsComponent,
     LoginDialogComponent,
-    SignupDialogComponent
+    SignupDialogComponent,
+    SignupConfirmationComponent
   ],
   imports: [
     BrowserModule,

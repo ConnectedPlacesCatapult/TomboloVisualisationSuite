@@ -13,6 +13,7 @@ import {MapEditorComponent} from './map-editor/map-editor.component';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
 import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
+import {SignupConfirmationComponent} from './auth/signup-confirmation/signup-confirmation.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,11 @@ const routes: Routes = [
   {
     path: 'signup',
     component: SignupDialogComponent,
+    outlet: 'loginBox'
+  },
+  {
+    path: 'signupconfirm',
+    component: SignupConfirmationComponent,
     outlet: 'loginBox'
   },
   { path: '',

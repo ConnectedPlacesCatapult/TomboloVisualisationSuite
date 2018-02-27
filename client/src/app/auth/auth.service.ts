@@ -22,6 +22,12 @@ export class AuthService {
     return this._user$.asObservable();
   }
 
+  /**
+   * Log in with email and password
+   *
+   * @param {string} email
+   * @param {string} password
+   */
   login(email: string, password: string): Promise<User> {
 
     // application/x-www-form-urlencoded form data
@@ -46,7 +52,7 @@ export class AuthService {
           // Login failed
           debug('Login failed');
           this._user$.next(null);
-          return Promise.resolve(null);
+          return Promise.reject(null);
         }
 
         return this.handleError(e);
@@ -55,7 +61,34 @@ export class AuthService {
   }
 
   signup(email: string, password: string) {
-    debug('Signing up');
+    // application/x-www-form-urlencoded form data
+    let body = new URLSearchParams();
+
+    body.set('email', email);
+    body.set('password', password);
+
+    let options = {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    };
+
+    return this.http.post<User>(`${environment.apiEndpoint}/auth/signup`, body.toString(), options)
+      .map(u => {
+        debug(`Signed up user`, u);
+        return u;
+      })
+      .catch(e => {
+
+        debug('signup error', e);
+
+        if (e instanceof HttpErrorResponse && e.status === 400) {
+          // Bad request
+          return Promise.reject(e);
+        }
+
+        // Generic handler for unknown errors
+        return this.handleError(e);
+      })
+      .toPromise();
   }
 
   loadUser(): Promise<User> {

@@ -20,6 +20,7 @@ export class User extends Model<User> implements UserBase {
   @Column({
     type: DataType.TEXT,
     unique: true,
+    allowNull: false,
     validate: {
       isEmail: true
     }
@@ -34,14 +35,12 @@ export class User extends Model<User> implements UserBase {
 
  @Column({
     type: DataType.TEXT,
-    field: 'last_name',
-    allowNull: true
+    field: 'last_name'
   })
   lastName: string;
 
   @Column({
-    type: DataType.TEXT,
-    allowNull: true
+    type: DataType.TEXT
   })
   password: string;
 

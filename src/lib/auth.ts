@@ -6,9 +6,19 @@ import {Express} from 'express';
 import * as passport from 'passport';
 import {AuthenticateOptions} from 'passport';
 import {User} from '../db/models/User';
+import {UniqueConstraintError} from 'sequelize';
 
 const FacebookStrategy = require('passport-facebook').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+
+export class AuthenticationError extends Error {
+  constructor(message: string, public status: number = 400) {
+    super(message);
+
+    // Set the prototype explicitly - required in Typescript when extending a built-in like Error
+    Object.setPrototypeOf(this, AuthenticationError.prototype);
+  }
+}
 
 /**
  * AuthenticationService configuration object
@@ -99,6 +109,35 @@ export class AuthService {
       });
 
     })(req, res, next);
+  }
+
+  async localSignup(email: string, firstName: string, lastName, password: string): Promise<User> {
+
+    if (!password) throw new AuthenticationError('Password must not be null');
+
+    try {
+      const encryptedPassword = await this.encryptPassword(password);
+      const user = await User.create<User>({
+        email,
+        firstName,
+        lastName,
+        password: encryptedPassword
+      });
+
+      return user;
+    }
+    catch (e) {
+      if (e instanceof UniqueConstraintError) {
+        throw new AuthenticationError(`User with email ${email} is already registered`);
+      }
+
+      if (e.name === 'SequelizeValidationError') {
+        throw new AuthenticationError(e.message);
+      }
+
+      // Unrecognised error - rethrow
+      throw e;
+    }
   }
 
   authenticate(strategy: string, options?: AuthenticateOptions): any {
