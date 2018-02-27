@@ -7,6 +7,8 @@ import * as passport from 'passport';
 import {AuthenticateOptions} from 'passport';
 import {User} from '../db/models/User';
 import {UniqueConstraintError} from 'sequelize';
+import {Mailer} from './mailer';
+import * as uuidv4 from 'uuid/v4';
 
 const FacebookStrategy = require('passport-facebook').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
@@ -31,10 +33,10 @@ export interface AuthenticationServiceConfig {
 }
 
 function ServiceFactory() {
-  let logger = Container.get(LoggerService);
+  const logger = Container.get(LoggerService);
+  const mailer = Container.get(Mailer);
 
-
-  return new AuthService(logger, config.get('auth'));
+  return new AuthService(logger, mailer, config.get('auth'));
 }
 
 
@@ -60,8 +62,8 @@ export class AuthService {
 
   config: AuthenticationServiceConfig;
 
-  constructor(private logger: Logger, private options: any) {
-    this.config = {...AuthService.defaultConfig, ...config};
+  constructor(private logger: Logger, private mailer: Mailer, private options: any) {
+    this.config = {...AuthService.defaultConfig, ...options};
   }
 
   /* Call at app startup to initialize passport */
@@ -111,7 +113,7 @@ export class AuthService {
     })(req, res, next);
   }
 
-  async localSignup(email: string, firstName: string, lastName, password: string): Promise<User> {
+  async localSignup(email: string, password: string, firstName: string, lastName, newsletters: boolean): Promise<User> {
 
     if (!password) throw new AuthenticationError('Password must not be null');
 
@@ -119,9 +121,10 @@ export class AuthService {
       const encryptedPassword = await this.encryptPassword(password);
       const user = await User.create<User>({
         email,
+        password: encryptedPassword,
         firstName,
         lastName,
-        password: encryptedPassword
+        newsletters
       });
 
       return user;
@@ -136,8 +139,52 @@ export class AuthService {
       }
 
       // Unrecognised error - rethrow
+      this.logger.error('Signup error', e);
       throw e;
     }
+  }
+
+  /**
+   * Send signup confirmation email with verification link
+   *
+   * @param {string} email - email of user to send link to
+   * @param {string} redirectUrl - relative url to redirect to once verification has occured
+   */
+  async sendSignupConfirmation(email: string, redirectUrl: string): Promise<User> {
+    let user = await User.findOne<User>({where: {email}});
+
+    if (!user) {
+      throw new AuthenticationError('User not found', 500);
+    }
+
+    const verificationToken = uuidv4();
+
+    user = await user.update({verificationToken: verificationToken});
+
+    const context = {
+      user,
+      redirectUrl
+    };
+
+    await this.mailer.sendMail(user.email, 'Welcome to Tombolo!', 'confirmation.html', context);
+
+    return user;
+  }
+
+  /**
+   * Verify user email address using verification token supplied in sign-up email
+   *
+   * @param {string} token
+   * @returns {Promise<User>}
+   */
+  async confirmEmail(token: string): Promise<User> {
+    let user = await User.findOne<User>({where: {verificationToken: token}});
+
+    if (!user) {
+      throw new AuthenticationError('Verification token not found');
+    }
+
+    return await user.update({emailVerified: true, verificationToken: null});
   }
 
   authenticate(strategy: string, options?: AuthenticateOptions): any {
@@ -183,7 +230,7 @@ export class AuthService {
   }
 
   /**
-   * Verify a previously encrypted password
+   * Verify an encrypted password
    */
   validatePassword(password, encryptedPassword): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -206,6 +253,13 @@ export class AuthService {
     });
   }
 
+  /**
+   * Passport callback for local strategy
+   *
+   * @param {string} username
+   * @param {string} password
+   * @param done
+   */
   private localCallback(username: string, password: string, done) {
 
     User.findOne<User>({where: {email: username}})
@@ -221,6 +275,14 @@ export class AuthService {
       .catch(e => done(e));
   }
 
+  /**
+   * Passport callback for Facebook strategy
+   *
+   * @param accessToken
+   * @param refreshToken
+   * @param profile
+   * @param done
+   */
   private facebookCallback(accessToken, refreshToken, profile, done) {
 
     this.logger.info(profile);
@@ -255,7 +317,4 @@ export class AuthService {
       })
       .catch(e => done(e));
   }
-
-
-
 }

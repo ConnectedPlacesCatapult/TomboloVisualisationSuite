@@ -41,10 +41,12 @@ import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
 import {PostgisTileRenderer} from './lib/tile-renderers/postgis-tile-renderer';
 import {AuthService} from './lib/auth';
+import {Mailer} from './lib/mailer';
 
 const logger = Container.get(LoggerService);
 const tileRendererService = Container.get(TileRendererService);
 const auth = Container.get(AuthService);
+const mailer = Container.get(Mailer);
 
 const app = express();
 const guard = expressJwtPermissions();
@@ -155,6 +157,13 @@ Container.get(DB).checkConnection()
     logger.error('Could connect to database', e);
     process.exit(1);
   });
+
+//////////////////////////////////////////////////////////////////////////
+// Check Mailer
+Container.get(Mailer)
+  .checkConnection()
+  .catch (e => process.exit(1));
+
 
 //////////////////////////////////////////////////////////////////////////
 // SIGINT handler - exit cleanly

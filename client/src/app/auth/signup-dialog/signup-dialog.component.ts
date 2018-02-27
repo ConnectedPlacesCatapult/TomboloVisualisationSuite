@@ -57,7 +57,7 @@ export class SignupDialogComponent implements OnInit {
       return;
     }
 
-    this.authService.signup(this.signupForm.get('email').value, this.signupForm.get('password').value)
+    this.authService.signup(this.signupForm.value)
       .then(user => this.router.navigate([{outlets: {'loginBox': 'signupconfirm'}}]))
       .catch((e) => this.errorMessage = e.message);
   }

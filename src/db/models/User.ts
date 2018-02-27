@@ -50,6 +50,25 @@ export class User extends Model<User> implements UserBase {
   })
   facebookId: string;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  newsletters: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'email_verified',
+    defaultValue: false
+  })
+  emailVerified: boolean;
+
+  @Column({
+    type: DataType.UUID,
+    field: 'verification_token'
+  })
+  verificationToken: string;
+
   @HasMany(() => Dataset)
   datasets: Dataset[];
 

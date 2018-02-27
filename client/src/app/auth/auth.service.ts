@@ -60,12 +60,13 @@ export class AuthService {
       .toPromise();
   }
 
-  signup(email: string, password: string) {
+  signup(data: object) {
     // application/x-www-form-urlencoded form data
     let body = new URLSearchParams();
 
-    body.set('email', email);
-    body.set('password', password);
+    Object.keys(data).forEach(key => {
+      body.set(key, data[key]);
+    });
 
     let options = {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')

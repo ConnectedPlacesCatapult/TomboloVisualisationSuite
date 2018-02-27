@@ -35,7 +35,9 @@ uploadPath = "/uploads"
 maxFileSize = 52428800 # 50 MB
 
 [auth]
-sessionSecret = "fjdkjer994ks"
+secret = "changethis!"
+sessionSecret = "changethis!"
+
 
 [auth.facebook]
 clientId = "147217102619899"
@@ -50,3 +52,16 @@ socialMediaTags = "tombolo, emuanalytics"
 googleAnalyticsUserId = "UA-79725616-5"
 
 
+[emailTemplates]
+from = "tombolo@emu-analytics.net"
+basePath = "./email-templates"
+baseLinkUrl = "http://localhost:4200"
+
+[smtp]
+host = 'smtp.mailgun.org'
+port = 587
+secure = false
+
+[smtp.auth]
+user = 'postmaster@server.net'
+pass ='changethis!'

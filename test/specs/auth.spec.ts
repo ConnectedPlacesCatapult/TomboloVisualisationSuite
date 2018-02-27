@@ -4,6 +4,7 @@ import {Container} from 'typedi';
 import {DB} from '../../src/db/index';
 import * as sequelize from 'sequelize';
 import {AuthService} from '../../src/lib/auth';
+import {Mailer} from '../../src/lib/mailer';
 
 
 describe('Authentication Service', () => {
@@ -26,8 +27,10 @@ describe('Authentication Service', () => {
     }
   };
 
+  const mockMailer: Mailer = {} as Mailer;
+
   beforeEach(() => {
-    authService = new AuthService(mockLocker, config.get('auth'));
+    authService = new AuthService(mockLocker, mockMailer, config.get('auth'));
   });
 
   describe('Authentication Service', () => {
