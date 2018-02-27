@@ -44,8 +44,8 @@ import {RegisterIcons} from './tombolo-theme/icons';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {MapControlsComponent} from './map-controls/map-controls.component';
 import {LoginControlsComponent} from './auth/login-controls/login-controls.component';
-import {LoginComponent} from './auth/login-component/login.component';
-import {SignupComponent} from './auth/signup-component/signup.component';
+import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
+import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -78,8 +78,8 @@ export function AppConfigFactory(configService: ConfigService) {
     IconsDemoComponent,
     MapControlsComponent,
     LoginControlsComponent,
-    LoginComponent,
-    SignupComponent
+    LoginDialogComponent,
+    SignupDialogComponent
   ],
   imports: [
     BrowserModule,

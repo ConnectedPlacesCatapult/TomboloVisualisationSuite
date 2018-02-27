@@ -11,7 +11,7 @@ const debug = Debug('tombolo:maps-demo');
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss', '../auth-panel.scss']
 })
-export class SignupComponent implements OnInit {
+export class SignupDialogComponent implements OnInit {
 
   @HostBinding('class.auth-panel-component') authPanelComponentClass = true;
 

@@ -1,0 +1,21 @@
+<h3 class="mat-h3">Login <button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
+<p class="mat-body">Not a member?</p>
+<button mat-button (click)="signup()"><mat-icon svgIcon="signup"></mat-icon>Sign up</button>
+<br/>
+<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Log in with Facebook</a><br/>
+<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Log in with Twitter</a><br/>
+<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Log in with Google</a><br/>
+
+<p class="mat-body">Or log in with email</p>
+
+<form>
+  <mat-form-field>
+    <input matInput placeholder="Email address">
+  </mat-form-field>
+  <mat-form-field>
+    <input type="password" matInput placeholder="Password">
+  </mat-form-field>
+  <button mat-raised-button>Log in </button>
+</form>
+
+<p  class="mat-body">Forgot <a href="">password</a>?</p>

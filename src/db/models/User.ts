@@ -1,13 +1,14 @@
 import {Column, DataType, HasMany, Model, Table, Unique} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
 import * as sequelize from 'sequelize';
+import {UserBase} from '../../shared/user-base';
 
 @Table({
   tableName: 'users',
   timestamps: true,
   version: true
 })
-export class User extends Model<User> {
+export class User extends Model<User> implements UserBase {
 
   @Column({
     type: DataType.UUID,
@@ -37,6 +38,12 @@ export class User extends Model<User> {
     allowNull: true
   })
   lastName: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true
+  })
+  password: string;
 
   @Column({
     type: DataType.TEXT,

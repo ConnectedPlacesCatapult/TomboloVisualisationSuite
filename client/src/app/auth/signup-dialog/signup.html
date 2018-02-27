@@ -1,10 +1,10 @@
 <h3 class="mat-h3">Sign Up <button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
 <p class="mat-body">Already a member?</p>
-<button mat-icon-button (click)="login()"><mat-icon svgIcon="login"></mat-icon>Log in</button>
+<button mat-button (click)="login()"><mat-icon svgIcon="login"></mat-icon>Log in</button>
 <br/>
-<button mat-icon-button><mat-icon svgIcon="signup"></mat-icon>Sign up with Facebook</button><br/>
-<button mat-icon-button><mat-icon svgIcon="signup"></mat-icon>Sign up with Twitter</button><br/>
-<button mat-icon-button><mat-icon svgIcon="signup"></mat-icon>Sign up in with Google</button><br/>
+<a mat-button><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Sign up with Facebook</a><br/>
+<a mat-button><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Sign up with Twitter</a><br/>
+<a mat-button><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Sign up in with Google</a><br/>
 
 <p class="mat-body">Or sign up with email</p>
 
@@ -18,11 +18,14 @@
   <mat-form-field>
     <input type="password" matInput placeholder="Confirm password">
   </mat-form-field>
+
+  <p class="mat-body"><mat-checkbox></mat-checkbox>Yes, I want to receive Tombolo newsletters</p>
+
+  <button mat-raised-button>Sign Up</button>
+
 </form>
 
-<p class="mat-body"><mat-checkbox></mat-checkbox>Yes, I want to receive Tombolo newsletters</p>
 
-<button mat-raised-button>Sign Up</button>
 
 
 <p  class="mat-caption">By clicking Sing Up, you accept our <a href="">Membership Agreement</a></p>

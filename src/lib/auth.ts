@@ -7,6 +7,7 @@ import {AuthenticateOptions} from 'passport';
 import {User} from '../db/models/User';
 
 const FacebookStrategy = require('passport-facebook').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
@@ -22,6 +23,10 @@ export class AuthService {
 
 
   init(app: Express) {
+
+    passport.use(new LocalStrategy({
+
+      }, this.localCallback.bind(this)));
 
     passport.use(new FacebookStrategy({
       clientID: this.options.facebook.clientId,
@@ -47,7 +52,13 @@ export class AuthService {
   }
 
   authenticate(strategy: string, options?: AuthenticateOptions): any {
-    return passport.authenticate(strategy, options);
+    return passport.authenticate(strategy, options, (err, user, info) => {
+      this.logger.debug('auth', err, user, info);
+    });
+  }
+
+  private localCallback(username: string, password: string, done) {
+    this.logger.debug(`Logging in with username: ${username}, password: ${password}`);
   }
 
   private facebookCallback(accessToken, refreshToken, profile, done) {

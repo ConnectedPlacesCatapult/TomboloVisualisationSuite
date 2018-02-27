@@ -11,8 +11,8 @@ import {MapInfoComponent} from './map-info/map-info.component';
 import {MapExportComponent} from "./map-export/map-export.component";
 import {MapEditorComponent} from './map-editor/map-editor.component';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
-import {LoginComponent} from './auth/login-component/login.component';
-import {SignupComponent} from './auth/signup-component/signup.component';
+import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
+import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
 
 const routes: Routes = [
   {
@@ -55,12 +55,12 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent,
+    component: LoginDialogComponent,
     outlet: 'loginBox'
   },
   {
     path: 'signup',
-    component: SignupComponent,
+    component: SignupDialogComponent,
     outlet: 'loginBox'
   },
   { path: '',

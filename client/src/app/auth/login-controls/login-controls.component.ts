@@ -3,6 +3,8 @@ import * as Debug from 'debug';
 
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
+import {AuthService} from '../auth.service';
+import {User} from '../user';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -14,12 +16,21 @@ const debug = Debug('tombolo:maps-demo');
 export class LoginControlsComponent implements OnInit {
 
 
-  constructor(private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService) {}
 
   private _subs: Subscription[] = [];
 
+  user: User = null;
+
   ngOnInit() {
 
+    this._subs.push(this.authService.user$().subscribe(user => {
+      this.user = user;
+    }));
+
+    this.authService.loadUser();
   }
 
   ngOnDestroy() {
