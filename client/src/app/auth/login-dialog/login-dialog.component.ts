@@ -3,6 +3,8 @@ import * as Debug from 'debug';
 
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../auth.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -17,12 +19,22 @@ export class LoginDialogComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private router: Router) {}
+    private router: Router,
+    private authService: AuthService) {}
+
+  loginForm: FormGroup;
+  errorMessage: string;
+
 
   private _subs: Subscription[] = [];
 
   ngOnInit() {
+    this.loginForm = new FormGroup({
+      email: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required)
+    });
 
+    this._subs.push(this.loginForm.valueChanges.subscribe(() => this.errorMessage = null));
   }
 
   ngOnDestroy() {
@@ -37,4 +49,15 @@ export class LoginDialogComponent implements OnInit {
     this.router.navigate([{outlets: {'loginBox': null}}]);
   }
 
+  login() {
+    this.authService.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
+      .then(user => {
+        if (user) {
+          this.router.navigate([{outlets: {'loginBox': null}}]);
+        }
+        else {
+          this.errorMessage = 'Invalid email or password';
+        }
+      });
+  }
 }

@@ -53,4 +53,14 @@ export class User extends Model<User> implements UserBase {
 
   @HasMany(() => Dataset)
   datasets: Dataset[];
+
+  // Return representation safe for sending to client
+  get clientSafeUser() {
+    return {
+      id: this.id,
+      email: this.email,
+      firstName: this.firstName,
+      lastName: this.lastName
+    };
+  }
 }

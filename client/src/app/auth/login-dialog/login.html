@@ -8,14 +8,15 @@
 
 <p class="mat-body">Or log in with email</p>
 
-<form>
+<form [formGroup]="loginForm">
   <mat-form-field>
-    <input matInput placeholder="Email address">
+    <input matInput placeholder="Email address" formControlName="email">
   </mat-form-field>
   <mat-form-field>
-    <input type="password" matInput placeholder="Password">
+    <input type="password" matInput placeholder="Password" formControlName="password">
   </mat-form-field>
-  <button mat-raised-button>Log in </button>
+  <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
+  <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid">Log in </button>
 </form>
 
 <p  class="mat-body">Forgot <a href="">password</a>?</p>

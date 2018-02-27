@@ -37,4 +37,7 @@ export class LoginControlsComponent implements OnInit {
     this._subs.forEach(sub => sub.unsubscribe());
   }
 
+  logout() {
+    this.authService.logOut();
+  }
 }

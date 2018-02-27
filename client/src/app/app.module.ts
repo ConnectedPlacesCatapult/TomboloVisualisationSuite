@@ -46,6 +46,7 @@ import {MapControlsComponent} from './map-controls/map-controls.component';
 import {LoginControlsComponent} from './auth/login-controls/login-controls.component';
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
 import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
+import {AuthService} from './auth/auth.service';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -109,6 +110,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapRegistry,
     MapService,
     TooltipRenderService,
+    AuthService,
     {
       // Load app config at startup
       provide: APP_INITIALIZER,

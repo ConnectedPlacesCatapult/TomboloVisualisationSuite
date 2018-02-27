@@ -26,7 +26,6 @@ describe('Authentication Service', () => {
     }
   };
 
-
   beforeEach(() => {
     authService = new AuthService(mockLocker, config.get('auth'));
   });
@@ -36,6 +35,35 @@ describe('Authentication Service', () => {
     it('should exist', () => {
       expect(authService).toBeDefined();
     });
-  });
 
+    it('should encrypt a password', (done) => {
+      authService.encryptPassword('password').then(encryptedPassword => {
+        expect(encryptedPassword.length).toBe(76);
+        done();
+      });
+    });
+
+    it('should verify a password', (done) => {
+      authService.encryptPassword('password')
+        .then(encryptedPassword => {
+          return authService.validatePassword('password', encryptedPassword);
+        })
+        .then(verified => {
+          expect(verified).toBeTruthy();
+          done();
+        });
+    });
+
+    it('should not verify an incorrect password', (done) => {
+      authService.encryptPassword('password')
+        .then(encryptedPassword => {
+          return authService.validatePassword('wrongpassword', encryptedPassword);
+        })
+        .then(verified => {
+          expect(verified).toBeFalsy();
+          done();
+        });
+    });
+
+  });
 });

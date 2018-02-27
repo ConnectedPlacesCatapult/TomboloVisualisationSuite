@@ -4,6 +4,7 @@
 </div>
 
 <div *ngIf="user" class="button-box">
-  <span class="username">Robin Summerhill</span>
+  <span class="username">{{user.email}}</span>
+  <button mat-icon-button (click)="logout()"><mat-icon svgIcon="user"></mat-icon>Log Out</button>
   <button mat-icon-button [routerLink]="['/', {outlets: {'loginBox': ['signup']}}]"><mat-icon svgIcon="user"></mat-icon>My Account</button>
 </div>
