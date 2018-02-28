@@ -92,6 +92,82 @@ export class AuthService {
       .toPromise();
   }
 
+  /**
+   * Send a password reset email to the specified user
+   *
+   * @param {string} email
+   */
+  resetPassword(email: string): Promise<User> {
+    let body = new URLSearchParams();
+
+    body.set('email', email);
+
+    let options = {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    };
+
+    return this.http.post<User>(`${environment.apiEndpoint}/auth/resetpassword`, body.toString(), options)
+      .map(u => {
+        debug(`Sent reset password email`, u);
+        return u;
+      })
+      .catch(e => {
+
+        debug('Password reset error', e);
+
+        if (e instanceof HttpErrorResponse && e.status === 400) {
+          // Bad request
+          return Promise.reject(e);
+        }
+
+        // Generic handler for unknown errors
+        return this.handleError(e);
+      })
+      .toPromise();
+  }
+
+  /**
+   * Change password
+   *
+   * Requires a password reset token delivered by email
+   *
+   * @param {string} email
+   * @param {string} password
+   * @param {string} token
+   */
+  changePassword(email: string, password: string, token: string): Promise<User> {
+
+    // application/x-www-form-urlencoded form data
+    let body = new URLSearchParams();
+
+    body.set('email', email);
+    body.set('password', password);
+    body.set('token', token);
+
+    let options = {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+    };
+
+    return this.http.post<User>(`${environment.apiEndpoint}/auth/changepassword`, body.toString(), options)
+      .map(u => {
+        debug(`Changed password`, u);
+        return u;
+      })
+      .catch(e => {
+
+        debug('Password change error', e);
+
+        if (e instanceof HttpErrorResponse && e.status === 400) {
+          // Bad request
+          return Promise.reject(e);
+        }
+
+        // Generic handler for unknown errors
+        return this.handleError(e);
+      })
+      .toPromise();
+  }
+
   loadUser(): Promise<User> {
     return this.http.get<User>(`${environment.apiEndpoint}/auth/me`)
       .map(user => {

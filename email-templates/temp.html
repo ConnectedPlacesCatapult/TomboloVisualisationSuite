@@ -570,9 +570,9 @@
                         
                         <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
                         
-                            <p>Welcome {{user.firstName}},<br>
+                            <p>Hello {{user.firstName}},<br>
 <br>
-You have created a Tombolo account. Click on the button below to confirm your email address.<br>
+You have requested to reset your Tombolo password. Click on the button below to change your password.<br>
 <br>
 Best regards,<br>
 The team at Emu Analytics</p>
@@ -617,7 +617,7 @@ The team at Emu Analytics</p>
                     <tbody>
                         <tr>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                <a class="mcnButton " title="Confirm Email" href="{{{baseLinkUrl}}}/api/v1/auth/confirmesignup?redirect={{redirectUrl}}&amp;token={{user.verificationToken}}" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Confirm Email</a>
+                                <a class="mcnButton " title="Reset Password" href="{{{baseLinkUrl}}}/api/v1/auth/confirmreset?redirect={{redirectUrl}}&amp;token={{user.passwordResetToken}}" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Reset Password</a>
                             </td>
                         </tr>
                     </tbody>

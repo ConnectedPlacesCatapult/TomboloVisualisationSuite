@@ -33,9 +33,8 @@ import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
-import AuthRouter from './routes/auth/auth';
 import AuthSocialRouter from './routes/auth/social';
-import AuthAPIRouter from './routes/api/auth';
+import AuthRouter from './routes/api/auth';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
@@ -92,11 +91,10 @@ auth.init(app);
 app.use('/api/v1/config', ConfigRouter);
 app.use('/api/v1/bookmarks', BookmarksRouter);
 app.use('/api/v1/uploads', UploadsRouter);
-app.use('/api/v1/auth', AuthAPIRouter);
+app.use('/api/v1/auth', AuthRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);
-app.use('/auth', AuthRouter);
 app.use('/auth/social', AuthSocialRouter);
 
 // Redirect to index.html for Angular routes

@@ -53,4 +53,5 @@ export class LoginDialogComponent implements OnInit {
       .then(user => this.router.navigate([{outlets: {'loginBox': null}}]))
       .catch(() => this.errorMessage = 'Invalid email or password');
   }
+
 }

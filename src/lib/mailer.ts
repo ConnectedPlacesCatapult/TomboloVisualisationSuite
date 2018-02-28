@@ -38,7 +38,9 @@ export interface MailerConfig {
 function mailerFactory() {
   let logger = Container.get(LoggerService);
   let transporter = nodemailer.createTransport(config.get('smtp'));
-  return new Mailer(transporter, logger, config.get('emailTemplates'));
+  const baseLinkUrl = config.get('server.baseUrl');
+  const mailerConfig = config.get('emailTemplates');
+  return new Mailer(transporter, logger, baseLinkUrl, mailerConfig);
 }
 
 /**
@@ -54,7 +56,7 @@ export class Mailer {
 
   private config: MailerConfig;
 
-  constructor(private transporter: Transporter, private logger: Logger, config: MailerConfig) {
+  constructor(private transporter: Transporter, private logger: Logger, private baseLinkUrl: string, config: MailerConfig) {
     this.config = {...Mailer.defaultConfig, ...config};
   }
 
@@ -69,7 +71,7 @@ export class Mailer {
   async sendMail(to: string, subject: string, templatePath: string, context: object): Promise<SentMessageInfo> {
 
     const template = await this.loadTemplate(templatePath);
-    const renderedMessage = Handlebars.compile(template)({baseLinkUrl: this.config.baseLinkUrl, ...context});
+    const renderedMessage = Handlebars.compile(template)({baseLinkUrl: this.baseLinkUrl, ...context});
 
     const messageEnvelope = {
       from: this.config.from,

@@ -16,7 +16,7 @@
     <input type="password" matInput placeholder="Password" formControlName="password">
   </mat-form-field>
   <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
-  <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid">Log in </button>
+  <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid">Log in</button>
 </form>
 
-<p  class="mat-body">Forgot <a href="">password</a>?</p>
+<p  class="mat-body">Forgot <a [routerLink]="['/',{outlets:{loginBox:['resetpassword']}}]">password</a>?</p>

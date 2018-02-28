@@ -13,7 +13,9 @@ import {MapEditorComponent} from './map-editor/map-editor.component';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
 import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
-import {SignupConfirmationComponent} from './auth/signup-confirmation/signup-confirmation.component';
+import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/signup-confirmation.component';
+import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
+import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
 
 const routes: Routes = [
   {
@@ -25,7 +27,7 @@ const routes: Routes = [
     component: BasemapDemoComponent
   },
   {
-    path: 'mapdemo',
+    path: 'view',
     component: MapsDemoComponent
   },
   {
@@ -65,12 +67,22 @@ const routes: Routes = [
     outlet: 'loginBox'
   },
   {
+    path: 'resetpassword',
+    component: ResetPasswordDialogComponent,
+    outlet: 'loginBox'
+  },
+  {
+    path: 'changepassword',
+    component: ChangePasswordDialogComponent,
+    outlet: 'loginBox'
+  },
+  {
     path: 'signupconfirm',
     component: SignupConfirmationComponent,
     outlet: 'loginBox'
   },
   { path: '',
-    redirectTo: '/mapdemo',
+    redirectTo: '/view',
     pathMatch: 'full'
   }
 ];

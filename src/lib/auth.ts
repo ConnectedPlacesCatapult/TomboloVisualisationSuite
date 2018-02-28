@@ -184,12 +184,41 @@ export class AuthService {
   }
 
   /**
+   * Send password reset email
+   *
+   * @param {string} email - email of user to send link to
+   * @param {string} redirectUrl - relative url to redirect to once verification has occured
+   */
+  async sendPasswordReset(email: string, redirectUrl: string): Promise<User> {
+    let user = await User.findOne<User>({where: {email}});
+
+    if (!user) {
+      throw new AuthenticationError('User not found', 500);
+    }
+
+    const resetToken = uuidv4();
+
+    user = await user.update({passwordResetToken: resetToken});
+
+    // Append token to redirect URL
+    const context = {
+      user,
+      redirectUrl: redirectUrl
+    };
+
+    await this.mailer.sendMail(user.email, 'Reset your Tombolo password', 'reset.html', context);
+
+    return user;
+  }
+
+
+  /**
    * Verify user email address using verification token supplied in sign-up email
    *
    * @param {string} token
    * @returns {Promise<User>}
    */
-  async confirmEmail(token: string): Promise<User> {
+  async confirmSignup(token: string): Promise<User> {
     let user = await User.findOne<User>({where: {verificationToken: token}});
 
     if (!user) {
@@ -197,6 +226,22 @@ export class AuthService {
     }
 
     return await user.update({emailVerified: true, verificationToken: null});
+  }
+
+  async changePassword(email: string, password: string, token: string): Promise<User> {
+
+    console.log('Changing password', email, password, token);
+
+
+    let user = await User.findOne<User>({where: {email, passwordResetToken: token}});
+
+    if (!user) {
+      throw new AuthenticationError('Password reset token not found');
+    }
+
+    password = await this.encryptPassword(password);
+
+    return await user.update({password, passwordResetToken: null});
   }
 
   authenticate(strategy: string, options?: AuthenticateOptions): any {
@@ -274,6 +319,7 @@ export class AuthService {
    */
   private localCallback(username: string, password: string, done) {
 
+    // Login is only valid if email is verified and password matches
     User.findOne<User>({where: {email: username, emailVerified: true} as any})
       .then(user => {
 

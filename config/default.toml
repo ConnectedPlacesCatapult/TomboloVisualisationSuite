@@ -38,7 +38,6 @@ maxFileSize = 52428800 # 50 MB
 secret = "changethis!"
 sessionSecret = "changethis!"
 
-
 [auth.facebook]
 clientId = "147217102619899"
 clientSecret = "1deb1f9d17a53f41ddce510a9c47c109"
@@ -51,11 +50,9 @@ socialMediaDescription = "Check out this amazing map I built with Tombolo!"
 socialMediaTags = "tombolo, emuanalytics"
 googleAnalyticsUserId = "UA-79725616-5"
 
-
 [emailTemplates]
 from = "tombolo@emu-analytics.net"
 basePath = "./email-templates"
-baseLinkUrl = "http://localhost:4200"
 
 [smtp]
 host = 'smtp.mailgun.org'

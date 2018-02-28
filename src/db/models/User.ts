@@ -69,6 +69,12 @@ export class User extends Model<User> implements UserBase {
   })
   verificationToken: string;
 
+  @Column({
+    type: DataType.UUID,
+    field: 'password_reset_token'
+  })
+  passwordResetToken: string;
+
   @HasMany(() => Dataset)
   datasets: Dataset[];
 
