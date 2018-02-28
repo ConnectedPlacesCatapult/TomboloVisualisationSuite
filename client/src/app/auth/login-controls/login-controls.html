@@ -1,0 +1,11 @@
+<div *ngIf="!user" class="button-box">
+  <button mat-icon-button disableRipple [routerLink]="['/', {outlets: {'loginBox': 'login', rightBar: null}}]"><mat-icon svgIcon="login"></mat-icon>Log In</button>
+  <button mat-icon-button disableRipple [routerLink]="['/', {outlets: {'loginBox': 'signup', rightBar: null}}]"><mat-icon svgIcon="signup"></mat-icon>Sign Up</button>
+  <button mat-icon-button disableRipple [routerLink]="['/', {outlets: {'rightBar': 'accountinfo'}}]"><mat-icon svgIcon="info"></mat-icon>Account Benefits</button>
+</div>
+
+<div *ngIf="user" class="button-box">
+  <span class="username">{{user.email}}</span>
+  <button mat-icon-button (click)="logout()"><mat-icon svgIcon="user"></mat-icon>Log Out</button>
+  <button mat-icon-button [routerLink]="['/', {outlets: {'loginBox': ['myaccount']}}]"><mat-icon svgIcon="user"></mat-icon>My Account</button>
+</div>

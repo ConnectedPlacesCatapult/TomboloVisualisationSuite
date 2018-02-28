@@ -6,7 +6,7 @@
 | AccessToServices | Events related to the *Access To Services* portion of the application. |
 | CityIndices | Events related to the *City Indices* portion of the application. |
 | ExportShare | Events related to exporting or sharing a map. |
-| SignUp | Events related to creating a user account. |
+| Account | Events related to accounts. |
 | TomboloPlayground | Events related to the *Tombolo Playground* portion of the application. |
 
 # Actions
@@ -25,3 +25,11 @@
 | ShareLinkedin | ExportShare | Share a map on Linkedin
 | ShareGooglePlus | ExportShare | Share a map on Google+
 | ShareEmail | ExportShare | Share a map through Email.
+| Account | Login | User logged in
+| Account | LoginFail | User failed to log in
+| Account | SignUp | User signed up
+| Account | SignUpFail | Sign up failed
+| Account | ResetPassword | User requested password reset
+| Account | ResetPasswordFail | User password reset failed
+| Account | ChangePassword | User changed password
+| Account | ChangePasswordFail | User password change failed

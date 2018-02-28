@@ -19,7 +19,10 @@ import * as exphbs from 'express-handlebars';
 import * as path from 'path';
 import * as cors from 'cors';
 import * as compression from 'compression';
-import * as expressJwtPermissions from 'express-jwt-permissions';
+import * as session from 'express-session';
+
+// initalize sequelize with session store
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 import {Container} from 'typedi';
 import {LoggerService} from './lib/logger';
@@ -32,16 +35,21 @@ import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
+import AuthRouter from './routes/api/auth';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
 import {PostgisTileRenderer} from './lib/tile-renderers/postgis-tile-renderer';
-
+import {AuthService} from './lib/auth';
+import {Mailer} from './lib/mailer';
 
 const logger = Container.get(LoggerService);
 const tileRendererService = Container.get(TileRendererService);
+const auth = Container.get(AuthService);
+const db = Container.get(DB);
+const mailer = Container.get(Mailer);
+
 const app = express();
-const guard = expressJwtPermissions();
 
 // Configure Handlebars views
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -64,17 +72,31 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(boolParser());
 app.use(cookieParser());
 app.use(compression());
+
 app.use(jwt({
   secret: config.get('jwt.secret'),
   credentialsRequired: false
 }));
 
+app.use(session({
+  secret: config.get('auth.sessionSecret'),
+  store: new SequelizeStore({
+    db: db.sequelize
+  }),
+  resave: false, // we support the touch method so per the express-session docs this should be set to false
+  proxy: true // if you do SSL outside of node.
+}));
+
+//////////////////////////////////////////////////////////////////////////
+// Initialise Authentication
+auth.init(app);
 
 //////////////////////////////////////////////////////////////////////////
 // Register Routes
 app.use('/api/v1/config', ConfigRouter);
 app.use('/api/v1/bookmarks', BookmarksRouter);
 app.use('/api/v1/uploads', UploadsRouter);
+app.use('/api/v1/auth', AuthRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);
@@ -111,7 +133,7 @@ if (app.get('env') === 'development') {
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   if (isApi(req)) {
-    res.json({success: false, error: err});
+    res.json({success: false,  message: err.message, error: err});
   } else {
     res.render('error', {message: err.message, error: {}, layout: false});
   }
@@ -132,11 +154,16 @@ tileRendererService.registerRenderer(['tilelive'], tileliveTileRenderer);
 
 //////////////////////////////////////////////////////////////////////////
 // Check DB
-Container.get(DB).checkConnection()
+db.checkConnection()
   .catch(e => {
     logger.error('Could connect to database', e);
     process.exit(1);
   });
+
+//////////////////////////////////////////////////////////////////////////
+// Check Mailer
+mailer.checkConnection()
+  .catch (e => process.exit(1));
 
 //////////////////////////////////////////////////////////////////////////
 // SIGINT handler - exit cleanly
