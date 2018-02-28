@@ -14,9 +14,50 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
 
+  /* Convenience style overrides */
+  .full-width {
+    width: 100% !important;
+  }
+
+  .top-margin {
+    margin-top: $g / 2 !important;
+  }
+
   a {
-    color: inherit;
+    color: mat-color($accent);
     outline: none;
+    text-decoration: none;
+  }
+
+  /* Buttons */
+  .mat-raised-button {
+    color: white;
+    background-color: mat-color($accent);
+    border-radius: $br;
+  }
+
+  // Adjust positioning of FontAwesome icons in buttons to center in 24px box
+  .mat-button, .mat-raised-button, .mat-icon-button {
+    .mat-icon.fa {
+      margin-right: 2px;
+    }
+
+    .mat-icon.fa:before {
+      position: relative;
+      top: 4px;
+    }
+  }
+
+  .button-facebook {
+    @include gradient-facebook-button();
+  }
+
+  .button-twitter {
+    @include gradient-twitter-button();
+  }
+
+  .button-google-plus {
+    @include gradient-google-button();
   }
 
   /* Sidebars */
@@ -210,6 +251,60 @@
     }
   }
 
+
+
+  /* Auth panel styling */
+  .auth-panel-component {
+
+    // Header bar styling with title and close button
+    h3 {
+      margin-top: -0.75em;
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+
+      span {
+        flex: 1 1;
+      }
+    }
+
+    // Adjust paragraph spacing
+    p {
+      margin-top: 0;
+    }
+
+    // Push checkbox text away from box
+    .mat-checkbox {
+      margin-right: 0.5em;
+    }
+
+    // Small icon button with label to right
+    .mat-icon-button {
+      @include mat-typography-level-to-styles($typography, caption);
+      color: mat-color($accent);
+      width: auto;
+
+      .mat-button-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .mat-icon {
+          padding-right: 0.1em;
+        }
+      }
+
+      &:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+    }
+
+    // Spacing for raised buttons
+    .mat-raised-button {
+      margin-bottom: $g / 2;
+    }
+  }
+
   /* Login Styling */
 
   login-controls {
@@ -241,15 +336,6 @@
         }
       }
     }
-  }
-
-  //a.mat-list-item.active, a.mat-list-item.active:hover, a.mat-list-item.active:visited, a.mat-list-item.active:focus {
-  //  background-color: mat-color($accent);
-  //  color: mat-contrast($accent, 500);
-  //}
-
-  .full-width {
-    width: 100%;
   }
 
   /* Sidebar styling */

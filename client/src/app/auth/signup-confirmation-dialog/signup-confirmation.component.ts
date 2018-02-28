@@ -9,7 +9,7 @@ const debug = Debug('tombolo:signup-confirmation');
 @Component({
   selector: 'signup-confirmation',
   templateUrl: './signup-confirmation.html',
-  styleUrls: ['./signup-confirmation.scss', '../auth-panel.scss']
+  styleUrls: ['../auth-panel.scss']
 })
 export class SignupConfirmationComponent implements OnInit {
 

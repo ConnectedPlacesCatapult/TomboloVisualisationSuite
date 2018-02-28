@@ -1,29 +1,29 @@
-<h3 class="mat-h3">Sign Up <button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
-<p class="mat-body">Already a member?</p>
-<button mat-button (click)="login()"><mat-icon svgIcon="login"></mat-icon>Log in</button>
-<br/>
-<a mat-button><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Sign up with Facebook</a><br/>
-<a mat-button><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Sign up with Twitter</a><br/>
-<a mat-button><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Sign up in with Google</a><br/>
+<h3 class="mat-h3"><span>Sign Up</span><button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
+<p class="mat-body">Already a member?
+  <br>
+  <button mat-icon-button (click)="login()"><mat-icon svgIcon="login"></mat-icon>Log in</button>
+</p>
 
-<p class="mat-body">Or sign up with email</p>
+<a mat-raised-button class="full-width button-facebook"><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Sign up with Facebook</a><br/>
+<a mat-raised-button class="full-width button-twitter"><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Sign up with Twitter</a><br/>
+<a mat-raised-button class="full-width button-google-plus"><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Sign up in with Google</a><br/>
+
+<p class="mat-body top-margin">Or sign up with email:</p>
 
 <form [formGroup]="signupForm">
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <input matInput placeholder="Email address" formControlName="email">
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <input type="password" matInput placeholder="Password" formControlName="password">
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <input type="password" matInput placeholder="Confirm password" formControlName="confirmPassword">
   </mat-form-field>
   <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
   <p class="mat-body"><mat-checkbox formControlName="newsletters"></mat-checkbox>Yes, I want to receive Tombolo newsletters</p>
-  <button mat-raised-button (click)="signup()">Sign Up</button>
+
+  <button mat-raised-button (click)="signup()" [disabled]="!signupForm.valid" class="full-width">Sign Up</button>
 </form>
 
-
-
-
-<p  class="mat-caption">By clicking Sing Up, you accept our <a href="">Membership Agreement</a></p>
+<p  class="mat-caption top-margin">By clicking signing up, you accept our <a href="">Membership Agreement</a>.</p>

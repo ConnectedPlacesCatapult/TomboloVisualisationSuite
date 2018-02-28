@@ -11,7 +11,7 @@ const debug = Debug('tombolo:signup-dialog');
 @Component({
   selector: 'signup-component',
   templateUrl: './signup.html',
-  styleUrls: ['./signup.scss', '../auth-panel.scss']
+  styleUrls: ['../auth-panel.scss']
 })
 export class SignupDialogComponent implements OnInit {
 
@@ -42,7 +42,7 @@ export class SignupDialogComponent implements OnInit {
   }
 
   login() {
-    this.router.navigate([{outlets: {'loginBox': 'login'}}]);
+    this.router.navigate(['/', {outlets: {'loginBox': 'login'}}]);
   }
 
   close() {

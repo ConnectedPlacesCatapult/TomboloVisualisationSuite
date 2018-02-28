@@ -1,22 +1,24 @@
-<h3 class="mat-h3">Login <button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
-<p class="mat-body">Not a member?</p>
-<button mat-button (click)="signup()"><mat-icon svgIcon="signup"></mat-icon>Sign up</button>
-<br/>
-<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Log in with Facebook</a><br/>
-<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Log in with Twitter</a><br/>
-<a href="/auth/social/facebook" mat-button><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Log in with Google</a><br/>
+<h3 class="mat-h3"><span>Log In</span><button mat-icon-button (click)="close()"><mat-icon svgIcon="cross"></mat-icon></button></h3>
+<p class="mat-body">Not a member?
+  <br>
+  <button mat-icon-button (click)="signup()"><mat-icon svgIcon="signup"></mat-icon>Sign up</button>
+</p>
 
-<p class="mat-body">Or log in with email</p>
+<a href="/auth/social/facebook" mat-raised-button class="full-width button-facebook"><mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>Log in with Facebook</a><br/>
+<a href="/auth/social/facebook" mat-raised-button class="full-width button-twitter"><mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>Log in with Twitter</a><br/>
+<a href="/auth/social/facebook" mat-raised-button class="full-width button-google-plus"><mat-icon fontSet="fa" fontIcon="fa-google-plus"></mat-icon>Log in with Google</a><br/>
+
+<p class="mat-body top-margin">Or log in with email:</p>
 
 <form [formGroup]="loginForm">
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <input matInput placeholder="Email address" formControlName="email">
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <input type="password" matInput placeholder="Password" formControlName="password">
   </mat-form-field>
   <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
-  <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid">Log in</button>
+  <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid" class="full-width">Log in</button>
 </form>
 
-<p  class="mat-body">Forgot <a [routerLink]="['/',{outlets:{loginBox:['resetpassword']}}]">password</a>?</p>
+<p  class="mat-body top-margin">Forgot <a [routerLink]="['/',{outlets:{loginBox:['resetpassword']}}]">password</a>?</p>

@@ -21,7 +21,9 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 @include angular-material-theme($light-theme);
 
 // Apply tombolo theme
-@include tombolo-theme($light-theme);
+tombolo-root {
+  @include tombolo-theme($light-theme);
+}
 
 // Apply dark theme variant to left sidebar
 .sidebar-left {

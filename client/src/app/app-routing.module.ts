@@ -16,6 +16,7 @@ import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.componen
 import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/signup-confirmation.component';
 import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
 import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
+import {AccountInfoComponent} from './account-info/account-info.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,11 @@ const routes: Routes = [
   {
     path: 'mapexport',
     component: MapExportComponent,
+    outlet: 'rightBar'
+  },
+  {
+    path: 'accountinfo',
+    component: AccountInfoComponent,
     outlet: 'rightBar'
   },
   {

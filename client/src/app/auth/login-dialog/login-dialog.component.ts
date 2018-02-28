@@ -11,7 +11,7 @@ const debug = Debug('tombolo:login-dialog');
 @Component({
   selector: 'login-component',
   templateUrl: './login.html',
-  styleUrls: ['./login.scss', '../auth-panel.scss']
+  styleUrls: ['../auth-panel.scss']
 })
 export class LoginDialogComponent implements OnInit {
 

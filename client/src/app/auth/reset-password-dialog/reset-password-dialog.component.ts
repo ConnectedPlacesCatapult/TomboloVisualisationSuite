@@ -11,7 +11,7 @@ const debug = Debug('tombolo:password-reset-dialog');
 @Component({
   selector: 'reset-password-component',
   templateUrl: './reset-password.html',
-  styleUrls: ['./reset-password.scss', '../auth-panel.scss']
+  styleUrls: ['../auth-panel.scss']
 })
 export class ResetPasswordDialogComponent implements OnInit {
 
