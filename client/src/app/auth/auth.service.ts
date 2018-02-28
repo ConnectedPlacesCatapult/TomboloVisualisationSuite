@@ -6,6 +6,7 @@ import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {NotificationService} from '../dialogs/notification.service';
+import {UserBase} from '../../../../src/shared/user-base';
 
 const debug = Debug('tombolo:AuthService');
 
@@ -129,9 +130,12 @@ export class AuthService {
   }
 
   loadUser(): Promise<User> {
-    return this.http.get<User>(`${environment.apiEndpoint}/auth/me`)
-      .map(user => {
+    return this.http.get<UserBase>(`${environment.apiEndpoint}/auth/me`)
+      .map(response => {
+        const user = new User(response);
+
         debug(`Loaded user: ${user.email}`);
+
         this._user$.next(user);
         return user;
       })

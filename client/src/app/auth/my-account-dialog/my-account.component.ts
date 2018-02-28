@@ -24,8 +24,18 @@ export class MyAccountDialogComponent implements OnInit {
     private analytics: Angulartics2) {}
 
   private _subs: Subscription[] = [];
+  profileForm: FormGroup;
 
   ngOnInit() {
+    this.profileForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
+      password: new FormControl('12345', Validators.required)
+    });
+
+    this.authService.loadUser().then(user => {
+      this.profileForm.patchValue({name: user.displayName, email: user.email})
+    });
   }
 
   ngOnDestroy() {
@@ -34,6 +44,10 @@ export class MyAccountDialogComponent implements OnInit {
 
   close() {
     this.router.navigate([{outlets: {'loginBox': null}}]);
+  }
+
+  changePassword() {
+    this.router.navigate(['/', {outlets:{loginBox:['resetpassword']}}]);
   }
 
 }
