@@ -1,14 +1,14 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 
-const debug = Debug('tombolo:account-info');
+const debug = Debug('tombolo:app-info');
 
 @Component({
-  selector: 'account-info',
-  templateUrl: './account-info.html',
-  styleUrls: ['./account-info.scss']
+  selector: 'app-info',
+  templateUrl: './app-info.html',
+  styleUrls: ['./app-info.scss']
 })
-export class AccountInfoComponent implements OnInit {
+export class AppInfoComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 

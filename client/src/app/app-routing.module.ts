@@ -17,6 +17,8 @@ import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/sig
 import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
 import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
 import {AccountInfoComponent} from './account-info/account-info.component';
+import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
+import {AppInfoComponent} from './app-info/app-info.component';
 
 const routes: Routes = [
   {
@@ -58,8 +60,18 @@ const routes: Routes = [
     outlet: 'rightBar'
   },
   {
+    path: 'appinfo',
+    component: AppInfoComponent,
+    outlet: 'rightBar'
+  },
+  {
     path: 'accountinfo',
     component: AccountInfoComponent,
+    outlet: 'rightBar'
+  },
+  {
+    path: 'termsandconditions',
+    component: TermsAndConditionsComponent,
     outlet: 'rightBar'
   },
   {
@@ -88,7 +100,7 @@ const routes: Routes = [
     outlet: 'loginBox'
   },
   { path: '',
-    redirectTo: '/view',
+    redirectTo: '/view(rightBar:appinfo)',
     pathMatch: 'full'
   }
 ];

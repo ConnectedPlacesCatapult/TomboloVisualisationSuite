@@ -23,6 +23,10 @@
     margin-top: $g / 2 !important;
   }
 
+  .with-padding {
+    padding: $sidebar-padding !important;
+  }
+
   a {
     color: mat-color($accent);
     outline: none;
@@ -283,6 +287,7 @@
       @include mat-typography-level-to-styles($typography, caption);
       color: mat-color($accent);
       width: auto;
+      border-radius: 0;
 
       .mat-button-wrapper {
         display: flex;
@@ -320,6 +325,7 @@
       .mat-icon-button {
         @include mat-typography-level-to-styles($typography, caption);
         width: auto;
+        border-radius: 0;
       }
 
       .mat-icon-button:hover {
@@ -374,10 +380,6 @@
 
     overflow-y: auto;
     flex: 1 1;
-
-    &.with-padding {
-      padding: $sidebar-padding;
-    }
   }
 
   .sidebar-footer {

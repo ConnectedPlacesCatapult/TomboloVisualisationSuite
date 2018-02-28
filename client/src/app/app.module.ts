@@ -51,6 +51,8 @@ import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/sig
 import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
 import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
 import {AccountInfoComponent} from './account-info/account-info.component';
+import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
+import {AppInfoComponent} from './app-info/app-info.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -88,7 +90,9 @@ export function AppConfigFactory(configService: ConfigService) {
     SignupConfirmationComponent,
     ChangePasswordDialogComponent,
     ResetPasswordDialogComponent,
-    AccountInfoComponent
+    AccountInfoComponent,
+    TermsAndConditionsComponent,
+    AppInfoComponent
   ],
   imports: [
     BrowserModule,

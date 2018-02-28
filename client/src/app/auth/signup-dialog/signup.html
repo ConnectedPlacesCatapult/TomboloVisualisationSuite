@@ -26,4 +26,4 @@
   <button mat-raised-button (click)="signup()" [disabled]="!signupForm.valid" class="full-width">Sign Up</button>
 </form>
 
-<p  class="mat-caption top-margin">By clicking signing up, you accept our <a href="">Membership Agreement</a>.</p>
+<p  class="mat-caption top-margin">By clicking signing up, you accept our <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">Membership Agreement</a>.</p>

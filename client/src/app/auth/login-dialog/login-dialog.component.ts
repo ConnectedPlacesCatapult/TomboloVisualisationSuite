@@ -45,7 +45,7 @@ export class LoginDialogComponent implements OnInit {
   }
 
   close() {
-    this.router.navigate([{outlets: {'loginBox': null}}]);
+    this.router.navigate([{outlets: {loginBox: null, rightBar: null}}]);
   }
 
   login() {
