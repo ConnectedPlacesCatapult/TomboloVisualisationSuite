@@ -3,6 +3,7 @@ import * as config from 'config';
 import {Container} from 'typedi';
 import {LoggerService} from '../../lib/logger';
 import {AuthService} from '../../lib/auth';
+import * as passport from 'passport';
 
 const logger = Container.get(LoggerService);
 const authService = Container.get(AuthService);
@@ -87,5 +88,29 @@ router.get('/confirmreset', async (req, res, next) => {
   // Add token to redirect url
   res.redirect(req.query.redirect + '?token=' + req.query.token);
 });
+
+//////////////////////////
+// Facebook Authentication
+
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email']}));
+
+router.get('/facebook/return', passport.authenticate(
+  'facebook',
+  {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  }));
+
+//////////////////////////
+// Facebook Authentication
+
+router.get('/twitter', passport.authenticate('twitter', { scope: ['email']}));
+
+router.get('/twitter/return', passport.authenticate(
+  'twitter',
+  {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  }));
 
 export default router;

@@ -51,6 +51,12 @@ export class User extends Model<User> implements UserBase {
   facebookId: string;
 
   @Column({
+    type: DataType.TEXT,
+    field: 'twitter_id'
+  })
+  twitterId: string;
+
+  @Column({
     type: DataType.BOOLEAN,
     defaultValue: false
   })

@@ -4,13 +4,13 @@ import {Logger, LoggerService} from './logger';
 import * as config from 'config';
 import {Express} from 'express';
 import * as passport from 'passport';
-import {AuthenticateOptions} from 'passport';
 import {User} from '../db/models/User';
 import {UniqueConstraintError} from 'sequelize';
 import {Mailer} from './mailer';
 import * as uuidv4 from 'uuid/v4';
 
 const FacebookStrategy = require('passport-facebook').Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 
 export class AuthenticationError extends Error {
@@ -87,6 +87,13 @@ export class AuthService {
       callbackURL: this.options.facebook.callback,
       profileFields: ['id', 'email', 'first_name', 'last_name']
     }, this.facebookCallback.bind(this)));
+
+    passport.use(new TwitterStrategy({
+      consumerKey: this.options.twitter.consumerKey,
+      consumerSecret: this.options.twitter.consumerSecret,
+      callbackURL: this.options.twitter.callback,
+      includeEmail: true
+    }, this.twitterCallback.bind(this)));
 
     passport.serializeUser((user: User, done) => {
       this.logger.info('Serializing user');
@@ -230,9 +237,6 @@ export class AuthService {
 
   async changePassword(email: string, password: string, token: string): Promise<User> {
 
-    console.log('Changing password', email, password, token);
-
-
     let user = await User.findOne<User>({where: {email, passwordResetToken: token}});
 
     if (!user) {
@@ -244,10 +248,12 @@ export class AuthService {
     return await user.update({password, passwordResetToken: null});
   }
 
-  authenticate(strategy: string, options?: AuthenticateOptions): any {
-    return passport.authenticate(strategy, options, (err, user, info) => {
-      this.logger.debug('auth', err, user, info);
-    });
+  facebookAuth(req, res, next) {
+    passport.authenticate('facebook', { scope: ['email']})(req, res, next);
+  }
+
+  facebookReturn(req, res, next) {
+    passport.authenticate('facebook')(req, res, next);
   }
 
   /**
@@ -290,6 +296,7 @@ export class AuthService {
    * Verify an encrypted password
    */
   validatePassword(password, encryptedPassword): Promise<boolean> {
+
     return new Promise((resolve, reject) => {
       // extract the salt and hash from the combined buffer
       const encryptedBuffer = new Buffer(encryptedPassword, 'base64');
@@ -325,6 +332,9 @@ export class AuthService {
 
         if (!user) return done(null, false);
 
+        // User's password is not set (e.g. Facebook signup)
+        if (!user.password) return done(null, false);
+
         return this.validatePassword(password, user.password).then(valid => {
           if (!valid) return done(null, false);
           done(null, user);
@@ -347,7 +357,7 @@ export class AuthService {
 
     const email = profile.emails[0].value;
 
-    return User.findOrCreate<User>({
+    User.findOrCreate<User>({
       where: {
         email: email
       },
@@ -355,24 +365,74 @@ export class AuthService {
         facebookId: profile.id,
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
-        email: email
+        email: email,
+        emailVerified: true,
+        newsletters: true
       }
     })
       .spread((user: User, created) => {
+
         if (created) {
           // New user created
-          return done(null, user);
+          done(null, user);
         }
         else {
-          // User already registered - associate FB id
-          if (!user.facebookId) {
+          if (user.facebookId) {
+            // Already associated with Facebook
+            done(null, user);
+          }
+          else {
+            // Associated with Facebook
             user.facebookId = profile.id;
-            return user.save().then(user => {
-              return done(null, user);
-            });
+            user.save().then(user => done(null, user));
           }
         }
-      })
-      .catch(e => done(e));
+      }).catch(e => done(e));
+  }
+
+  /**
+   * Passport callback for Twitter strategy
+   *
+   * @param accessToken
+   * @param refreshToken
+   * @param profile
+   * @param done
+   */
+  private twitterCallback(accessToken, refreshToken, profile, done) {
+
+    this.logger.info(profile);
+
+    const email = profile.emails[0].value;
+
+    User.findOrCreate<User>({
+      where: {
+        email: profile.email
+      },
+      defaults: {
+        twitterId: profile.id,
+        firstName: profile.displayName,
+        email: email,
+        emailVerified: true,
+        newsletters: true
+      }
+    })
+      .spread((user: User, created) => {
+
+        if (created) {
+          // New user created
+          done(null, user);
+        }
+        else {
+          if (user.twitterId) {
+            // Already associated with Twitter
+            done(null, user);
+          }
+          else {
+            // Associated with Twitter
+            user.twitterId = profile.id;
+            user.save().then(user => done(null, user));
+          }
+        }
+      }).catch(e => done(e));
   }
 }

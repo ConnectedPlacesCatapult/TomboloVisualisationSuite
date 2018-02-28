@@ -19,7 +19,6 @@ import * as exphbs from 'express-handlebars';
 import * as path from 'path';
 import * as cors from 'cors';
 import * as compression from 'compression';
-import * as expressJwtPermissions from 'express-jwt-permissions';
 import * as session from 'express-session';
 
 // initalize sequelize with session store
@@ -36,7 +35,6 @@ import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
-import AuthSocialRouter from './routes/auth/social';
 import AuthRouter from './routes/api/auth';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
@@ -102,7 +100,6 @@ app.use('/api/v1/auth', AuthRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);
-app.use('/auth/social', AuthSocialRouter);
 
 // Redirect to index.html for Angular routes
 app.get('/[^\.]+$', function(req, res){
