@@ -53,6 +53,8 @@ import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-p
 import {AccountInfoComponent} from './account-info/account-info.component';
 import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
 import {AppInfoComponent} from './app-info/app-info.component';
+import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
+import {FocusModule} from 'angular2-focus';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -92,7 +94,8 @@ export function AppConfigFactory(configService: ConfigService) {
     ResetPasswordDialogComponent,
     AccountInfoComponent,
     TermsAndConditionsComponent,
-    AppInfoComponent
+    AppInfoComponent,
+    MyAccountDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -106,6 +109,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MaterialModule,
     MapboxModule,
     NgUploaderModule,
+    FocusModule.forRoot(),
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({

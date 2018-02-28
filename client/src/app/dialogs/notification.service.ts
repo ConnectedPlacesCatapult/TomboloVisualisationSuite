@@ -7,7 +7,7 @@ import {MatSnackBar, MatSnackBarRef} from '@angular/material';
 import {DialogsService} from "./dialogs.service";
 
 // Default snack bar duration before auto-dismiss
-const NOTIFICATION_DURATION = 4000;
+const NOTIFICATION_DURATION = 6000;
 const INFO_CLASS = 'info';
 const ERROR_CLASS = 'error';
 

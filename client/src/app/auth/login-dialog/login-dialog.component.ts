@@ -6,6 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 import {Angulartics2} from 'angulartics2';
+import {FocusTrapFactory} from '@angular/cdk/a11y';
 
 const debug = Debug('tombolo:login-dialog');
 
@@ -21,11 +22,10 @@ export class LoginDialogComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private analytics: Angulartics2) {}
+    private analytics: Angulartics2,) {}
 
   loginForm: FormGroup;
   errorMessage: string;
-
 
   private _subs: Subscription[] = [];
 
@@ -62,8 +62,8 @@ export class LoginDialogComponent implements OnInit {
           },
         });
       })
-      .catch(() => {
-        this.errorMessage = 'Invalid email or password';
+      .catch(e => {
+        this.errorMessage = e.message;
         this.analytics.eventTrack.next({
           action: 'LoginFail',
           properties: {

@@ -110,7 +110,7 @@ export class AuthService {
 
       if (err) return next(err);
 
-      if (!user) return next({status: 401, message: 'Not authorised'});
+      if (!user) return next({status: 401, message: 'Invalid email or password'});
 
       req.logIn(user, err => {
         if (err) return next(err);
@@ -143,7 +143,7 @@ export class AuthService {
     }
     catch (e) {
       if (e instanceof UniqueConstraintError) {
-        throw new AuthenticationError(`User with email ${data.email} is already registered`);
+        throw new AuthenticationError(`User is already registered`);
       }
 
       if (e.name === 'SequelizeValidationError') {

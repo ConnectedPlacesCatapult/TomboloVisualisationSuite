@@ -47,14 +47,7 @@ export class AuthService {
         return u;
       })
       .catch(e => {
-
-        if (e instanceof HttpErrorResponse && e.status === 401) {
-          // Login failed
-          debug('Login failed');
-          this._user$.next(null);
-          return Promise.reject(null);
-        }
-
+        this._user$.next(null);
         return this.handleError(e);
       })
       .toPromise();
@@ -77,18 +70,7 @@ export class AuthService {
         debug(`Signed up user`, u);
         return u;
       })
-      .catch(e => {
-
-        debug('signup error', e);
-
-        if (e instanceof HttpErrorResponse && e.status === 400) {
-          // Bad request
-          return Promise.reject(e);
-        }
-
-        // Generic handler for unknown errors
-        return this.handleError(e);
-      })
+      .catch(e =>this.handleError(e))
       .toPromise();
   }
 
@@ -111,18 +93,7 @@ export class AuthService {
         debug(`Sent reset password email`, u);
         return u;
       })
-      .catch(e => {
-
-        debug('Password reset error', e);
-
-        if (e instanceof HttpErrorResponse && e.status === 400) {
-          // Bad request
-          return Promise.reject(e);
-        }
-
-        // Generic handler for unknown errors
-        return this.handleError(e);
-      })
+      .catch(e => this.handleError(e))
       .toPromise();
   }
 
@@ -153,18 +124,7 @@ export class AuthService {
         debug(`Changed password`, u);
         return u;
       })
-      .catch(e => {
-
-        debug('Password change error', e);
-
-        if (e instanceof HttpErrorResponse && e.status === 400) {
-          // Bad request
-          return Promise.reject(e);
-        }
-
-        // Generic handler for unknown errors
-        return this.handleError(e);
-      })
+      .catch(e => this.handleError(e))
       .toPromise();
   }
 
@@ -176,15 +136,14 @@ export class AuthService {
         return user;
       })
       .catch(e => {
+        this._user$.next(null);
 
         if (e instanceof HttpErrorResponse && e.status === 404) {
-          // No logged in user
-          debug('No logged in user');
-          this._user$.next(null);
+          // Not logged in
           return Promise.resolve(null);
         }
 
-        return this.handleError(e);
+        return this.handleError(e)
       })
       .toPromise();
   }
@@ -197,9 +156,17 @@ export class AuthService {
 
   private handleError(e): Promise<any> {
 
+    debug('Auth error', e);
+
+    if (e instanceof HttpErrorResponse) {
+      // Bad request
+      return Promise.reject(e.error);
+    }
+
     if (!environment.production) {
       this.notificationService.error(e);
     }
-    return Promise.reject(e);
+
+    return Promise.reject(new Error('Unknown error'));
   }
 }

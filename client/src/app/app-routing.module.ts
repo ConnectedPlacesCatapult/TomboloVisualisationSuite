@@ -19,6 +19,7 @@ import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-p
 import {AccountInfoComponent} from './account-info/account-info.component';
 import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
 import {AppInfoComponent} from './app-info/app-info.component';
+import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
 
 const routes: Routes = [
   {
@@ -97,6 +98,11 @@ const routes: Routes = [
   {
     path: 'signupconfirm',
     component: SignupConfirmationComponent,
+    outlet: 'loginBox'
+  },
+  {
+    path: 'myaccount',
+    component: MyAccountDialogComponent,
     outlet: 'loginBox'
   },
   { path: '',
