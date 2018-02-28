@@ -13,3 +13,10 @@ origin = "CORS_ORIGIN"
 
 [client]
 authEndpoint = "AUTH_ENDPOINT"
+
+[server]
+baseUrl = "SERVER_BASE_URL"
+
+[smtp.auth]
+user = "SMTP_USER"
+pass = "SMTP_PASSWORD"

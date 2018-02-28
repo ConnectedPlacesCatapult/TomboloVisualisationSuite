@@ -133,7 +133,7 @@ if (app.get('env') === 'development') {
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   if (isApi(req)) {
-    res.json({success: false, error: err});
+    res.json({success: false,  message: err.message, error: err});
   } else {
     res.render('error', {message: err.message, error: {}, layout: false});
   }
