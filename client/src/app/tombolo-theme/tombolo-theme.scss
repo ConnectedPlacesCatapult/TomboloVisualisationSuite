@@ -256,7 +256,6 @@
   }
 
 
-
   /* Auth panel styling */
   .auth-panel-component {
 
@@ -275,11 +274,6 @@
     // Adjust paragraph spacing
     p {
       margin-top: 0;
-    }
-
-    // Push checkbox text away from box
-    .mat-checkbox {
-      margin-right: 0.5em;
     }
 
     // Small icon button with label to right
@@ -304,6 +298,11 @@
       }
     }
 
+    // Push checkbox text away from box
+    .mat-checkbox {
+      margin-right: 0.5em;
+    }
+
     // Spacing for raised buttons
     .mat-raised-button {
       margin-bottom: $g / 2;
@@ -314,23 +313,20 @@
 
   login-controls {
     background-color: white;
-    color: mat-color($accent);
 
     .button-box {
       padding: 0 $g;
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
 
-      .mat-icon-button {
-        @include mat-typography-level-to-styles($typography, caption);
-        width: auto;
-        border-radius: 0;
-      }
-
-      .mat-icon-button:hover {
-        color: mat-color($tombolo-darkblue, 500);
-      }
+    // Small icon button with label to right
+    .mat-icon-button {
+      @include mat-typography-level-to-styles($typography, caption);
+      color: mat-color($accent);
+      width: auto;
+      border-radius: 0;
 
       .mat-button-wrapper {
         display: flex;
@@ -341,6 +337,14 @@
           padding-right: 0.1em;
         }
       }
+
+      &:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+    }
+
+    .username {
+      @include mat-typography-level-to-styles($typography, caption);
     }
   }
 
@@ -385,8 +389,6 @@
   .sidebar-footer {
 
   }
-
-
 
   /* Markdown styling */
   div[markdown] {

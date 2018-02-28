@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
+import {Angulartics2} from 'angulartics2';
 
 const debug = Debug('tombolo:password-reset-dialog');
 
@@ -19,7 +20,8 @@ export class ChangePasswordDialogComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    private analytics: Angulartics2) {}
 
   changePasswordForm: FormGroup;
   errorMessage: string;
@@ -60,7 +62,26 @@ export class ChangePasswordDialogComponent implements OnInit {
     }
 
     this.authService.changePassword(email, password, token)
-      .then(user => this.router.navigate([{outlets: {'loginBox': 'login'}}]))
-      .catch(() => this.errorMessage = 'Invalid email or password');
+      .then(user => {
+        this.router.navigate([{outlets: {'loginBox': 'login'}}]);
+        this.analytics.eventTrack.next({
+          action: 'ChangePassword',
+          properties: {
+            category: 'Account',
+            label: this.changePasswordForm.get('email').value
+          },
+        });
+      })
+      .catch(e => {
+        this.errorMessage = 'Invalid email or password';
+
+        this.analytics.eventTrack.next({
+          action: 'ChangePasswordFail',
+          properties: {
+            category: 'Account',
+            label: e.message
+          },
+        });
+      });
   }
 }

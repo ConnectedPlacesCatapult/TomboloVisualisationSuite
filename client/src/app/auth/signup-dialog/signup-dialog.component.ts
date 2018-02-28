@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
+import {Angulartics2} from 'angulartics2';
 
 const debug = Debug('tombolo:signup-dialog');
 
@@ -19,7 +20,8 @@ export class SignupDialogComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    private analytics: Angulartics2) {}
 
   signupForm: FormGroup;
   errorMessage: string;
@@ -58,8 +60,25 @@ export class SignupDialogComponent implements OnInit {
     }
 
     this.authService.signup(this.signupForm.value)
-      .then(user => this.router.navigate([{outlets: {'loginBox': 'signupconfirm'}}]))
-      .catch((e) => this.errorMessage = e.message);
+      .then(user => {
+        this.router.navigate([{outlets: {'loginBox': 'signupconfirm'}}]);
+        this.analytics.eventTrack.next({
+          action: 'SignUp',
+          properties: {
+            category: 'Account',
+            label: this.signupForm.get('email').value
+          },
+        });
+      })
+      .catch((e) => {
+        this.errorMessage = e.message;
+        this.analytics.eventTrack.next({
+          action: 'SignUpFail',
+          properties: {
+            category: 'Account',
+            label: e.message
+          },
+        });
+      });
   }
-
 }
