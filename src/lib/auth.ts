@@ -363,8 +363,7 @@ export class AuthService {
       },
       defaults: {
         facebookId: profile.id,
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName,
+        name: profile.name.givenName + ' ' + profile.name.familyName,
         email: email,
         emailVerified: true,
         newsletters: true
@@ -404,17 +403,19 @@ export class AuthService {
 
     const email = profile.emails[0].value;
 
+    const defaults = {
+      twitterId: profile.id,
+      name: profile.displayName,
+      email: email,
+      emailVerified: true,
+      newsletters: true
+    };
+
     User.findOrCreate<User>({
       where: {
-        email: profile.email
+        email
       },
-      defaults: {
-        twitterId: profile.id,
-        firstName: profile.displayName,
-        email: email,
-        emailVerified: true,
-        newsletters: true
-      }
+      defaults
     })
       .spread((user: User, created) => {
 
@@ -433,6 +434,9 @@ export class AuthService {
             user.save().then(user => done(null, user));
           }
         }
-      }).catch(e => done(e));
+      }).catch(e => {
+        this.logger.error('Twitter auth error', e);
+        done(e);
+    });
   }
 }

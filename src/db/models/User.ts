@@ -28,16 +28,9 @@ export class User extends Model<User> implements UserBase {
   email: string;
 
   @Column({
-    type: DataType.TEXT,
-    field: 'first_name'
+    type: DataType.TEXT
   })
-  firstName: string;
-
- @Column({
-    type: DataType.TEXT,
-    field: 'last_name'
-  })
-  lastName: string;
+  name: string;
 
   @Column({
     type: DataType.TEXT
@@ -89,8 +82,7 @@ export class User extends Model<User> implements UserBase {
     return {
       id: this.id,
       email: this.email,
-      firstName: this.firstName,
-      lastName: this.lastName
+      name: this.name
     };
   }
 }

@@ -34,7 +34,7 @@ export class MyAccountDialogComponent implements OnInit {
     });
 
     this.authService.loadUser().then(user => {
-      this.profileForm.patchValue({name: user.displayName, email: user.email})
+      this.profileForm.patchValue({name: user.name, email: user.email})
     });
   }
 

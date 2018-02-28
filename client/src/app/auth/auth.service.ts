@@ -130,13 +130,11 @@ export class AuthService {
   }
 
   loadUser(): Promise<User> {
-    return this.http.get<UserBase>(`${environment.apiEndpoint}/auth/me`)
-      .map(response => {
-        const user = new User(response);
-
+    return this.http.get<User>(`${environment.apiEndpoint}/auth/me`)
+      .map(user => {
         debug(`Loaded user: ${user.email}`);
-
         this._user$.next(user);
+
         return user;
       })
       .catch(e => {
