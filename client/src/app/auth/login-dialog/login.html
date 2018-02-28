@@ -17,7 +17,9 @@
   <mat-form-field class="full-width">
     <input type="password" matInput placeholder="Password" formControlName="password">
   </mat-form-field>
-  <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
+
+  <div class="error" *ngIf="errorMessage"><mat-icon svgIcon="info"></mat-icon>{{errorMessage}}</div>
+
   <button mat-raised-button (click)="login()" [disabled]="!loginForm.valid" class="full-width">Log in</button>
 </form>
 

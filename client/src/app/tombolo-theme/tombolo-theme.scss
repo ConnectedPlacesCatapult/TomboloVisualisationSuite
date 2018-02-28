@@ -238,7 +238,7 @@
       .mat-icon-button {
         @include mat-typography-level-to-styles($typography, caption);
         border-radius: 0;
-        border-left: 1px solid mat-color($accent, lighter);
+        border-left: 1px solid mat-color($accent, 200);
         border-right: 1px solid mat-color($accent, darker);
       }
 
@@ -307,6 +307,19 @@
     .mat-raised-button {
       margin-bottom: $g / 2;
     }
+
+    .error {
+      @include mat-typography-level-to-styles($typography, body-1);
+      color: mat-color($warn);
+      .mat-icon {
+        position: relative;
+        top: 4px;
+        margin-right: 4px;
+        width: 18px;
+        height: 18px;
+      }
+      margin-bottom: 1em;
+    }
   }
 
   /* Login Styling */
@@ -314,6 +327,8 @@
   login-controls {
     background-color: white;
 
+    border-radius: 0 0 $br 0;
+    
     .button-box {
       padding: 0 $g;
       display: flex;

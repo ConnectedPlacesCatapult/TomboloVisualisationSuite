@@ -25,6 +25,7 @@ export class SignupDialogComponent implements OnInit {
 
   signupForm: FormGroup;
   errorMessage: string;
+  showProgress = false;
 
   private _subs: Subscription[] = [];
 
@@ -59,8 +60,11 @@ export class SignupDialogComponent implements OnInit {
       return;
     }
 
+    this.showProgress = true;
+
     this.authService.signup(this.signupForm.value)
       .then(user => {
+        this.showProgress = false;
         this.router.navigate([{outlets: {'loginBox': 'signupconfirm'}}]);
         this.analytics.eventTrack.next({
           action: 'SignUp',
@@ -71,6 +75,7 @@ export class SignupDialogComponent implements OnInit {
         });
       })
       .catch((e) => {
+        this.showProgress = false;
         this.errorMessage = e.message;
         this.analytics.eventTrack.next({
           action: 'SignUpFail',

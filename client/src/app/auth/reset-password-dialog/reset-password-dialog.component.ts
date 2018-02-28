@@ -26,6 +26,7 @@ export class ResetPasswordDialogComponent implements OnInit {
   resetPasswordForm: FormGroup;
   passwordReset = false;
   errorMessage: string;
+  showProgress = false;
 
   private _subs: Subscription[] = [];
 
@@ -48,10 +49,11 @@ export class ResetPasswordDialogComponent implements OnInit {
   resetPassword() {
 
     const email = this.resetPasswordForm.get('email').value;
-
+    this.showProgress = true;
     this.authService.resetPassword(email)
       .then(user => {
         this.passwordReset = true;
+        this.showProgress = false;
         this.analytics.eventTrack.next({
           action: 'PasswordReset',
           properties: {
@@ -62,7 +64,7 @@ export class ResetPasswordDialogComponent implements OnInit {
       })
       .catch(e => {
         this.errorMessage = 'Invalid email or password';
-
+        this.showProgress = false;
         this.analytics.eventTrack.next({
           action: 'PasswordResetFail',
           properties: {

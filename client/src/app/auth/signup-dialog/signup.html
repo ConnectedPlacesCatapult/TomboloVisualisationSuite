@@ -20,10 +20,14 @@
   <mat-form-field class="full-width">
     <input type="password" matInput placeholder="Confirm password" formControlName="confirmPassword">
   </mat-form-field>
-  <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
+
+  <div class="error" *ngIf="errorMessage"><mat-icon svgIcon="info"></mat-icon>{{errorMessage}}</div>
+
   <p class="mat-body"><mat-checkbox formControlName="newsletters"></mat-checkbox>Yes, I want to receive Tombolo newsletters</p>
 
   <button mat-raised-button (click)="signup()" [disabled]="!signupForm.valid" class="full-width">Sign Up</button>
+
+  <mat-progress-bar mode="indeterminate" color="accent" *ngIf="showProgress"></mat-progress-bar>
 </form>
 
 <p  class="mat-caption top-margin">By clicking signing up, you accept our <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">Membership Agreement</a>.</p>
