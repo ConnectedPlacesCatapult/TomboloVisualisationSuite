@@ -1,13 +1,14 @@
 import {Column, DataType, HasMany, Model, Table, Unique} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
 import * as sequelize from 'sequelize';
+import {UserBase} from '../../shared/user-base';
 
 @Table({
   tableName: 'users',
   timestamps: true,
   version: true
 })
-export class User extends Model<User> {
+export class User extends Model<User> implements UserBase {
 
   @Column({
     type: DataType.UUID,
@@ -27,19 +28,61 @@ export class User extends Model<User> {
   email: string;
 
   @Column({
-    type: DataType.TEXT,
-    field: 'first_name',
-    allowNull: false
+    type: DataType.TEXT
   })
-  firstName: string;
+  name: string;
+
+  @Column({
+    type: DataType.TEXT
+  })
+  password: string;
 
   @Column({
     type: DataType.TEXT,
-    field: 'last_name',
-    allowNull: true
+    field: 'facebook_id'
   })
-  lastName: string;
+  facebookId: string;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'twitter_id'
+  })
+  twitterId: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false
+  })
+  newsletters: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'email_verified',
+    defaultValue: false
+  })
+  emailVerified: boolean;
+
+  @Column({
+    type: DataType.UUID,
+    field: 'verification_token'
+  })
+  verificationToken: string;
+
+  @Column({
+    type: DataType.UUID,
+    field: 'password_reset_token'
+  })
+  passwordResetToken: string;
 
   @HasMany(() => Dataset)
   datasets: Dataset[];
+
+  // Return representation safe for sending to client
+  get clientSafeUser() {
+    return {
+      id: this.id,
+      email: this.email,
+      name: this.name
+    };
+  }
 }

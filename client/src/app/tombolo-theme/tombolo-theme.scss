@@ -14,9 +14,54 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
 
+  /* Convenience style overrides */
+  .full-width {
+    width: 100% !important;
+  }
+
+  .top-margin {
+    margin-top: $g / 2 !important;
+  }
+
+  .with-padding {
+    padding: $sidebar-padding !important;
+  }
+
   a {
-    color: inherit;
+    color: mat-color($accent);
     outline: none;
+    text-decoration: none;
+  }
+
+  /* Buttons */
+  .mat-raised-button {
+    color: white;
+    background-color: mat-color($accent);
+    border-radius: $br;
+  }
+
+  // Adjust positioning of FontAwesome icons in buttons to center in 24px box
+  .mat-button, .mat-raised-button, .mat-icon-button {
+    .mat-icon.fa {
+      margin-right: 2px;
+    }
+
+    .mat-icon.fa:before {
+      position: relative;
+      top: 4px;
+    }
+  }
+
+  .button-facebook {
+    @include gradient-facebook-button();
+  }
+
+  .button-twitter {
+    @include gradient-twitter-button();
+  }
+
+  .button-google-plus {
+    @include gradient-google-button();
   }
 
   /* Sidebars */
@@ -193,7 +238,7 @@
       .mat-icon-button {
         @include mat-typography-level-to-styles($typography, caption);
         border-radius: 0;
-        border-left: 1px solid mat-color($accent, lighter);
+        border-left: 1px solid mat-color($accent, 200);
         border-right: 1px solid mat-color($accent, darker);
       }
 
@@ -210,13 +255,112 @@
     }
   }
 
-  //a.mat-list-item.active, a.mat-list-item.active:hover, a.mat-list-item.active:visited, a.mat-list-item.active:focus {
-  //  background-color: mat-color($accent);
-  //  color: mat-contrast($accent, 500);
-  //}
 
-  .full-width {
-    width: 100%;
+  /* Auth panel styling */
+  .auth-panel-component {
+
+    // Header bar styling with title and close button
+    h3 {
+      margin-top: -0.75em;
+      display: flex;
+      align-items: center;
+      margin-bottom: 0;
+
+      span {
+        flex: 1 1;
+      }
+    }
+
+    // Adjust paragraph spacing
+    p {
+      margin-top: 0;
+    }
+
+    // Small icon button with label to right
+    .mat-icon-button {
+      @include mat-typography-level-to-styles($typography, caption);
+      color: mat-color($accent);
+      width: auto;
+      border-radius: 0;
+
+      .mat-button-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .mat-icon {
+          padding-right: 0.1em;
+        }
+      }
+
+      &:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+    }
+
+    // Push checkbox text away from box
+    .mat-checkbox {
+      margin-right: 0.5em;
+    }
+
+    // Spacing for raised buttons
+    .mat-raised-button {
+      margin-bottom: $g / 2;
+    }
+
+    .error {
+      @include mat-typography-level-to-styles($typography, body-1);
+      color: mat-color($warn);
+      .mat-icon {
+        position: relative;
+        top: 4px;
+        margin-right: 4px;
+        width: 18px;
+        height: 18px;
+      }
+      margin-bottom: 1em;
+    }
+  }
+
+  /* Login Styling */
+
+  login-controls {
+    background-color: white;
+
+    border-radius: 0 0 $br 0;
+
+    .button-box {
+      padding: 0 $g;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    // Small icon button with label to right
+    .mat-icon-button {
+      @include mat-typography-level-to-styles($typography, caption);
+      color: mat-color($accent);
+      width: auto;
+      border-radius: 0;
+
+      .mat-button-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .mat-icon {
+          padding-right: 0.1em;
+        }
+      }
+
+      &:hover {
+        color: mat-color($tombolo-darkblue, 500);
+      }
+    }
+
+    .username {
+      @include mat-typography-level-to-styles($typography, caption);
+    }
   }
 
   /* Sidebar styling */
@@ -255,17 +399,11 @@
 
     overflow-y: auto;
     flex: 1 1;
-
-    &.with-padding {
-      padding: $sidebar-padding;
-    }
   }
 
   .sidebar-footer {
 
   }
-
-
 
   /* Markdown styling */
   div[markdown] {

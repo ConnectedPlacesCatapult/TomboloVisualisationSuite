@@ -20,6 +20,11 @@
 
   <map-controls></map-controls>
 
+  <login-controls></login-controls>
+  <div class="login-box">
+    <router-outlet name="loginBox"></router-outlet>
+  </div>
+
   <mat-sidenav class="sidebar sidebar-right" align="end" mode="over" [opened]="rightBarOpen">
     <div class="sidebar-tab"><button mat-icon-button (click)="rightBarOpen = !rightBarOpen" disableRipple><mat-icon [svgIcon]="iconForSidebarTab()" color="accent"></mat-icon></button></div>
     <router-outlet name="rightBar"></router-outlet>

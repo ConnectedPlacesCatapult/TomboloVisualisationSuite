@@ -57,18 +57,18 @@ export class DB {
   async checkConnection(force: boolean = false): Promise<void> {
     try {
       await this.sequelize.authenticate();
-      await this.sequelize.sync({force: force, match: /test/});
+
+      if (force) {
+        await this.sequelize.sync({force: force, match: /test/});
+      }
+      else {
+        await this.sequelize.sync({force: force});
+      }
 
       this.logger.info(`Connected to DB: ${this.sequelize.options.database}`);
     } catch (e) {
-      if (e.message === 'Database does not match sync match parameter') {
-        // Ignore db name not matching sync parameter
-        this.logger.info(`Connected to DB: ${this.sequelize.options.database}`);
-      }
-      else {
-        this.logger.error('Error connecting to DB:', e);
-        throw e;
-      }
+      this.logger.error('Error connecting to DB:', e);
+      throw e;
     }
   }
 

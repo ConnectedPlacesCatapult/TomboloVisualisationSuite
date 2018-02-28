@@ -43,6 +43,18 @@ import {CustomGoogleTagManager} from './custom-google-tag-manager/custom-google-
 import {RegisterIcons} from './tombolo-theme/icons';
 import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {MapControlsComponent} from './map-controls/map-controls.component';
+import {LoginControlsComponent} from './auth/login-controls/login-controls.component';
+import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
+import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
+import {AuthService} from './auth/auth.service';
+import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/signup-confirmation.component';
+import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
+import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
+import {AccountInfoComponent} from './account-info/account-info.component';
+import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
+import {AppInfoComponent} from './app-info/app-info.component';
+import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
+import {FocusModule} from 'angular2-focus';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -73,7 +85,17 @@ export function AppConfigFactory(configService: ConfigService) {
     UploadPage3Component,
     UploadPage4Component,
     IconsDemoComponent,
-    MapControlsComponent
+    MapControlsComponent,
+    LoginControlsComponent,
+    LoginDialogComponent,
+    SignupDialogComponent,
+    SignupConfirmationComponent,
+    ChangePasswordDialogComponent,
+    ResetPasswordDialogComponent,
+    AccountInfoComponent,
+    TermsAndConditionsComponent,
+    AppInfoComponent,
+    MyAccountDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -87,6 +109,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MaterialModule,
     MapboxModule,
     NgUploaderModule,
+    FocusModule.forRoot(),
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
@@ -103,6 +126,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapRegistry,
     MapService,
     TooltipRenderService,
+    AuthService,
     {
       // Load app config at startup
       provide: APP_INITIALIZER,
