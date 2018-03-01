@@ -17,6 +17,7 @@ export class AppConfig {
   socialMediaDescription: string;
   socialMediaTags: string;
   googleAnalyticsUserId: string;
+  nominatimUrl: string;
 }
 
 @Injectable()

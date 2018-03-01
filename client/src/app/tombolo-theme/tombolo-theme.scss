@@ -131,13 +131,109 @@
     }
   }
 
+
+  /* Left navigation expansion panel */
+
+  .sidebar-left .mat-expansion-panel {
+    background-color: inherit;
+    box-shadow: none !important;
+
+    // Add horizontal rule after panel (except last one)
+    &:not(:last-of-type)::after {
+      display: block;
+      height: 1px;
+      margin: $g/2 $g;
+      content: "";
+      background-color: mat-color($tombolo-darkblue, 400);
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.5);
+    }
+
+    // Truncate long group titles with ellipsis
+    .mat-expansion-panel-header {
+      padding: 0 24px 0 $g;
+      .mat-content {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+    }
+
+    // Remove expansion panel padding
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+  }
+
+  /* Geosearch component */
+  geosearch-component {
+
+    width: 100%;
+    padding: 0 15px 0 20px;
+    margin: $g / 2 0;
+
+    .mat-input-container {
+      width: 100%;
+      background-color: mat-color($primary, 600);
+      border: 1px solid mat-color($primary, 400);
+      border-radius: 3px;
+    }
+
+    .mat-input-flex {
+      box-sizing: border-box;
+      padding-left: 0.5em;
+    }
+
+    .mat-input-underline {
+      display: none;
+    }
+
+    .mat-input-subscript-wrapper {
+      display: none;
+    }
+
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+
+    .mat-form-field-infix {
+      border-top: 0;
+      color: white;
+    }
+
+    .mat-input-element {
+      caret-color: white;
+    }
+
+    .mat-focused .mat-form-field-label {
+      color: mat-color($primary, 400);
+    }
+
+    .mat-form-field-prefix .mat-icon-button, .mat-form-field-suffix .mat-icon-button {
+      color: mat-color($accent, 300);
+      width: 40px;
+      height: 30px;
+      position: relative;
+      right: -5px;
+    }
+
+    .mat-form-field-prefix .mat-icon-button .mat-icon, .mat-form-field-suffix .mat-icon-button .mat-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
   /* Left sidebar nav list */
+
   .sidebar-left .mat-nav-list {
 
+    padding-top: 0;
+
     a.mat-list-item {
-      color: mat-color($accent, 200);
+      color: mat-color($accent, 300);
       font-size: 14px;
       padding: 0;
+      height: $g * 2;
 
       .mat-list-item-content {
         padding: 0 $g * 2 0 $g;
@@ -146,7 +242,7 @@
         white-space: nowrap;
         overflow: hidden;
         display: block;
-        line-height: 48px;
+        line-height: $g * 2;
 
         mat-icon {
           // Add right padding to move text onto grid position
@@ -154,7 +250,7 @@
 
           position: relative;
           top: 6px;
-          color: mat-color($accent, 200);
+          color: mat-color($accent, 300);
         }
       }
     }
@@ -446,4 +542,6 @@
       }
     }
   }
+
+
 }

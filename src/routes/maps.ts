@@ -5,6 +5,7 @@ import {Container} from 'typedi';
 import {LoggerService} from '../lib/logger';
 import {TomboloMap} from '../db/models/TomboloMap';
 import {StyleGenerator} from '../lib/style-generator';
+import {MapGroup} from '../db/models/MapGroup';
 
 const logger = Container.get(LoggerService);
 const styleGenerator = Container.get(StyleGenerator);
@@ -18,13 +19,20 @@ const baseUrl = config.get('server.baseUrl');
 
 router.get('/', async (req, res, next) => {
   try {
-    const maps = await TomboloMap.findAll<TomboloMap>({order: ['name']});
-    const results = maps.map(map => ({
-      id: map.id,
-      name: map.name,
-      description: map.description,
-      icon: map.icon,
-      styleUrl: `${baseUrl}/maps/${map.id}/style.json`
+    const mapGroups = await MapGroup.scope('full').findAll<MapGroup>();
+
+    const results = mapGroups.map(group => ({
+      id: group.id,
+      name: group.name,
+      order: group.order,
+      maps: group.maps.map(map => ({
+        id: map.id,
+        name: map.name,
+        description: map.description,
+        icon: map.icon,
+        order: map.order,
+        styleUrl: `${baseUrl}/maps/${map.id}/style.json`
+      }))
     }));
 
     res.json(results);

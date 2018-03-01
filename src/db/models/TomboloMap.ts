@@ -6,6 +6,8 @@ import {DataAttribute} from './DataAttribute';
 import {BaseMap} from './BaseMap';
 import {TomboloMapLayer} from './TomboloMapLayer';
 import {Palette} from './Palette';
+import {MapGroup} from './MapGroup';
+import {ITomboloMap} from '../../shared/ITomboloMap';
 
 @Table({
   tableName: 'maps',
@@ -27,7 +29,7 @@ import {Palette} from './Palette';
       }]
   }
 })
-export class TomboloMap extends Model<TomboloMap> {
+export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
   @Column({
     type: DataType.UUID,
@@ -82,11 +84,26 @@ export class TomboloMap extends Model<TomboloMap> {
   })
   basemapId: string;
 
+  @ForeignKey(() => MapGroup)
+  @Column({
+    type: DataType.TEXT,
+    field: 'map_group_id'
+  })
+  mapGroupId: string;
+
+  @Column({
+    type: DataType.INTEGER()
+  })
+  order: number;
+
   @HasMany(() => TomboloMapLayer)
   layers: TomboloMapLayer[];
 
   @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
+
+  @BelongsTo(() => MapGroup, {onDelete: 'SET NULL'})
+  mapGroup: MapGroup;
 
   @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;

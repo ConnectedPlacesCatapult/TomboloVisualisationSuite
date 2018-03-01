@@ -54,7 +54,8 @@ import {AccountInfoComponent} from './account-info/account-info.component';
 import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
 import {AppInfoComponent} from './app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
-import {FocusModule} from 'angular2-focus';
+import {GeosearchComponent} from './geosearch/geosearch.component';
+import {GeosearchService} from './geosearch/geosearch.service';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -95,7 +96,8 @@ export function AppConfigFactory(configService: ConfigService) {
     AccountInfoComponent,
     TermsAndConditionsComponent,
     AppInfoComponent,
-    MyAccountDialogComponent
+    MyAccountDialogComponent,
+    GeosearchComponent
   ],
   imports: [
     BrowserModule,
@@ -109,7 +111,6 @@ export function AppConfigFactory(configService: ConfigService) {
     MaterialModule,
     MapboxModule,
     NgUploaderModule,
-    FocusModule.forRoot(),
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
@@ -127,6 +128,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapService,
     TooltipRenderService,
     AuthService,
+    GeosearchService,
     {
       // Load app config at startup
       provide: APP_INITIALIZER,

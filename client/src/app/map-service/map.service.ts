@@ -10,6 +10,7 @@ import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 import {FileUploadBase} from '../../../../src/shared/fileupload-base';
 import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
+import {IMapGroup} from '../../../../src/shared/IMapGroup';
 
 const debug = Debug('tombolo:MapService');
 
@@ -58,6 +59,15 @@ export class MapService {
         return map;
       })
       .catch(e => this.handleError(e));
+  }
+
+  /**
+   * Load maps groups and nested maps for populating left-hand navigation panel
+   *
+   * @returns {Promise<IMapGroup[]>}
+   */
+  loadMapGroups(): Observable<IMapGroup[]> {
+    return this.http.get<IMapGroup[]>('/maps');
   }
 
   pollIngest(uploadID: string): Observable<FileUploadBase> {

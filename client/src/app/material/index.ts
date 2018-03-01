@@ -21,7 +21,8 @@ import {
   MatTableModule,
   MatProgressBarModule,
   MatSliderModule,
-  MatStepperModule
+  MatStepperModule,
+  MatExpansionModule, MatAutocompleteModule
 } from '@angular/material';
 
 const materialModules = [
@@ -44,7 +45,9 @@ const materialModules = [
   MatTableModule,
   CdkTableModule,
   MatSliderModule,
-  MatStepperModule
+  MatStepperModule,
+  MatExpansionModule,
+  MatAutocompleteModule
 ];
 
 @NgModule({
