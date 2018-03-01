@@ -9,6 +9,9 @@ import {Style} from 'mapbox-gl';
 import {MapService} from '../map-service/map.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 import {Angulartics2} from 'angulartics2';
+import {IMapGroup} from '../../../../src/shared/IMapGroup';
+import {GeosearchItem} from '../geosearch/geosearch.service';
+import LngLatBoundsLike = mapboxgl.LngLatBoundsLike;
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -23,13 +26,15 @@ export class MapsDemoComponent implements OnInit {
 
   maps$: Observable<object[]> = null;
 
+  mapGroups$: Observable<IMapGroup[]> = null;
+
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
               private mapService: MapService) {}
 
   ngOnInit() {
-    this.maps$ = this.httpClient.get<object[]>('/maps');
+    this.mapGroups$ = this.mapService.loadMapGroups();
     this.activatedRoute.params.subscribe(params => {
       this.loadMap(params.mapID);
     });
@@ -44,6 +49,12 @@ export class MapsDemoComponent implements OnInit {
 
     this.mapService.loadMap(mapID).then(map => {
       //map.setBasemapDetail(this.sliderValue);
+    });
+  }
+
+  geosearchSelected(item: GeosearchItem) {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      map.fitBounds(item.boundingBox, {padding: 30, maxZoom: 13});
     });
   }
 

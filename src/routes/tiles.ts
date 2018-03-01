@@ -8,8 +8,6 @@ import {Dataset} from '../db/models/Dataset';
 import {startTimer} from '../lib/utils';
 import {DataAttribute} from '../db/models/DataAttribute';
 import {TileRenderer, TileRendererService} from '../lib/tile-renderers/tile-renderer-service';
-import {TileliveTileRenderer} from '../lib/tile-renderers/tilelive-tile-renderer';
-import {PostgisTileRenderer} from '../lib/tile-renderers/postgis-tile-renderer';
 
 const logger = Container.get(LoggerService);
 const router = express.Router();
