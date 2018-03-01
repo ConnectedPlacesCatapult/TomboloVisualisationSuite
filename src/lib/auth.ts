@@ -43,8 +43,10 @@ export interface AuthenticationServiceConfig {
 function ServiceFactory() {
   const logger = Container.get(LoggerService);
   const mailer = Container.get(Mailer);
+  const baseUrl = config.get('server.baseUrl');
+  const conf = config.get('auth');
 
-  return new AuthService(logger, mailer, config.get('auth'));
+  return new AuthService(logger, mailer, baseUrl, conf);
 }
 
 
@@ -70,7 +72,7 @@ export class AuthService {
 
   config: AuthenticationServiceConfig;
 
-  constructor(private logger: Logger, private mailer: Mailer, private options: any) {
+  constructor(private logger: Logger, private mailer: Mailer, private baseUrl: string, private options: any) {
     this.config = {...AuthService.defaultConfig, ...options};
   }
 
@@ -84,14 +86,14 @@ export class AuthService {
     passport.use(new FacebookStrategy({
       clientID: this.options.facebook.clientId,
       clientSecret: this.options.facebook.clientSecret,
-      callbackURL: this.options.facebook.callback,
+      callbackURL: this.baseUrl + '/api/v1/auth/facebook/return',
       profileFields: ['id', 'email', 'first_name', 'last_name']
     }, this.facebookCallback.bind(this)));
 
     passport.use(new TwitterStrategy({
       consumerKey: this.options.twitter.consumerKey,
       consumerSecret: this.options.twitter.consumerSecret,
-      callbackURL: this.options.twitter.callback,
+      callbackURL: this.baseUrl + '/api/v1/auth/twitter/return',
       includeEmail: true
     }, this.twitterCallback.bind(this)));
 

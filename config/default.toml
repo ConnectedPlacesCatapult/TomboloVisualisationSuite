@@ -41,12 +41,10 @@ sessionSecret = "changethis!"
 [auth.facebook]
 clientId = "147217102619899"
 clientSecret = "1deb1f9d17a53f41ddce510a9c47c109"
-callback = "http://localhost:4200/api/v1/auth/facebook/return"
 
 [auth.twitter]
 consumerKey = "QWEAgUk3nlZjxNkCrk9Zg5ilZ"
 consumerSecret = "NBNSxKBIu12QHXZDGvMViM5YdsioAUtW5wrpehzFdS9p71Cyv6"
-callback = "http://localhost:4200/api/v1/auth/twitter/return"
 
 [client]
 authEndpoint = "/accounts/api/v1"

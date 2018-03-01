@@ -26,9 +26,7 @@ export interface MailerConfig {
   from?: string;
   /** Base path of template directory (can be relative to CWD) **/
   basePath?: string;
-  /** Base url used to form links in email templates **/
-  baseLinkUrl?: string;
-};
+}
 
 /**
  * DI factory function to create and configure mailer.
