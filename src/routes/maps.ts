@@ -19,21 +19,30 @@ const baseUrl = config.get('server.baseUrl');
 
 router.get('/', async (req, res, next) => {
   try {
-    const mapGroups = await MapGroup.scope('full').findAll<MapGroup>();
 
-    const results = mapGroups.map(group => ({
+    // Get system map groups
+    const mapGroups = await MapGroup.scope('systemMaps').findAll<MapGroup>();
+
+    let results = mapGroups.map(group => ({
       id: group.id,
       name: group.name,
       order: group.order,
-      maps: group.maps.map(map => ({
-        id: map.id,
-        name: map.name,
-        description: map.description,
-        icon: map.icon,
-        order: map.order,
-        styleUrl: `${baseUrl}/maps/${map.id}/style.json`
-      }))
+      maps: group.maps.map(clientSafeMap)
     }));
+
+    // Get user's maps
+    if (req.user) {
+      const userMaps = await TomboloMap.findAll<TomboloMap>({where: {ownerId: req.user.id}});
+
+      const userGroup = {
+        id: 'usergroup',
+        name: 'My Maps',
+        order: 99,
+        maps: userMaps.map(clientSafeMap)
+      };
+
+      results.push(userGroup);
+    }
 
     res.json(results);
   }
@@ -62,5 +71,18 @@ router.get('/:mapId/style.json', async (req, res, next) => {
   }
 });
 
+////////////////
+// Route helpers
+
+function clientSafeMap(map: TomboloMap): object {
+  return {
+    id: map.id,
+    name: map.name,
+    description: map.description,
+    icon: map.icon,
+    order: map.order,
+    styleUrl: `${baseUrl}/maps/${map.id}/style.json`
+  };
+}
 
 export default router;

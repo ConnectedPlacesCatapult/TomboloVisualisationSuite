@@ -18,6 +18,7 @@ import {FileIngester} from '../../lib/file-ingester/file-ingester';
 import {Dataset} from '../../db/models/Dataset';
 import {TomboloMap} from '../../db/models/TomboloMap';
 import {DataAttribute} from '../../db/models/DataAttribute';
+import {isAuthenticated} from '../../lib/utils';
 
 const logger = Container.get(LoggerService);
 const fileUploader = Container.get(FileIngester);
@@ -35,7 +36,7 @@ const upload = multer({
 /**
  * Get client config
  */
-router.get('/:uploadId', async (req, res, next) => {
+router.get('/:uploadId', isAuthenticated, async (req, res, next) => {
   try {
     const upload = await FileUpload.findById<FileUpload>(req.params.uploadId);
 
@@ -51,7 +52,7 @@ router.get('/:uploadId', async (req, res, next) => {
   }
 });
 
-router.post('/', upload.single('file'), async (req, res, next) => {
+router.post('/', isAuthenticated, upload.single('file'), async (req, res, next) => {
 
  try {
     const file = req.file;
@@ -62,7 +63,8 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       originalName: file.originalname,
       size: file.size,
       path: file.path,
-      status: 'uploaded'
+      status: 'uploaded',
+      ownerId: req.user.id
     });
 
     // Do not wait for processing to finish.
@@ -77,7 +79,7 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   }
 });
 
-router.post('/:uploadId', async (req, res, next) => {
+router.post('/:uploadId', isAuthenticated, async (req, res, next) => {
   try {
     let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId);
 
@@ -98,25 +100,7 @@ router.post('/:uploadId', async (req, res, next) => {
   }
 });
 
-router.get('/:uploadId/dataset', async (req, res, next) => {
-  try {
-    let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId);
-
-    if (!fileUpload) {
-      return next({status: 404, message: 'Upload not found'});
-    }
-
-    const dataset = await fileUploader.generateDataset(fileUpload);
-
-    res.json(dataset);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
-router.get('/:uploadId/dataset', async (req, res, next) => {
+router.get('/:uploadId/dataset', isAuthenticated, async (req, res, next) => {
   try {
     let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId, {include: [Dataset]});
 
@@ -140,7 +124,7 @@ router.get('/:uploadId/dataset', async (req, res, next) => {
   }
 });
 
-router.get('/:uploadId/map', async (req, res, next) => {
+router.get('/:uploadId/map', isAuthenticated, async (req, res, next) => {
   try {
     let fileUpload = await FileUpload.findById<FileUpload>(req.params.uploadId, {
       include: [{model: Dataset, include: [{model: DataAttribute}]}, TomboloMap]

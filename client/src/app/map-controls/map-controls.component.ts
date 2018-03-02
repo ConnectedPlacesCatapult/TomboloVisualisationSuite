@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MapService} from '../map-service/map.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {BookmarkService} from '../bookmark-service/bookmark.service';
@@ -9,6 +9,7 @@ import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
 import {MatDialog} from '@angular/material';
 import {Subscription} from 'rxjs/Subscription';
+import {AuthService} from '../auth/auth.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -27,8 +28,9 @@ export class MapControlsComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private dialogsService: DialogsService,
     private location: Location,
-    private dialog: MatDialog,
-    private mapService: MapService) {}
+    private authService: AuthService,
+    private mapService: MapService,
+    private router: Router) {}
 
   private _subs: Subscription[] = [];
 
@@ -63,6 +65,15 @@ export class MapControlsComponent implements OnInit {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
       this.dialogsService.share('Share your Map', res['shortUrl']);
     });
+  }
+
+  editMap(): void {
+    if (!this.authService.getUserSync()) {
+      this.router.navigate(['/', {outlets: {loginBox: 'login'}}])
+    }
+    else {
+      this.router.navigate(['/edit'])
+    }
   }
 
   showRecipeDialog(): void {

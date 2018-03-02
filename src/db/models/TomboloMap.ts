@@ -107,4 +107,5 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
   @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;
+
 }

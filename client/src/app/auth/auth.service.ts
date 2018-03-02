@@ -7,6 +7,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {NotificationService} from '../dialogs/notification.service';
 import {UserBase} from '../../../../src/shared/user-base';
+import {Router} from '@angular/router';
 
 const debug = Debug('tombolo:AuthService');
 
@@ -14,10 +15,13 @@ const debug = Debug('tombolo:AuthService');
 export class AuthService {
 
   private _user$ = new Subject<User>();
+  private _user: User;
 
   constructor(
     private http: HttpClient,
-    private notificationService: NotificationService) {}
+    private notificationService: NotificationService,
+    private router: Router) {}
+
 
   user$(): Observable<User> {
     return this._user$.asObservable();
@@ -133,11 +137,13 @@ export class AuthService {
     return this.http.get<User>(`${environment.apiEndpoint}/auth/me`)
       .map(user => {
         debug(`Loaded user: ${user.email}`);
+        this._user = user;
         this._user$.next(user);
 
         return user;
       })
       .catch(e => {
+        this._user = null;
         this._user$.next(null);
 
         if (e instanceof HttpErrorResponse && e.status === 404) {
@@ -150,9 +156,15 @@ export class AuthService {
       .toPromise();
   }
 
+  getUserSync(): User {
+    return this._user;
+  }
+
   logOut(): Promise<void> {
     return this.http.get(`${environment.apiEndpoint}/auth/logout`, {}).map(() => {
+      this._user = null;
       this._user$.next(null);
+      this.router.navigate(['/']);
     }).toPromise();
   }
 
