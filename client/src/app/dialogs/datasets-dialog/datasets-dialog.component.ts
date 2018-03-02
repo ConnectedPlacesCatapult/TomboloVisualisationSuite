@@ -7,6 +7,7 @@ import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core
 import {APP_CONFIG, AppConfig} from '../../config.service';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
+import {MapService} from '../../map-service/map.service';
 
 @Component({
   selector: 'share-dialog',
@@ -21,6 +22,7 @@ export class DatasetsDialog implements OnInit {
   selectedGroupId: string;
 
   constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
+              private mapService: MapService,
               private http: HttpClient,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(APP_CONFIG) private config: AppConfig) {
@@ -31,14 +33,14 @@ export class DatasetsDialog implements OnInit {
   }
 
   getGroups(): void {
-    this.http.get(`${environment.localApiEndpoint}/datasets/groups`)
-    .subscribe(groups => this.groups = groups);
+    this.mapService.loadDatasetGroups()
+      .subscribe(groups => this.groups = groups);
   }
 
   loadDatasets(groupId: string): void {
     this.selectedGroupId = groupId;
 
-    this.http.get(`${environment.localApiEndpoint}/datasets/groups/${groupId}`)
+    this.mapService.loadDatasetsInGroup(groupId)
       .subscribe(group => this.datasets = group['datasets']);
   }
 
@@ -46,7 +48,8 @@ export class DatasetsDialog implements OnInit {
     this.selectedGroupId = null;
 
     if (this.filterInput === '') return;
-    this.http.get<object[]>(`${environment.localApiEndpoint}/datasets?query=${this.filterInput}`)
+
+    this.mapService.findDatasetsByQuery(this.filterInput)
       .subscribe(datasets => this.datasets = datasets);
   }
 }
