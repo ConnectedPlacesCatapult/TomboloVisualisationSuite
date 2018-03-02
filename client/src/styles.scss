@@ -86,3 +86,9 @@ body {
 .mat-horizontal-stepper-header{
   pointer-events: none !important;
 }
+
+.tooltip-shifted {
+  position: relative;
+  left: 40px;
+}
+

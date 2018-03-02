@@ -12,8 +12,16 @@
       </mat-expansion-panel-header>
 
       <mat-nav-list>
-        <mat-list-item >
-          <a matLine href="d">Hello</a>
+        <mat-list-item *ngFor="let map of userMaps$ | async">
+          <a matLine [matTooltip]="map.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted"
+             [routerLink]="['/',{outlets:{primary:['edit', map.id], rightBar:['editpanel']}}]"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: false}"
+             angulartics2On="click"
+             angularticsCategory="Playground"
+             angularticsAction="Edit map"
+             [angularticsLabel]="map.name">
+            {{map.name}}</a>
           <button mat-icon-button class="compressed" (click)="deleteMap()">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>

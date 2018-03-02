@@ -67,7 +67,16 @@ export class MapService {
    * @returns {Promise<IMapGroup[]>}
    */
   loadMapGroups(): Observable<IMapGroup[]> {
-    return this.http.get<IMapGroup[]>('/maps');
+    return this.http.get<IMapGroup[]>('/maps/grouped');
+  }
+
+  /**
+   * Load user's maps
+   *
+   * @returns {Promise<IMapGroup[]>}
+   */
+  loadUserMaps(userId: string): Observable<IMapGroup[]> {
+    return this.http.get<IMapGroup[]>(`/maps?userId=${userId}`);
   }
 
   pollIngest(uploadID: string): Observable<FileUploadBase> {

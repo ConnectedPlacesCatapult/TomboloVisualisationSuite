@@ -10,7 +10,9 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {MatDialog} from '@angular/material';
 import {UploadDialogComponent, UploadDialogContext} from './upload-dialog/upload-dialog.component';
-import {DialogsService} from '../dialogs/dialogs.service';
+import {AuthService} from '../auth/auth.service';
+import {Observable} from 'rxjs/Observable';
+import {User} from '../auth/user';
 
 const debug = Debug('tombolo:map-editor');
 
@@ -25,11 +27,14 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   options: UploaderOptions;
 
+  userMaps$: Observable<object[]> = null;
+
   files: UploadFile[] = [];
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
-  private subs: Subscription[] = [];
+
+  private _subs: Subscription[] = [];
 
   constructor(
               private router: Router,
@@ -38,20 +43,26 @@ export class MapEditorComponent implements OnInit, OnDestroy {
               private httpClient: HttpClient,
               private mapService: MapService,
               private matDialog: MatDialog,
-              private dialogService: DialogsService) {}
+              private authService: AuthService) {}
 
   ngOnInit() {
+
     this.activatedRoute.params.subscribe(params => {
       this.loadMap(params.mapID);
     });
 
-    this.subs.push(this.uploadOutput.subscribe(event => {
+    this._subs.push(this.uploadOutput.subscribe(event => {
       this.handleUploadOutput(event);
+    }));
+
+    this._subs.push(this.authService.user$.subscribe(user => {
+      this.loadUserMaps(user);
+      this.loadUserDatasets(user);
     }));
   }
 
   ngOnDestroy() {
-    this.subs.forEach(sub => sub.unsubscribe());
+    this._subs.forEach(sub => sub.unsubscribe());
   }
 
   loadMap(mapID: string) {
@@ -63,6 +74,18 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     this.mapService.loadMap(mapID).then(map => {
       //map.setBasemapDetail(this.sliderValue);
     });
+  }
+
+  loadUserMaps(user: User) {
+    if (user) {
+      this.userMaps$ = this.mapService.loadUserMaps(user.id)
+    }
+  }
+
+  loadUserDatasets(user: User) {
+    if (user) {
+      //this.userMaps$ = this.mapService.loadUserMaps(user.id)
+    }
   }
 
   backToView() {

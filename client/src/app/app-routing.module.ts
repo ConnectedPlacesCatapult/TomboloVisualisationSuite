@@ -48,6 +48,10 @@ const routes: Routes = [
     component: MapEditorComponent
   },
   {
+    path: 'edit',
+    component: MapEditorComponent
+  },
+  {
     path: 'mapinfo',
     component: MapInfoComponent,
     outlet: 'rightBar'

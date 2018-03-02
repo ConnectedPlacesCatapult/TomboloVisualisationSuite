@@ -12,6 +12,8 @@ import {Angulartics2} from 'angulartics2';
 import {IMapGroup} from '../../../../src/shared/IMapGroup';
 import {GeosearchItem} from '../geosearch/geosearch.service';
 import LngLatBoundsLike = mapboxgl.LngLatBoundsLike;
+import {Subscription} from 'rxjs/Subscription';
+import {AuthService} from '../auth/auth.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -24,23 +26,30 @@ export class MapsDemoComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
-  maps$: Observable<object[]> = null;
+  private _subs: Subscription[] = [];
 
   mapGroups$: Observable<IMapGroup[]> = null;
 
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private mapService: MapService,
-              private router: Router) {}
+              private router: Router,
+              private authService: AuthService) {}
 
   ngOnInit() {
-    this.mapGroups$ = this.mapService.loadMapGroups();
+
+    // Load maps whenever user changes
+    this._subs.push(this.authService.user$.subscribe(user => {
+      this.mapGroups$ = this.mapService.loadMapGroups();
+    }));
+
     this.activatedRoute.params.subscribe(params => {
       this.loadMap(params.mapID);
     });
   }
 
   ngOnDestroy() {
+    this._subs.forEach(sub => sub.unsubscribe());
   }
 
   loadMap(mapID: string) {
@@ -60,10 +69,23 @@ export class MapsDemoComponent implements OnInit {
 
   gotoPlayground() {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.router.navigate(['/',{outlets:{
-        primary:['edit', map.id],
-        loginBar: null,
-        rightBar:['editpanel']}}], {
+
+      let route;
+
+      if (map.id) {
+        route = ['/', {outlets: {
+          primary: ['edit', map.id],
+          loginBar: null,
+          rightBar: ['editpanel']}}]
+      }
+      else {
+        route = ['/', {outlets: {
+          primary: ['edit'],
+          loginBar: null,
+          rightBar: ['editpanel']}}]
+      }
+
+      this.router.navigate(route,{
         preserveQueryParams: true
       });
     });

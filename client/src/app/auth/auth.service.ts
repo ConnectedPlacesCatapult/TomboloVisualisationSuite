@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as Debug from 'debug';
-import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {User} from './user';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
@@ -14,7 +14,7 @@ const debug = Debug('tombolo:AuthService');
 @Injectable()
 export class AuthService {
 
-  private _user$ = new Subject<User>();
+  private _user$ = new BehaviorSubject<User>(null);
   private _user: User;
 
   constructor(
@@ -23,7 +23,7 @@ export class AuthService {
     private router: Router) {}
 
 
-  user$(): Observable<User> {
+  get user$(): Observable<User> {
     return this._user$.asObservable();
   }
 

@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as config from 'config';
-
 import {Container} from 'typedi';
 import {LoggerService} from '../lib/logger';
 import {TomboloMap} from '../db/models/TomboloMap';
@@ -17,7 +16,39 @@ const baseUrl = config.get('server.baseUrl');
 //////////////////////
 // Routes
 
+
+// Get maps
 router.get('/', async (req, res, next) => {
+  try {
+
+    let where: object;
+
+    if (req.query.userId) {
+      // Get user's maps
+      where = {
+        ownerId: req.query.userId
+      };
+    }
+    else {
+      // Get all public maps
+      where = {
+        $or: [{isPrivate: false}, {isPrivate: null}]
+      };
+    }
+
+    const maps = await TomboloMap.findAll<TomboloMap>({where, limit: 1000});
+
+    res.json(maps.map(clientSafeMap));
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+
+// Get maps grouped by groupID for populating left hand navigation
+router.get('/grouped', async (req, res, next) => {
   try {
 
     // Get system map groups
@@ -79,8 +110,10 @@ function clientSafeMap(map: TomboloMap): object {
     id: map.id,
     name: map.name,
     description: map.description,
+    isPrivate: map.isPrivate,
     icon: map.icon,
-    order: map.order,
+    groupId: map.mapGroupId,
+    ownerId: map.ownerId,
     styleUrl: `${baseUrl}/maps/${map.id}/style.json`
   };
 }
