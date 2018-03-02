@@ -41,6 +41,11 @@ router.get('/groups/:groupId', async (req, res, next) => {
 router.get('/:datasetId', async (req, res, next) => {
   try {
     const dataset = await Dataset.findById<Dataset>(req.params.datasetId);
+
+    if (!dataset) {
+      return next({status: 404, message: 'Dataset not found'});
+    }
+
     res.json(dataset);
   }
   catch (e) {
@@ -53,27 +58,27 @@ router.get('/', async (req, res, next) => {
   let searchQuery;
   let searchTerm;
 
-  if (req.query.query) {
+  if (req.query.query && req.query.query !== '') {
     searchQuery = `SELECT * FROM datasets WHERE to_tsvector('english', name || ' ' || coalesce(description, '')) 
       @@ plainto_tsquery('english', ?) LIMIT 10;`;
     searchTerm = req.query.query;
-  } else if (req.query.userId) {
+  } else if (req.query.userId && req.query.userId !== '') {
     searchQuery = `SELECT * FROM datasets WHERE owner_id = ? LIMIT 10;`;
     searchTerm = req.query.userId;
   } else {
-    res.send('Must specify query or userId.');
-    return;
+    return next({status: 400, message: 'Must provide userId or query'});
   }
 
-  db.sequelize.query(
-    searchQuery,
-    {replacements: [searchTerm], type: sequelize.QueryTypes.SELECT}
-  ).then(datasets => {
-    res.json(datasets);
-  }).catch(e => {
+  try {
+    const queryResult = await db.sequelize.query(searchQuery,
+      {replacements: [searchTerm], type: sequelize.QueryTypes.SELECT}
+    );
+    res.json(queryResult);
+  }
+  catch (e) {
     logger.error(e);
     next(e);
-  });
+  }
 });
 
 export default router;
