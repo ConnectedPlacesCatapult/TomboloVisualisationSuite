@@ -44,8 +44,8 @@
 
 
       <mat-nav-list>
-        <mat-list-item *ngFor="let ds of userDatasets">
-          <a matLine [matTooltip]="ds.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted">
+        <mat-list-item *ngFor="let ds of userDatasets" [matTooltip]="ds.name" matTooltipPosition="right">
+          <a matLine>
             {{ds.name}}
           </a>
           <button mat-icon-button  class="compressed" (click)="addDataset(ds)">
