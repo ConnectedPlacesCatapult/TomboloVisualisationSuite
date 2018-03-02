@@ -54,11 +54,11 @@ router.get('/', async (req, res, next) => {
   let searchTerm;
 
   if (req.query.query) {
-    searchQuery = `SELECT name FROM datasets WHERE to_tsvector('english', name || ' ' || coalesce(description, '')) 
+    searchQuery = `SELECT * FROM datasets WHERE to_tsvector('english', name || ' ' || coalesce(description, '')) 
       @@ plainto_tsquery('english', ?) LIMIT 10;`;
     searchTerm = req.query.query;
   } else if (req.query.userId) {
-    searchQuery = `SELECT name FROM datasets WHERE owner_id = ? LIMIT 10;`;
+    searchQuery = `SELECT * FROM datasets WHERE owner_id = ? LIMIT 10;`;
     searchTerm = req.query.userId;
   } else {
     res.send('Must specify query or userId.');
@@ -68,9 +68,8 @@ router.get('/', async (req, res, next) => {
   db.sequelize.query(
     searchQuery,
     {replacements: [searchTerm], type: sequelize.QueryTypes.SELECT}
-  ).then(datasetNames => {
-    const namesArray = datasetNames.map(datasetName => datasetName.name);
-    res.json(namesArray);
+  ).then(datasets => {
+    res.json(datasets);
   }).catch(e => {
     logger.error(e);
     next(e);

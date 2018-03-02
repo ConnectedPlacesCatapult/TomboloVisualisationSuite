@@ -158,7 +158,6 @@ export class StyleGenerator {
   }
 
   private insertMapLayer(insertionPoint: string, style: object, layer: object): void {
-    console.log(style);
     const index = style['layers'].findIndex(l => l['id'] === insertionPoint);
     style['layers'].splice(index, 0, layer);
   }

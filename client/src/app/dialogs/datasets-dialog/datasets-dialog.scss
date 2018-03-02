@@ -1,0 +1,51 @@
+:host {
+  .row {
+    width: 40%;
+    height: 400px;
+    overflow: hidden;
+    padding: 2px 20px;
+    float: left;
+  }
+
+  h3 {
+    padding: 0;
+    margin: 0;
+    height: auto;
+  }
+
+  /deep/ .mat-list {
+    padding: 0;
+  }
+
+  /deep/ .mat-list-item-content {
+    cursor: pointer;
+  }
+
+  .border {
+    border-right: 1px solid rgba(15,45,58,0.5);
+  }
+
+  .darkblue {
+    color: rgb(5,35,48);
+  }
+
+  .blue {
+    color: rgb(41,182,206);
+  }
+
+  .block {
+    width: 100%;
+    zoom: 1;
+  }
+
+  .search {
+    width: 100%;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(15,45,58,0.5);
+  }
+
+  /deep/ .mat-input-element {
+    width: 80%;
+  }
+}
