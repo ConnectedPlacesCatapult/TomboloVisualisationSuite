@@ -1,8 +1,6 @@
 import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
-import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
 import {MapService} from '../map-service/map.service';
 import {UploaderOptions, UploadFile, UploadInput, UploadOutput} from 'ngx-uploader';
 import {environment} from '../../environments/environment';
@@ -13,6 +11,7 @@ import {UploadDialogComponent, UploadDialogContext} from './upload-dialog/upload
 import {AuthService} from '../auth/auth.service';
 import {Observable} from 'rxjs/Observable';
 import {User} from '../auth/user';
+import {DatasetsDialog} from '../dialogs/datasets-dialog/datasets-dialog.component';
 
 const debug = Debug('tombolo:map-editor');
 
@@ -26,10 +25,8 @@ export class MapEditorComponent implements OnInit, OnDestroy {
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   options: UploaderOptions;
-
   userMaps$: Observable<object[]> = null;
 
-  files: UploadFile[] = [];
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
@@ -38,12 +35,10 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   constructor(
               private router: Router,
-              private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient,
               private mapService: MapService,
-              private matDialog: MatDialog,
-              private authService: AuthService) {}
+              private authService: AuthService,
+              private matDialog: MatDialog) {}
 
   ngOnInit() {
 
@@ -143,5 +138,9 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     };
 
     this.uploadInput.emit(event);
+  }
+
+  browsePublicDatasets() {
+    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog);
   }
 }
