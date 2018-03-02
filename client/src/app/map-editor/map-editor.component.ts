@@ -11,6 +11,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MatDialog} from '@angular/material';
 import {UploadDialogComponent, UploadDialogContext} from './upload-dialog/upload-dialog.component';
 import {DialogsService} from '../dialogs/dialogs.service';
+import {DatasetsDialog} from "../dialogs/datasets-dialog/datasets-dialog.component";
 
 const debug = Debug('tombolo:map-editor');
 
@@ -37,8 +38,7 @@ export class MapEditorComponent implements OnInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               private httpClient: HttpClient,
               private mapService: MapService,
-              private matDialog: MatDialog,
-              private dialogService: DialogsService) {}
+              private matDialog: MatDialog) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
@@ -120,5 +120,9 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     };
 
     this.uploadInput.emit(event);
+  }
+
+  browsePublicDatasets() {
+    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog);
   }
 }

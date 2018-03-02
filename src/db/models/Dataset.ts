@@ -2,6 +2,7 @@ import {BelongsTo, Column, DataType, DefaultScope, ForeignKey, HasMany, Model, T
 import {User} from './User';
 import {DataAttribute} from './DataAttribute';
 import * as sequelize from 'sequelize';
+import {DatasetGroup} from './DatasetGroup';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
@@ -109,12 +110,25 @@ export class Dataset extends Model<Dataset> {
   })
   dbBytes: number;
 
+  @Column({
+    type: DataType.INTEGER()
+  })
+  order: number;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     field: 'owner_id'
   })
   ownerId: string;
+
+  @ForeignKey(() => DatasetGroup)
+  @Column({
+    type: DataType.TEXT,
+    field: 'dataset_group_id'
+  })
+  datasetGroupId: string;
+
 
   @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
