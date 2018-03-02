@@ -12,6 +12,8 @@ import {AuthService} from '../auth/auth.service';
 import {Observable} from 'rxjs/Observable';
 import {User} from '../auth/user';
 import {DatasetsDialog} from '../dialogs/datasets-dialog/datasets-dialog.component';
+import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
+import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
 
 const debug = Debug('tombolo:map-editor');
 
@@ -25,7 +27,9 @@ export class MapEditorComponent implements OnInit, OnDestroy {
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   options: UploaderOptions;
-  userMaps$: Observable<object[]> = null;
+
+  userMaps$: Observable<ITomboloMap[]> = null;
+  userDatasets$: Observable<ITomboloDataset[]> = null;
 
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
@@ -73,13 +77,13 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   loadUserMaps(user: User) {
     if (user) {
-      this.userMaps$ = this.mapService.loadUserMaps(user.id)
+      this.userMaps$ = this.mapService.loadUserMaps(user.id);
     }
   }
 
   loadUserDatasets(user: User) {
     if (user) {
-      //this.userMaps$ = this.mapService.loadUserMaps(user.id)
+      this.userDatasets$ = this.mapService.loadUserDatasets(user.id);
     }
   }
 

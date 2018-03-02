@@ -11,6 +11,8 @@ import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
 import {FileUploadBase} from '../../../../src/shared/fileupload-base';
 import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
 import {IMapGroup} from '../../../../src/shared/IMapGroup';
+import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
+import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
 
 const debug = Debug('tombolo:MapService');
 
@@ -73,10 +75,19 @@ export class MapService {
   /**
    * Load user's maps
    *
+   * @returns {Promise<ITomboloMap[]>}
+   */
+  loadUserMaps(userId: string): Observable<ITomboloMap[]> {
+    return this.http.get<ITomboloMap[]>(`/maps?userId=${userId}`);
+  }
+
+  /**
+   * Load user's datasets
+   *
    * @returns {Promise<IMapGroup[]>}
    */
-  loadUserMaps(userId: string): Observable<IMapGroup[]> {
-    return this.http.get<IMapGroup[]>(`/maps?userId=${userId}`);
+  loadUserDatasets(userId: string): Observable<ITomboloDataset[]> {
+    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?userId=${userId}`);
   }
 
   pollIngest(uploadID: string): Observable<FileUploadBase> {

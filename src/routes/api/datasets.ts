@@ -10,7 +10,6 @@ import {IDatasetGroup} from '../../shared/IDatasetGroup';
 
 const logger = Container.get(LoggerService);
 const router = express.Router();
-const sequelize = Sequelize;
 const db = Container.get(DB);
 
 // Tile server config options
@@ -50,31 +49,21 @@ router.get('/:datasetId', async (req, res, next) => {
 });
 
 router.get('/', async (req, res, next) => {
-  let searchQuery;
-  let searchTerm;
-
-  if (req.query.query) {
-    searchQuery = `SELECT name FROM datasets WHERE to_tsvector('english', name || ' ' || coalesce(description, '')) 
-      @@ plainto_tsquery('english', ?) LIMIT 10;`;
-    searchTerm = req.query.query;
-  } else if (req.query.userId) {
-    searchQuery = `SELECT name FROM datasets WHERE owner_id = ? LIMIT 10;`;
-    searchTerm = req.query.userId;
-  } else {
-    res.send('Must specify query or userId.');
-    return;
+  try {
+    if (req.query.userId) {
+      res.json(await Dataset.findByUserId(req.query.userId));
+    }
+    else if (req.query.query) {
+      res.json(await Dataset.findByFullTextQuery(req.query.query));
+    }
+    else {
+      next({status: 400, message: 'Must specify userId or query parameter'});
+    }
   }
-
-  db.sequelize.query(
-    searchQuery,
-    {replacements: [searchTerm], type: sequelize.QueryTypes.SELECT}
-  ).then(datasetNames => {
-    const namesArray = datasetNames.map(datasetName => datasetName.name);
-    res.json(namesArray);
-  }).catch(e => {
+  catch (e) {
     logger.error(e);
     next(e);
-  });
+  }
 });
 
 export default router;

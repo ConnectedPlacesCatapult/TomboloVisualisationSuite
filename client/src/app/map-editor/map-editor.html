@@ -22,7 +22,7 @@
              angularticsAction="Edit map"
              [angularticsLabel]="map.name">
             {{map.name}}</a>
-          <button mat-icon-button class="compressed" (click)="deleteMap()">
+          <button mat-icon-button class="compressed" (click)="deleteMap(map.id)">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
         </mat-list-item>
@@ -34,13 +34,16 @@
       MY DATASETS
     </mat-expansion-panel-header>
 
+
       <mat-nav-list>
-        <mat-list-item >
-          <a matLine href="d">Hello</a>
-          <button mat-icon-button  class="compressed" (click)="addDataset()">
+        <mat-list-item *ngFor="let ds of userDatasets$ | async">
+          <a matLine [matTooltip]="ds.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted">
+            {{ds.name}}
+          </a>
+          <button mat-icon-button  class="compressed" (click)="addDataset(ds.id)">
             <mat-icon svgIcon="add"></mat-icon>
           </button>
-          <button mat-icon-button class="compressed" (click)="deleteDataset()">
+          <button mat-icon-button class="compressed" (click)="deleteDataset(ds.id)">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
         </mat-list-item>
