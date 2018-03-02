@@ -125,3 +125,11 @@ export function postgresTypeName(type: number): string {
       return `Custom type ${type}`;
   }
 }
+
+export function isAuthenticated(req, res, next) {
+
+  if (req.user)
+    return next();
+
+  res.status(401).send('Not Authorized');
+}

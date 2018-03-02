@@ -1,7 +1,9 @@
 import {BelongsTo, Column, DataType, DefaultScope, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
 import {User} from './User';
 import {DataAttribute} from './DataAttribute';
+import {DatasetGroup} from './DatasetGroup';
 import * as sequelize from 'sequelize';
+import {QueryInterface} from 'sequelize';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
@@ -109,6 +111,11 @@ export class Dataset extends Model<Dataset> {
   })
   dbBytes: number;
 
+  @Column({
+    type: DataType.INTEGER()
+  })
+  order: number;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
@@ -116,11 +123,40 @@ export class Dataset extends Model<Dataset> {
   })
   ownerId: string;
 
+  @ForeignKey(() => DatasetGroup)
+  @Column({
+    type: DataType.TEXT,
+    field: 'dataset_group_id'
+  })
+  datasetGroupId: string;
+
+
   @BelongsTo(() => User, {onDelete: 'CASCADE'})
   owner: User;
 
   @HasMany(() => DataAttribute)
   dataAttributes: DataAttribute[];
+
+  // Find all datasets by userId
+  static findByUserId(userId: string) {
+    return Dataset.findAll<Dataset>({where: { ownerId: userId}});
+  }
+
+  // Find datasets by full-text query
+  static findByFullTextQuery(query: string) {
+
+    const queryInterface: QueryInterface = (this as any).QueryInterface;
+    const sqlSafeQuery = queryInterface.escape(query);
+
+    const fullTextQuery =
+      `to_tsvector('english', name || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ${sqlSafeQuery})`;
+
+    return Dataset.findAll<Dataset>({
+      where: {
+        query: sequelize.literal(fullTextQuery)
+      } as any
+    });
+  }
 
   async calculateDataAttributeStats(): Promise<void> {
     // Calculating attribute stats is only supported for 'table' and 'sql' type datasets
@@ -174,6 +210,8 @@ export class Dataset extends Model<Dataset> {
     else
       return this.source;
   }
+
+
 
   private async updateNumericAttribute(attribute: DataAttribute): Promise<void> {
 

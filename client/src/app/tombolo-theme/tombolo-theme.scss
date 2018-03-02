@@ -40,16 +40,19 @@
     border-radius: $br;
   }
 
-  // Adjust positioning of FontAwesome icons in buttons to center in 24px box
+  // Adjust positioning of icons in buttons
   .mat-button, .mat-raised-button, .mat-icon-button {
-    .mat-icon.fa {
-      margin-right: 2px;
-    }
-
     .mat-icon.fa:before {
       position: relative;
       top: 4px;
     }
+  }
+
+  // Compressed icon button that can be packed closer together
+  .mat-icon-button.compressed {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
   }
 
   .button-facebook {
@@ -64,6 +67,15 @@
     @include gradient-google-button();
   }
 
+  .button-playground {
+    @include gradient-dark-button();
+    margin: $g/2 $g;
+    width: $sidebar-left-width - $g * 2;
+    height: $g * 2;
+    color: mat-color($accent, 300);
+    text-transform: uppercase;
+  }
+
   /* Sidebars */
 
   .sidebar {
@@ -71,8 +83,31 @@
   }
 
   .sidebar-left {
-    width: $sidebar-left-width;
     @include gradient-sidebar-left($primary);
+    color: white;
+    width: $sidebar-left-width;
+
+    h2 {
+      text-align: center;
+      font-weight: 300;
+    }
+
+    hr {
+      height: 1px;
+      margin: $g/2 $g;
+      background-color: mat-color($accent, 200, 0.2);
+      border: none;
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.7);
+
+      &.short {
+        background-color: mat-color($accent, 200, 0.4);
+        margin: $g $g * 4.5;
+      }
+    }
+
+    .mat-button {
+      color: mat-color($accent);
+    }
   }
 
   .sidebar-right {
@@ -131,7 +166,6 @@
     }
   }
 
-
   /* Left navigation expansion panel */
 
   .sidebar-left .mat-expansion-panel {
@@ -144,8 +178,8 @@
       height: 1px;
       margin: $g/2 $g;
       content: "";
-      background-color: mat-color($tombolo-darkblue, 400);
-      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.5);
+      background-color: mat-color($accent, 200, 0.2);
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.7);
     }
 
     // Truncate long group titles with ellipsis
@@ -229,43 +263,63 @@
 
     padding-top: 0;
 
-    a.mat-list-item {
+    .mat-list-item {
       color: mat-color($accent, 300);
       font-size: 14px;
       padding: 0;
       height: $g * 2;
 
-      .mat-list-item-content {
-        padding: 0 $g * 2 0 $g;
-
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
+      a {
         line-height: $g * 2;
+      }
 
-        mat-icon {
-          // Add right padding to move text onto grid position
-          padding-right: $g - 4px;
+      .mat-list-item-content {
+        // Right padding set to move list item button to correct position
+        padding: 0 13px 0 $g;
 
-          position: relative;
-          top: 6px;
-          color: mat-color($accent, 300);
-        }
+        //text-overflow: ellipsis;
+        //white-space: nowrap;
+        //overflow: hidden;
+        //display: block;
+        //line-height: $g * 2;
+
+      }
+
+      &.list-item-placeholder .mat-list-item-content {
+        font-style: italic;
+        color: mat-color($accent, 300, 0.6);
       }
     }
 
-    // Add radio button as background image
-    .mat-list-item, .mat-list-item:hover {
-      background-image:  url(/assets/icons/radio-off.svg) !important;
-      background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 20px - $g center !important;
-    }
+    // Nav list style for links with glowing radio button
+    &.link-list {
 
-    .mat-list-item.active, .mat-list-item.active:hover {
-      background-image:  url(/assets/icons/radio-on.svg) !important;
-      background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 25px - $g center !important;
+
+      // Prefix icons for map types
+      .mat-icon {
+        // Add right padding to move text onto grid position
+        padding-right: $g - 4px;
+        color: mat-color($accent, 300);
+        position: relative;
+        top: 5px;
+      }
+
+      .mat-list-item-content {
+        padding: 0 $g * 2 0 $g;
+      }
+
+      // Add radio button as background image
+      .mat-list-item, .mat-list-item:hover {
+        background-image: url(/assets/icons/radio-off.svg) !important;
+        background-repeat: no-repeat !important;
+        background-position: $sidebar-left-width - 20px - $g center !important;
+      }
+
+      .mat-list-item.active, .mat-list-item.active:hover {
+        background-image: url(/assets/icons/radio-on.svg) !important;
+        background-repeat: no-repeat !important;
+        background-position: $sidebar-left-width - 25px - $g center !important;
+      }
     }
 
   }
@@ -543,5 +597,39 @@
     }
   }
 
+  /* Drag & Drop container */
+  .drop-container {
+    color: #008297;
+    margin: 0 $g;
+    padding: 0 0 0 60px;
+    p {
+      margin: 0;
+    }
 
+    p.caption {
+      margin-top: 0.2em;
+    }
+
+    background-image: url(/assets/images/upload.svg);
+    background-repeat: no-repeat;
+    background-position: left center;
+    height: 70px;
+
+    .upload-button {
+      display: inline-block;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-weight: bold;
+      color: mat-color($accent);
+      input {
+        display: none;
+      }
+    }
+
+    &.dragOver {
+      color: mat-color($accent);
+      outline: 1px solid mat-color($accent);
+    }
+  }
 }

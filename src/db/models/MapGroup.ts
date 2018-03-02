@@ -6,9 +6,9 @@ import {IMapGroup} from '../../shared/IMapGroup';
   tableName: 'map_groups'
 })
 @Scopes({
-  full: {
+  systemMaps: {
     order: [['order', 'asc nulls last'], ['maps', 'order', 'asc nulls last']],
-    include: [() => TomboloMap]
+    include: [{model: () => TomboloMap, where: {'ownerId': null}}]
   }
 })
 export class MapGroup extends Model<MapGroup> implements IMapGroup {

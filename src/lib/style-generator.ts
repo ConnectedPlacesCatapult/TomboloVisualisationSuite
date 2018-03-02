@@ -33,6 +33,7 @@ export class StyleGenerator {
     let style = map.basemap.style;
 
     style['name'] = map.name;
+    style['metadata']['id'] = map.id;
     style['metadata']['description'] = map.description;
     style['metadata']['datasets'] = this.datasetsMetadataForMap(map);
     style['metadata']['dataLayers'] = map.layers.map(layer => DATA_LAYER_PREFIX + layer.layerId);
@@ -157,7 +158,6 @@ export class StyleGenerator {
   }
 
   private insertMapLayer(insertionPoint: string, style: object, layer: object): void {
-    console.log(style);
     const index = style['layers'].findIndex(l => l['id'] === insertionPoint);
     style['layers'].splice(index, 0, layer);
   }

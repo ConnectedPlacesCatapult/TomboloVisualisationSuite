@@ -70,6 +70,13 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
   })
   center: number;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: true,
+    field: 'is_private'
+  })
+  isPrivate: boolean;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
@@ -107,4 +114,5 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
   @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;
+
 }

@@ -33,6 +33,7 @@ import ConfigRouter from './routes/api/config';
 import UploadsRouter from './routes/api/uploads';
 import TilesRouter from './routes/tiles';
 import MapsRouter from './routes/maps';
+import DatasetsRouter from './routes/api/datasets';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
 import AuthRouter from './routes/api/auth';
@@ -94,6 +95,7 @@ auth.init(app);
 //////////////////////////////////////////////////////////////////////////
 // Register Routes
 app.use('/api/v1/config', ConfigRouter);
+app.use('/api/v1/datasets', DatasetsRouter);
 app.use('/api/v1/bookmarks', BookmarksRouter);
 app.use('/api/v1/uploads', UploadsRouter);
 app.use('/api/v1/auth', AuthRouter);
