@@ -2,9 +2,10 @@
 
 <div class="sidebar-content">
   <button mat-button (click)="backToView()"><mat-icon svgIcon="backarrow"></mat-icon>Back to Maps</button>
+  <hr>
   <h2>Tombolo Playground</h2>
   <hr class="short">
-
+  <hr>
   <mat-accordion displayMode="flat">
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
@@ -12,8 +13,10 @@
       </mat-expansion-panel-header>
 
       <mat-nav-list>
-        <mat-list-item *ngFor="let map of userMaps$ | async">
-          <a matLine [matTooltip]="map.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted"
+        <mat-list-item *ngFor="let map of userMaps"
+                       [matTooltip]="map.name"
+                       matTooltipPosition="right">
+          <a matLine
              [routerLink]="['/',{outlets:{primary:['edit', map.id], rightBar:['editpanel']}}]"
              routerLinkActive="active"
              [routerLinkActiveOptions]="{exact: false}"
@@ -26,6 +29,11 @@
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
         </mat-list-item>
+
+        <mat-list-item *ngIf="userMaps.length == 0" class="list-item-placeholder">
+          No maps
+        </mat-list-item>
+
       </mat-nav-list>
 
     </mat-expansion-panel>
@@ -36,7 +44,7 @@
 
 
       <mat-nav-list>
-        <mat-list-item *ngFor="let ds of userDatasets$ | async">
+        <mat-list-item *ngFor="let ds of userDatasets">
           <a matLine [matTooltip]="ds.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted">
             {{ds.name}}
           </a>
@@ -46,6 +54,10 @@
           <button mat-icon-button class="compressed" (click)="deleteDataset(ds)">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="userDatasets.length == 0" class="list-item-placeholder">
+          No dataset
         </mat-list-item>
       </mat-nav-list>
 

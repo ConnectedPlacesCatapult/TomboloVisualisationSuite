@@ -95,12 +95,13 @@
     hr {
       height: 1px;
       margin: $g/2 $g;
-      background-color: mat-color($tombolo-darkblue, 400);
+      background-color: mat-color($accent, 200, 0.2);
       border: none;
-      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.5);
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.7);
 
       &.short {
-        margin: $g/2 $g * 4;
+        background-color: mat-color($accent, 200, 0.4);
+        margin: $g $g * 4.5;
       }
     }
 
@@ -177,8 +178,8 @@
       height: 1px;
       margin: $g/2 $g;
       content: "";
-      background-color: mat-color($tombolo-darkblue, 400);
-      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.5);
+      background-color: mat-color($accent, 200, 0.2);
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.7);
     }
 
     // Truncate long group titles with ellipsis
@@ -268,8 +269,12 @@
       padding: 0;
       height: $g * 2;
 
+      a {
+        line-height: $g * 2;
+      }
+
       .mat-list-item-content {
-        // Right padding set to move list item button to correct positon
+        // Right padding set to move list item button to correct position
         padding: 0 13px 0 $g;
 
         //text-overflow: ellipsis;
@@ -278,22 +283,30 @@
         //display: block;
         //line-height: $g * 2;
 
-        // Prefix icons for map types
-        .mat-icon {
-          // Add right padding to move text onto grid position
-          padding-right: $g - 4px;
-          color: mat-color($accent, 300);
-        }
+      }
 
-        // Reset for other icon buttons
-        .mat-button-wrapper .mat-icon {
-          padding-right: 0;
-        }
+      &.list-item-placeholder .mat-list-item-content {
+        font-style: italic;
+        color: mat-color($accent, 300, 0.6);
       }
     }
 
     // Nav list style for links with glowing radio button
     &.link-list {
+
+
+      // Prefix icons for map types
+      .mat-icon {
+        // Add right padding to move text onto grid position
+        padding-right: $g - 4px;
+        color: mat-color($accent, 300);
+        position: relative;
+        top: 5px;
+      }
+
+      .mat-list-item-content {
+        padding: 0 $g * 2 0 $g;
+      }
 
       // Add radio button as background image
       .mat-list-item, .mat-list-item:hover {

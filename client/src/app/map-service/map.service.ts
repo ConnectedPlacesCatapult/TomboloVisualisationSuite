@@ -100,7 +100,6 @@ export class MapService {
     return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?query=${query}`);
   }
 
-
   /**
    * Load user's maps
    *

@@ -4,23 +4,28 @@
 
   <geosearch-component (selectItem)="geosearchSelected($event)"></geosearch-component>
 
-  <mat-accordion multi="true" displayMode="flat">
-    <mat-expansion-panel *ngFor="let group of mapGroups$ | async" expanded="true">
+  <mat-accordion multi="false" displayMode="flat">
+    <mat-expansion-panel *ngFor="let i = index; let group of mapGroups$ | async" [expanded]="i == 0">
       <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
         {{group.name}}
       </mat-expansion-panel-header>
 
       <mat-nav-list class="link-list">
-        <a mat-list-item *ngFor="let map of group.maps" [matTooltip]="map.name" matTooltipPosition="right"
-           [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{exact: false}"
-           angulartics2On="click"
-           angularticsCategory="CityIndices"
-           angularticsAction="NavigateCityIndexDataset"
-           [angularticsLabel]="map.name">
-          <mat-icon [svgIcon]="map.icon || 'map'" color="accent"></mat-icon>{{map.name}}
-        </a>
+        <mat-list-item *ngFor="let map of group.maps"
+                       [matTooltip]="map.name"
+                       matTooltipPosition="right"
+                       routerLinkActive="active"
+                       [routerLinkActiveOptions]="{exact: false}">
+          <a matLine
+             [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]"
+             angulartics2On="click"
+             angularticsCategory="CityIndices"
+             angularticsAction="NavigateCityIndexDataset"
+             [angularticsLabel]="map.name">
+            <mat-icon [svgIcon]="map.icon || 'map'" color="accent"></mat-icon>
+            {{map.name}}
+          </a>
+        </mat-list-item>
       </mat-nav-list>
 
     </mat-expansion-panel>

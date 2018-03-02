@@ -19,6 +19,7 @@ export  const ICONS = [
   'leisure-centres',
   'line',
   'login',
+  'logout',
   'map',
   'map-pin',
   'minus',

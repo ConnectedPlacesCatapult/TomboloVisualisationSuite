@@ -32,8 +32,8 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   options: UploaderOptions;
 
-  userMaps$: Observable<ITomboloMap[]> = null;
-  userDatasets$: Observable<ITomboloDataset[]> = null;
+  userMaps: ITomboloMap[] = [];
+  userDatasets: ITomboloDataset[] = [];
 
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
@@ -83,18 +83,18 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   loadUserMaps(user: User) {
     if (user) {
-      this.userMaps$ = this.mapService.loadUserMaps(user.id);
+      this.mapService.loadUserMaps(user.id).subscribe(maps => this.userMaps = maps);
     }
   }
 
   loadUserDatasets(user: User) {
     if (user) {
-      this.userDatasets$ = this.mapService.loadUserDatasets(user.id);
+      this.mapService.loadUserDatasets(user.id).subscribe(datasets => this.userDatasets = datasets);
     }
   }
 
   backToView() {
-    this.router.navigate(['/view' ]);
+    this.router.navigate(['/', {outlets: {primary: 'view', rightBar: 'appinfo'}}]);
   }
 
   handleUploadOutput(output: UploadOutput): void {
