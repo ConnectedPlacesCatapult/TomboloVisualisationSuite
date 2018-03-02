@@ -246,7 +246,8 @@ export class FileIngester {
       geometryColumn: 'wkb_geometry',
       geometryType: geometryType,
       originalBytes: file.size,
-      isPrivate: false
+      isPrivate: false,
+      ownerId: file.ownerId
     });
 
     await file.$set('dataset', dataset);
@@ -290,7 +291,8 @@ export class FileIngester {
       description: file.dataset.description,
       center: [lng, lat],
       zoom: zoom,
-      basemapId: (basemap) ? basemap.id : null
+      basemapId: (basemap) ? basemap.id : null,
+      ownerId: file.ownerId
     });
 
     await file.$set('map', map);

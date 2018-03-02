@@ -11,6 +11,7 @@ import {ShareModule} from "@ngx-share/core";
 import {RecipeDialog} from "./recipe-dialog/recipe-dialog.component";
 import {CodeMirrorComponent} from "./recipe-dialog/codemirror.component";
 import {FormsModule} from "@angular/forms";
+import {DatasetsDialog} from "./datasets-dialog/datasets-dialog.component";
 
 @NgModule({
   imports: [
@@ -23,13 +24,15 @@ import {FormsModule} from "@angular/forms";
     ConfirmDialog,
     InformationDialog,
     ShareDialog,
-    RecipeDialog
+    RecipeDialog,
+    DatasetsDialog
   ],
   declarations: [
     ConfirmDialog,
     InformationDialog,
     ShareDialog,
     RecipeDialog,
+    DatasetsDialog,
     CodeMirrorComponent
   ],
   providers: [
@@ -40,7 +43,8 @@ import {FormsModule} from "@angular/forms";
     ConfirmDialog,
     InformationDialog,
     ShareDialog,
-    RecipeDialog
+    RecipeDialog,
+    DatasetsDialog
   ],
 })
 export class DialogsModule { }

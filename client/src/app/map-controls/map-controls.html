@@ -1,5 +1,5 @@
 <div class="button-box">
-  <button mat-icon-button disableRipple><mat-icon svgIcon="edit"></mat-icon>Edit</button>
+  <button mat-icon-button disableRipple (click)="editMap()"><mat-icon svgIcon="edit"></mat-icon>Edit</button>
   <button mat-icon-button disableRipple (click)="showRecipeDialog()"><mat-icon svgIcon="info"></mat-icon>Recipe</button>
   <button mat-icon-button disableRipple [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]"><mat-icon svgIcon="export"></mat-icon>Export</button>
   <button mat-icon-button disableRipple (click)="postBookmark()"><mat-icon svgIcon="share"></mat-icon>Share</button>

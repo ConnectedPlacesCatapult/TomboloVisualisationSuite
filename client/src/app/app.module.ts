@@ -56,6 +56,7 @@ import {AppInfoComponent} from './app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
 import {GeosearchComponent} from './geosearch/geosearch.component';
 import {GeosearchService} from './geosearch/geosearch.service';
+import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -97,7 +98,8 @@ export function AppConfigFactory(configService: ConfigService) {
     TermsAndConditionsComponent,
     AppInfoComponent,
     MyAccountDialogComponent,
-    GeosearchComponent
+    GeosearchComponent,
+    EditPanelComponent
   ],
   imports: [
     BrowserModule,

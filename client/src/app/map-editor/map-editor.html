@@ -1,20 +1,91 @@
-<h3 class="sidebar-header"><mat-icon fontSet="fa" fontIcon="fa-pencil"></mat-icon> Map Editor</h3>
+<h1 class="sidebar-header">[ app name ]</h1>
 
 <div class="sidebar-content">
-  <mat-nav-list>
+  <button mat-button (click)="backToView()"><mat-icon svgIcon="backarrow"></mat-icon>Back to Maps</button>
+  <hr>
+  <h2>Tombolo Playground</h2>
+  <hr class="short">
+  <hr>
+  <mat-accordion displayMode="flat">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+        MY MAPS
+      </mat-expansion-panel-header>
 
-  </mat-nav-list>
+      <mat-nav-list>
+        <mat-list-item *ngFor="let map of userMaps"
+                       [matTooltip]="map.name"
+                       matTooltipPosition="right">
+          <a matLine
+             [routerLink]="['/',{outlets:{primary:['edit', map.id], rightBar:['editpanel']}}]"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: false}"
+             angulartics2On="click"
+             angularticsCategory="Playground"
+             angularticsAction="Edit map"
+             [angularticsLabel]="map.name">
+            {{map.name}}</a>
+          <button mat-icon-button class="compressed" (click)="deleteMap(map)">
+            <mat-icon svgIcon="trash"></mat-icon>
+          </button>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="userMaps.length == 0" class="list-item-placeholder">
+          No maps
+        </mat-list-item>
+
+      </mat-nav-list>
+
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+    <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+      MY DATASETS
+    </mat-expansion-panel-header>
+
+
+      <mat-nav-list>
+        <mat-list-item *ngFor="let ds of userDatasets">
+          <a matLine [matTooltip]="ds.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted">
+            {{ds.name}}
+          </a>
+          <button mat-icon-button  class="compressed" (click)="addDataset(ds)">
+            <mat-icon svgIcon="add"></mat-icon>
+          </button>
+          <button mat-icon-button class="compressed" (click)="deleteDataset(ds)">
+            <mat-icon svgIcon="trash"></mat-icon>
+          </button>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="userDatasets.length == 0" class="list-item-placeholder">
+          No dataset
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <hr>
+
+  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground">Public Datasets...</button>
 </div>
 
 <div class="sidebar-footer">
+  <hr>
   <div class="drop-container" ngFileDrop [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput"[ngClass]="{dragOver: dragOver}">
-    <p>
-      Drag a file here or<br>
+    <p class="mat-body2">Add your data</p>
+    <p class="mat-caption">
+      Drag and drop a file here or
       <label class="upload-button">
         <input type="file" ngFileSelect [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput">
         browse
       </label>
       to upload.
     </p>
+  </div>
+
+  <hr>
+
+  <div class="tombolo-branding">
+    <a href="http://www.tombolo.org.uk/" target="_blank">Tombolo</a>
   </div>
 </div>

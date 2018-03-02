@@ -1,0 +1,25 @@
+<div class="block">
+  <div class="row border">
+
+    <div class="search">
+      <mat-form-field>
+        <input matInput (input)="filterByQuery()" [(ngModel)]="filterInput" class="filter" placeholder="Search datasets">
+      </mat-form-field>
+    </div>
+
+    <h3>Categories</h3>
+    <mat-list *ngIf="groups">
+      <mat-list-item *ngFor="let group of groups"
+        [ngClass]="{'darkblue': group['id']===selectedGroupId,
+        'blue': group['id']!==selectedGroupId}"
+        (click)="loadDatasets(group['id'])">{{group['name']}}</mat-list-item>
+    </mat-list>
+  </div>
+
+  <div class="row">
+    <h3>Datasets</h3>
+    <mat-list *ngIf="datasets">
+      <mat-list-item *ngFor="let dataset of datasets" class="blue">{{dataset['name']}}</mat-list-item>
+    </mat-list>
+  </div>
+</div>

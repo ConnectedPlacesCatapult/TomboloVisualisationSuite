@@ -26,7 +26,7 @@ export class LoginControlsComponent implements OnInit {
 
   ngOnInit() {
 
-    this._subs.push(this.authService.user$().subscribe(user => {
+    this._subs.push(this.authService.user$.subscribe(user => {
       this.user = user;
     }));
 

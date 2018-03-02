@@ -140,13 +140,18 @@ export class AuthService {
 
     try {
       data.password = await this.encryptPassword(data.password);
-      const user = await User.create<User>(data, {fields: [
-        'email',
-        'password',
-        'firstName',
-        'lastName',
-        'newsletters'
-      ]});
+      const user = await User.create<User>({
+        ...data,
+        emailVerified: false
+      }, {
+        fields: [
+          'email',
+          'password',
+          'firstName',
+          'lastName',
+          'newsletters'
+        ]
+      });
 
       return user;
     }

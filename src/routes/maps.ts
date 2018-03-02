@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as config from 'config';
-
 import {Container} from 'typedi';
 import {LoggerService} from '../lib/logger';
 import {TomboloMap} from '../db/models/TomboloMap';
 import {StyleGenerator} from '../lib/style-generator';
 import {MapGroup} from '../db/models/MapGroup';
+import {isAuthenticated} from '../lib/utils';
 
 const logger = Container.get(LoggerService);
 const styleGenerator = Container.get(StyleGenerator);
@@ -17,23 +17,87 @@ const baseUrl = config.get('server.baseUrl');
 //////////////////////
 // Routes
 
+
+// Get maps
 router.get('/', async (req, res, next) => {
   try {
-    const mapGroups = await MapGroup.scope('full').findAll<MapGroup>();
 
-    const results = mapGroups.map(group => ({
+    let where: object;
+
+    if (req.query.userId) {
+      // Get user's maps
+      where = {
+        ownerId: req.query.userId
+      };
+    }
+    else {
+      // Get all public maps
+      where = {
+        $or: [{isPrivate: false}, {isPrivate: null}]
+      };
+    }
+
+    const maps = await TomboloMap.findAll<TomboloMap>({where, limit: 1000});
+
+    res.json(maps.map(clientSafeMap));
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+// Delete a map - user must be logged in and own map
+router.delete('/:mapId', isAuthenticated, async (req, res, next) => {
+
+  try {
+    const map = await TomboloMap.findById<TomboloMap>(req.params.mapId);
+
+    if (!map) {
+      return next({status: 404, message: 'Map not found'});
+    }
+
+    if (map.ownerId !== req.user.id) {
+      return next({status: 401, message: 'Not authorized'});
+    }
+
+    await map.destroy();
+
+    res.status(204).send();
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+// Get maps grouped by groupID for populating left hand navigation
+router.get('/grouped', async (req, res, next) => {
+  try {
+
+    // Get system map groups
+    const mapGroups = await MapGroup.scope('systemMaps').findAll<MapGroup>();
+
+    let results = mapGroups.map(group => ({
       id: group.id,
       name: group.name,
       order: group.order,
-      maps: group.maps.map(map => ({
-        id: map.id,
-        name: map.name,
-        description: map.description,
-        icon: map.icon,
-        order: map.order,
-        styleUrl: `${baseUrl}/maps/${map.id}/style.json`
-      }))
+      maps: group.maps.map(clientSafeMap)
     }));
+
+    // Get user's maps
+    if (req.user) {
+      const userMaps = await TomboloMap.findAll<TomboloMap>({where: {ownerId: req.user.id}});
+
+      const userGroup = {
+        id: 'usergroup',
+        name: 'My Maps',
+        order: 99,
+        maps: userMaps.map(clientSafeMap)
+      };
+
+      results.push(userGroup);
+    }
 
     res.json(results);
   }
@@ -62,5 +126,20 @@ router.get('/:mapId/style.json', async (req, res, next) => {
   }
 });
 
+////////////////
+// Route helpers
+
+function clientSafeMap(map: TomboloMap): object {
+  return {
+    id: map.id,
+    name: map.name,
+    description: map.description,
+    isPrivate: map.isPrivate,
+    icon: map.icon,
+    groupId: map.mapGroupId,
+    ownerId: map.ownerId,
+    styleUrl: `${baseUrl}/maps/${map.id}/style.json`
+  };
+}
 
 export default router;
