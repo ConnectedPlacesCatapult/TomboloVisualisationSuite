@@ -40,6 +40,11 @@ router.get('/groups/:groupId', async (req, res, next) => {
 router.get('/:datasetId', async (req, res, next) => {
   try {
     const dataset = await Dataset.findById<Dataset>(req.params.datasetId);
+
+    if (!dataset) {
+      return next({status: 404, message: 'Dataset not found'});
+    }
+
     res.json(dataset);
   }
   catch (e) {

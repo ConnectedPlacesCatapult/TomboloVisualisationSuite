@@ -3,18 +3,50 @@
  */
 
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {APP_CONFIG, AppConfig} from '../../config.service';
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'share-dialog',
   templateUrl: './datasets-dialog.html',
   styleUrls: ['./datasets-dialog.scss']
 })
-export class DatasetsDialog {
+export class DatasetsDialog implements OnInit {
+
+  groups: object;
+  datasets: object[];
+  filterInput: string;
+  selectedGroupId: string;
 
   constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
+              private http: HttpClient,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(APP_CONFIG) private config: AppConfig) {
+  }
+
+  ngOnInit() {
+    this.getGroups();
+  }
+
+  getGroups(): void {
+    this.http.get(`${environment.localApiEndpoint}/datasets/groups`)
+    .subscribe(groups => this.groups = groups);
+  }
+
+  loadDatasets(groupId: string): void {
+    this.selectedGroupId = groupId;
+
+    this.http.get(`${environment.localApiEndpoint}/datasets/groups/${groupId}`)
+      .subscribe(group => this.datasets = group['datasets']);
+  }
+
+  filterByQuery(): void {
+    this.selectedGroupId = null;
+
+    if (this.filterInput === '') return;
+    this.http.get<object[]>(`${environment.localApiEndpoint}/datasets?query=${this.filterInput}`)
+      .subscribe(datasets => this.datasets = datasets);
   }
 }
