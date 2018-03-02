@@ -22,7 +22,7 @@
              angularticsAction="Edit map"
              [angularticsLabel]="map.name">
             {{map.name}}</a>
-          <button mat-icon-button class="compressed" (click)="deleteMap(map.id)">
+          <button mat-icon-button class="compressed" (click)="deleteMap(map)">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
         </mat-list-item>
@@ -40,10 +40,10 @@
           <a matLine [matTooltip]="ds.name" matTooltipPosition="right" matTooltipClass="tooltip-shifted">
             {{ds.name}}
           </a>
-          <button mat-icon-button  class="compressed" (click)="addDataset(ds.id)">
+          <button mat-icon-button  class="compressed" (click)="addDataset(ds)">
             <mat-icon svgIcon="add"></mat-icon>
           </button>
-          <button mat-icon-button class="compressed" (click)="deleteDataset(ds.id)">
+          <button mat-icon-button class="compressed" (click)="deleteDataset(ds)">
             <mat-icon svgIcon="trash"></mat-icon>
           </button>
         </mat-list-item>

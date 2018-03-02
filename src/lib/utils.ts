@@ -128,8 +128,6 @@ export function postgresTypeName(type: number): string {
 
 export function isAuthenticated(req, res, next) {
 
-  console.log('Checking auth', req.user);
-
   if (req.user)
     return next();
 

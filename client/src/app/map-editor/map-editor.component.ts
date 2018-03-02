@@ -14,6 +14,10 @@ import {User} from '../auth/user';
 import {DatasetsDialog} from '../dialogs/datasets-dialog/datasets-dialog.component';
 import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
 import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
+import {DialogsService} from '../dialogs/dialogs.service';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/mergeMap';
+import {NotificationService} from '../dialogs/notification.service';
 
 const debug = Debug('tombolo:map-editor');
 
@@ -42,7 +46,9 @@ export class MapEditorComponent implements OnInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               private mapService: MapService,
               private authService: AuthService,
-              private matDialog: MatDialog) {}
+              private dialogsService: DialogsService,
+              private matDialog: MatDialog,
+              private notificationService: NotificationService) {}
 
   ngOnInit() {
 
@@ -147,4 +153,54 @@ export class MapEditorComponent implements OnInit, OnDestroy {
   browsePublicDatasets() {
     const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '500px', height: '400px'});
   }
+
+  addDataset(datasetId: string) {
+    debug('Add dataset');
+  }
+
+  deleteMap(map: ITomboloMap) {
+    this.dialogsService.confirm(
+      'Delete Map',
+      `Are you sure you want to delete the map '${map.name}'.<p>This cannot be undone!`)
+      .filter(ok => ok)
+      .mergeMap(() => {
+        return this.mapService.deleteMap(map.id);
+      })
+      .subscribe(() => {
+        this.notificationService.info('Map deleted!');
+        this.loadUserMaps(this.authService.getUserSync());
+      });
+  }
+
+  deleteDataset(dataset: ITomboloDataset) {
+
+    this.mapService.loadMapsForDataset(dataset.id)
+      .mergeMap(maps => {
+
+        let message;
+
+        if (maps.length) {
+
+          const list = `<ul>${maps.map(map => '<li>' + map.name + '</li>')}</ul>`;
+
+          message = `There are maps that require this dataset:
+                        ${list}
+                        Are you sure you want to continue?`;
+        }
+        else {
+          message = `Are you sure you want to delete the dataset '${dataset.name}'?.<p>This cannot be undone!`;
+        }
+
+        return this.dialogsService.confirm('Delete Dataset', message);
+      })
+      .filter(ok => ok)
+      .mergeMap(() => {
+        return this.mapService.deleteDataset(dataset.id);
+      })
+      .subscribe(() => {
+        this.notificationService.info('Dataset deleted!');
+        this.loadUserDatasets(this.authService.getUserSync());
+      });
+  }
+
 }

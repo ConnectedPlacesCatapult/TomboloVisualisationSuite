@@ -5,6 +5,7 @@ import {LoggerService} from '../lib/logger';
 import {TomboloMap} from '../db/models/TomboloMap';
 import {StyleGenerator} from '../lib/style-generator';
 import {MapGroup} from '../db/models/MapGroup';
+import {isAuthenticated} from '../lib/utils';
 
 const logger = Container.get(LoggerService);
 const styleGenerator = Container.get(StyleGenerator);
@@ -46,6 +47,29 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// Delete a map - user must be logged in and own map
+router.delete('/:mapId', isAuthenticated, async (req, res, next) => {
+
+  try {
+    const map = await TomboloMap.findById<TomboloMap>(req.params.mapId);
+
+    if (!map) {
+      return next({status: 404, message: 'Map not found'});
+    }
+
+    if (map.ownerId !== req.user.id) {
+      return next({status: 401, message: 'Not authorized'});
+    }
+
+    await map.destroy();
+
+    res.status(204).send();
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
 
 // Get maps grouped by groupID for populating left hand navigation
 router.get('/grouped', async (req, res, next) => {

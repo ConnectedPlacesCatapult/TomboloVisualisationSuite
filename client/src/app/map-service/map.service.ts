@@ -13,6 +13,7 @@ import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
 import {IMapGroup} from '../../../../src/shared/IMapGroup';
 import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
 import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
+import {IDatasetGroup} from '../../../../src/shared/IDatasetGroup';
 
 const debug = Debug('tombolo:MapService');
 
@@ -73,6 +74,34 @@ export class MapService {
   }
 
   /**
+   * Load dataset groups
+   *
+   * @returns {Promise<IDatasetGroup[]>}
+   */
+  loadDatasetGroups(): Observable<IDatasetGroup[]> {
+    return this.http.get<IDatasetGroup[]>(`${environment.apiEndpoint}/datasets/groups`);
+  }
+
+  /**
+   * Load datasets in specified group
+   *
+   * @returns {Promise<IDataset[]>}
+   */
+  loadDatasetsInGroup(groupId: string): Observable<ITomboloDataset[]> {
+    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
+  }
+
+  /**
+   * Find datasets by full text search
+   *
+   * @returns {Promise<IDataset[]>}
+   */
+  findDatasetsByQuery(query: string): Observable<ITomboloDataset[]> {
+    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?query=${query}`);
+  }
+
+
+  /**
    * Load user's maps
    *
    * @returns {Promise<ITomboloMap[]>}
@@ -88,6 +117,38 @@ export class MapService {
    */
   loadUserDatasets(userId: string): Observable<ITomboloDataset[]> {
     return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?userId=${userId}`);
+  }
+
+  /**
+   * Loads maps referencing the given dataset
+   *
+   * Used to warn user when deleting a dataset that there are maps that reference it.
+   *
+   * @param {string} datsetId
+   * @returns {Observable<ITomboloMap[]>}
+   */
+  loadMapsForDataset(datsetId: string): Observable<ITomboloMap[]> {
+    return this.http.get<ITomboloMap[]>(`${environment.apiEndpoint}/datasets/${datsetId}/maps`);
+  }
+
+  /**
+   * Delete map - user must be logged in and own map
+   *
+   * @param {string} mapId
+   * @returns {Observable<void>}
+   */
+  deleteMap(mapId: string): Observable<void> {
+    return this.http.delete<void>(`/maps/${mapId}`);
+  }
+
+  /**
+   * Delete dataset - user must be logged in and own dataset
+   *
+   * @param {string} datasetId
+   * @returns {Observable<void>}
+   */
+  deleteDataset(datasetId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`);
   }
 
   pollIngest(uploadID: string): Observable<FileUploadBase> {
