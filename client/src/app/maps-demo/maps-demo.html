@@ -10,7 +10,7 @@
         {{group.name}}
       </mat-expansion-panel-header>
 
-      <mat-nav-list>
+      <mat-nav-list class="link-list">
         <a mat-list-item *ngFor="let map of group.maps" [matTooltip]="map.name" matTooltipPosition="right"
            [routerLink]="['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]"
            routerLinkActive="active"
@@ -33,7 +33,7 @@
 <div class="sidebar-footer">
 
   <button mat-raised-button (click)="gotoPlayground()" class="button-playground">
-    <mat-icon svgIcon="edit"></mat-icon>Go to playground
+    <mat-icon svgIcon="edit"></mat-icon>&nbsp;&nbsp;Go to playground
   </button>
   <div class="tombolo-branding">
     <a href="http://www.tombolo.org.uk/" target="_blank">Tombolo</a>

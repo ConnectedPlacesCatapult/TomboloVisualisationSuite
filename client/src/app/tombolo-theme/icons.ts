@@ -3,6 +3,7 @@ import {MatIconRegistry} from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 
 export  const ICONS = [
+  'add',
   'air-quality',
   'backarrow',
   'bike',

@@ -42,14 +42,17 @@
 
   // Adjust positioning of icons in buttons
   .mat-button, .mat-raised-button, .mat-icon-button {
-    .mat-icon {
-      margin-right: 0.5em;
-    }
-
     .mat-icon.fa:before {
       position: relative;
       top: 4px;
     }
+  }
+
+  // Compressed icon button that can be packed closer together
+  .mat-icon-button.compressed {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
   }
 
   .button-facebook {
@@ -259,43 +262,51 @@
 
     padding-top: 0;
 
-    a.mat-list-item {
+    .mat-list-item {
       color: mat-color($accent, 300);
       font-size: 14px;
       padding: 0;
       height: $g * 2;
 
       .mat-list-item-content {
-        padding: 0 $g * 2 0 $g;
+        // Right padding set to move list item button to correct positon
+        padding: 0 13px 0 $g;
 
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
-        line-height: $g * 2;
+        //text-overflow: ellipsis;
+        //white-space: nowrap;
+        //overflow: hidden;
+        //display: block;
+        //line-height: $g * 2;
 
-        mat-icon {
+        // Prefix icons for map types
+        .mat-icon {
           // Add right padding to move text onto grid position
           padding-right: $g - 4px;
-
-          position: relative;
-          top: 6px;
           color: mat-color($accent, 300);
+        }
+
+        // Reset for other icon buttons
+        .mat-button-wrapper .mat-icon {
+          padding-right: 0;
         }
       }
     }
 
-    // Add radio button as background image
-    .mat-list-item, .mat-list-item:hover {
-      background-image:  url(/assets/icons/radio-off.svg) !important;
-      background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 20px - $g center !important;
-    }
+    // Nav list style for links with glowing radio button
+    &.link-list {
 
-    .mat-list-item.active, .mat-list-item.active:hover {
-      background-image:  url(/assets/icons/radio-on.svg) !important;
-      background-repeat: no-repeat !important;
-      background-position: $sidebar-left-width - 25px - $g center !important;
+      // Add radio button as background image
+      .mat-list-item, .mat-list-item:hover {
+        background-image: url(/assets/icons/radio-off.svg) !important;
+        background-repeat: no-repeat !important;
+        background-position: $sidebar-left-width - 20px - $g center !important;
+      }
+
+      .mat-list-item.active, .mat-list-item.active:hover {
+        background-image: url(/assets/icons/radio-on.svg) !important;
+        background-repeat: no-repeat !important;
+        background-position: $sidebar-left-width - 25px - $g center !important;
+      }
     }
 
   }
@@ -573,5 +584,39 @@
     }
   }
 
+  /* Drag & Drop container */
+  .drop-container {
+    color: #008297;
+    margin: 0 $g;
+    padding: 0 0 0 60px;
+    p {
+      margin: 0;
+    }
 
+    p.caption {
+      margin-top: 0.2em;
+    }
+
+    background-image: url(/assets/images/upload.svg);
+    background-repeat: no-repeat;
+    background-position: left center;
+    height: 70px;
+
+    .upload-button {
+      display: inline-block;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-weight: bold;
+      color: mat-color($accent);
+      input {
+        display: none;
+      }
+    }
+
+    &.dragOver {
+      color: mat-color($accent);
+      outline: 1px solid mat-color($accent);
+    }
+  }
 }
