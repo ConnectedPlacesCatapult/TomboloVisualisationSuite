@@ -2,7 +2,7 @@ import {Component, HostBinding, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
@@ -30,8 +30,8 @@ export class MapsDemoComponent implements OnInit {
 
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient,
-              private mapService: MapService) {}
+              private mapService: MapService,
+              private router: Router) {}
 
   ngOnInit() {
     this.mapGroups$ = this.mapService.loadMapGroups();
@@ -55,6 +55,17 @@ export class MapsDemoComponent implements OnInit {
   geosearchSelected(item: GeosearchItem) {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       map.fitBounds(item.boundingBox, {padding: 30, maxZoom: 13});
+    });
+  }
+
+  gotoPlayground() {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      this.router.navigate(['/',{outlets:{
+        primary:['edit', map.id],
+        loginBar: null,
+        rightBar:['editpanel']}}], {
+        preserveQueryParams: true
+      });
     });
   }
 

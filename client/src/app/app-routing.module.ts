@@ -20,6 +20,7 @@ import {AccountInfoComponent} from './account-info/account-info.component';
 import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
 import {AppInfoComponent} from './app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
+import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 
 const routes: Routes = [
   {
@@ -43,10 +44,6 @@ const routes: Routes = [
     component: MapsDemoComponent
   },
   {
-    path: 'edit',
-    component: MapEditorComponent
-  },
-  {
     path: 'edit/:mapID',
     component: MapEditorComponent
   },
@@ -58,6 +55,11 @@ const routes: Routes = [
   {
     path: 'mapexport',
     component: MapExportComponent,
+    outlet: 'rightBar'
+  },
+  {
+    path: 'editpanel',
+    component: EditPanelComponent,
     outlet: 'rightBar'
   },
   {

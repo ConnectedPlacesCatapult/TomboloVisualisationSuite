@@ -11,6 +11,7 @@ export interface TomboloStyleLayer extends MapboxLayer {
 }
 
 export interface TomboloStyleMetadata {
+  id: string;
   description: string;
   insertionPoints: {[key: string]: string};
   basemapDetail: TombolBasemapDetailMetadata;
@@ -81,6 +82,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
   getLayer(layerID: string): TomboloStyleLayer {
     return super.getLayer(layerID) as TomboloStyleLayer;
+  }
+
+  get id(): string {
+    return this.getStyle().metadata.id;
   }
 
   get name(): string {

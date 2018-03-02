@@ -1,9 +1,42 @@
-<h3 class="sidebar-header"><mat-icon fontSet="fa" fontIcon="fa-pencil"></mat-icon> Map Editor</h3>
+<h1 class="sidebar-header">[ app name ]</h1>
 
 <div class="sidebar-content">
-  <mat-nav-list>
+  <button mat-button (click)="backToView()"><mat-icon svgIcon="backarrow"></mat-icon>Back to Maps</button>
+  <h2>Tombolo Playground</h2>
+  <hr class="short">
 
-  </mat-nav-list>
+  <mat-accordion displayMode="flat">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+        MY MAPS
+      </mat-expansion-panel-header>
+
+      <mat-nav-list>
+        <a mat-list-item>
+          hello
+        </a>
+      </mat-nav-list>
+
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+    <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+      MY DATASETS
+    </mat-expansion-panel-header>
+
+    <mat-nav-list>
+      <a mat-list-item>
+        hello
+      </a>
+    </mat-nav-list>
+
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <hr>
+
+  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground">
+    <mat-icon svgIcon="edit"></mat-icon>Public Datasets...
+  </button>
 </div>
 
 <div class="sidebar-footer">
@@ -16,5 +49,8 @@
       </label>
       to upload.
     </p>
+  </div>
+  <div class="tombolo-branding">
+    <a href="http://www.tombolo.org.uk/" target="_blank">Tombolo</a>
   </div>
 </div>

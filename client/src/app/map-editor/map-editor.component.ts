@@ -41,6 +41,10 @@ export class MapEditorComponent implements OnInit, OnDestroy {
               private dialogService: DialogsService) {}
 
   ngOnInit() {
+    this.activatedRoute.params.subscribe(params => {
+      this.loadMap(params.mapID);
+    });
+
     this.subs.push(this.uploadOutput.subscribe(event => {
       this.handleUploadOutput(event);
     }));
@@ -48,6 +52,21 @@ export class MapEditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subs.forEach(sub => sub.unsubscribe());
+  }
+
+  loadMap(mapID: string) {
+
+    debug('Editing mapID:', mapID);
+
+    if (!mapID) return;
+
+    this.mapService.loadMap(mapID).then(map => {
+      //map.setBasemapDetail(this.sliderValue);
+    });
+  }
+
+  backToView() {
+    this.router.navigate(['/view' ]);
   }
 
   handleUploadOutput(output: UploadOutput): void {

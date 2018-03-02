@@ -40,10 +40,10 @@
     border-radius: $br;
   }
 
-  // Adjust positioning of FontAwesome icons in buttons to center in 24px box
+  // Adjust positioning of icons in buttons
   .mat-button, .mat-raised-button, .mat-icon-button {
-    .mat-icon.fa {
-      margin-right: 2px;
+    .mat-icon {
+      margin-right: 0.5em;
     }
 
     .mat-icon.fa:before {
@@ -64,6 +64,15 @@
     @include gradient-google-button();
   }
 
+  .button-playground {
+    @include gradient-dark-button();
+    margin: $g/2 $g;
+    width: $sidebar-left-width - $g * 2;
+    height: $g * 2;
+    color: mat-color($accent, 300);
+    text-transform: uppercase;
+  }
+
   /* Sidebars */
 
   .sidebar {
@@ -71,8 +80,30 @@
   }
 
   .sidebar-left {
-    width: $sidebar-left-width;
     @include gradient-sidebar-left($primary);
+    color: white;
+    width: $sidebar-left-width;
+
+    h2 {
+      text-align: center;
+      font-weight: 300;
+    }
+
+    hr {
+      height: 1px;
+      margin: $g/2 $g;
+      background-color: mat-color($tombolo-darkblue, 400);
+      border: none;
+      border-bottom: 1px solid mat-color($tombolo-darkblue, 800, 0.5);
+
+      &.short {
+        margin: $g/2 $g * 4;
+      }
+    }
+
+    .mat-button {
+      color: mat-color($accent);
+    }
   }
 
   .sidebar-right {
@@ -130,7 +161,6 @@
       text-indent: -9999px;
     }
   }
-
 
   /* Left navigation expansion panel */
 
