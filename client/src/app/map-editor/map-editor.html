@@ -7,11 +7,12 @@
   <hr class="short">
   <hr>
   <mat-accordion displayMode="flat">
+
+    <!-- My Maps accordian section -->
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
         MY MAPS
       </mat-expansion-panel-header>
-
       <mat-nav-list>
         <mat-list-item *ngFor="let map of userMaps"
                        [matTooltip]="map.name"
@@ -30,25 +31,24 @@
           </button>
         </mat-list-item>
 
+        <!-- Placeholder for no maps -->
         <mat-list-item *ngIf="userMaps.length == 0" class="list-item-placeholder">
           No maps
         </mat-list-item>
-
       </mat-nav-list>
-
     </mat-expansion-panel>
+
+    <!-- My Datasets accordian section -->
     <mat-expansion-panel>
-    <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
-      MY DATASETS
-    </mat-expansion-panel-header>
-
-
+      <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+        MY DATASETS
+      </mat-expansion-panel-header>
       <mat-nav-list>
         <mat-list-item *ngFor="let ds of userDatasets" [matTooltip]="ds.name" matTooltipPosition="right">
           <a matLine>
             {{ds.name}}
           </a>
-          <button mat-icon-button  class="compressed" (click)="addDataset(ds)">
+          <button mat-icon-button class="compressed" (click)="addDataset(ds)">
             <mat-icon svgIcon="add"></mat-icon>
           </button>
           <button mat-icon-button class="compressed" (click)="deleteDataset(ds)">
@@ -56,6 +56,7 @@
           </button>
         </mat-list-item>
 
+        <!-- Placeholder for no datasets -->
         <mat-list-item *ngIf="userDatasets.length == 0" class="list-item-placeholder">
           No dataset
         </mat-list-item>

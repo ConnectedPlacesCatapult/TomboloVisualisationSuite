@@ -1,8 +1,33 @@
 <h3 class="sidebar-header">
-  Map Edit
+  Map Editor
 </h3>
 
-<div class="sidebar-content with-padding"></div>
+<div class="sidebar-content">
+  <ng-container *ngIf="map">
+
+    <map-metadata-editor [map]="map"></map-metadata-editor>
+
+    <mat-accordion multi="true" displayMode="flat">
+      <!-- Map layers -->
+      <mat-expansion-panel *ngFor="let layerId of map.dataLayers" expanded="true">
+        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+          {{layerId}}
+        </mat-expansion-panel-header>
+        <map-layer-editor [map]="map" [layerId]="layerId"></map-layer-editor>
+      </mat-expansion-panel>
+
+      <!-- Basemap -->
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+          Basemap
+        </mat-expansion-panel-header>
+        <map-basemap-editor ></map-basemap-editor>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+  </ng-container>
+</div>
 
 <div class="sidebar-footer">
 

@@ -6,7 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from '../../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
 
-const debug = Debug('tombolo:map-info');
+const debug = Debug('tombolo:map-edit-panel');
 
 @Component({
   selector: 'map-info',
@@ -21,9 +21,20 @@ export class EditPanelComponent implements OnInit {
               private mapRegistry: MapRegistry) {}
 
   _subs: Subscription[] = [];
+  map: TomboloMapboxMap;
 
   ngOnInit() {
+    this._subs.push(this.mapService.mapLoading$().subscribe(() => {
+      debug('Map is loading');
+      // Clear map so that child components don't try to access map
+      // while it is loading
+      this.map = null;
+    }));
 
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
+      debug('Edit panel got map', map.id);
+      this.map = map;
+    }));
   }
 
   ngOnDestroy() {

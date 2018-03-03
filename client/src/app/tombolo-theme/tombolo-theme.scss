@@ -27,6 +27,10 @@
     padding: $sidebar-padding !important;
   }
 
+  div.spacer {
+    height: $g / 2;
+  }
+
   a {
     color: mat-color($accent);
     outline: none;
@@ -630,6 +634,13 @@
     &.dragOver {
       color: mat-color($accent);
       outline: 1px solid mat-color($accent);
+    }
+  }
+
+  /* Radio control container */
+  .mat-radio-button.align-button-top {
+    label {
+      align-items: flex-start;
     }
   }
 }

@@ -35,9 +35,14 @@ export class MapService {
     private mapRegistry: MapRegistry) {}
 
   private _mapLoaded$ = new Subject<TomboloMapboxMap>();
+  private _mapLoading$ = new Subject<void>();
 
   mapLoaded$(): Observable<TomboloMapboxMap> {
     return this._mapLoaded$.asObservable();
+  }
+
+  mapLoading$(): Observable<void> {
+    return this._mapLoading$.asObservable();
   }
 
   /**
@@ -48,6 +53,9 @@ export class MapService {
    * @param {string} mapId
    */
   loadMap(mapId: string): Promise<TomboloMapboxMap> {
+
+    // Inform clients that the map is about to load
+    this._mapLoading$.next();
 
     return Promise.all([
       this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),

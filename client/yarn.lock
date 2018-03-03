@@ -4471,6 +4471,10 @@ ng2-dragula@^1.5.0:
   dependencies:
     dragula "^3.7.2"
 
+ngx-color-picker@^5.3.3:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/ngx-color-picker/-/ngx-color-picker-5.3.3.tgz#950415cf7d998df4d2e4788ab039eb140bdb98da"
+
 ngx-md@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/ngx-md/-/ngx-md-3.1.1.tgz#41310ac862713cb4cc6b4f455743d948943ed728"

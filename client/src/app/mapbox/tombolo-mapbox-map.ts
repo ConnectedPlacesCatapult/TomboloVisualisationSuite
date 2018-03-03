@@ -1,5 +1,7 @@
 import {EmuMapboxMap} from './mapbox.component';
 import {Style as MapboxStyle, Layer as MapboxLayer} from 'mapbox-gl';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 export interface TomboloMapStyle extends MapboxStyle {
   metadata: TomboloStyleMetadata;
@@ -13,6 +15,7 @@ export interface TomboloStyleLayer extends MapboxLayer {
 export interface TomboloStyleMetadata {
   id: string;
   description: string;
+  isPrivate: boolean;
   insertionPoints: {[key: string]: string};
   basemapDetail: TombolBasemapDetailMetadata;
   datasets: TomboloDatasetMetadata[],
@@ -49,6 +52,7 @@ export interface TomboloDataAttributeMetadata {
 export interface TomboloLayerMetadata {
   dataset: string;
   attribute: string;
+  opacity: number;
   palette: {
     id: string;
     colorStops: string[];
@@ -59,6 +63,12 @@ export interface TomboloLayerMetadata {
 export class TomboloMapboxMap extends EmuMapboxMap {
 
   private _cachedStyle: TomboloMapStyle = null;
+  private _modified: boolean = false;
+  private _modified$ = new Subject<boolean>();
+
+  modified$(): Observable<boolean> {
+    return this._modified$.asObservable();
+  }
 
   getStyle(): TomboloMapStyle {
 
@@ -70,6 +80,12 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   setStyle(style: string | MapboxStyle, options?: any): this {
+
+    // Setting the style will overwrite any map modifications made in the editor
+    // Save or clear modified flag first
+    if (this._modified) {
+      throw new Error('Overwriting modified map style!');
+    }
 
     this._cachedStyle = null;
 
@@ -84,6 +100,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return super.getLayer(layerID) as TomboloStyleLayer;
   }
 
+  get isModified(): boolean {
+    return this._modified;
+  }
+
   get id(): string {
     return this.getStyle().metadata.id;
   }
@@ -92,8 +112,27 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return this.getStyle().name;
   }
 
+  set name(val: string) {
+    this._cachedStyle.name = val;
+    this.setModified();
+  }
+
   get description(): string {
     return this.getStyle().metadata.description;
+  }
+
+  set description(val: string) {
+    this._cachedStyle.metadata.description = val;
+    this.setModified();
+  }
+
+  get isPrivate(): boolean {
+    return !!(this.getStyle().metadata.isPrivate);
+  }
+
+  set isPrivate(val: boolean) {
+    this._cachedStyle.metadata.isPrivate = val;
+    this.setModified();
   }
 
   get datasets(): TomboloDatasetMetadata[] {
@@ -151,8 +190,20 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   clearCache(): void {
+    // Warning - this will clear and unsaved modifications to the map
     this._cachedStyle = null;
   }
+
+  setDataLayerOpacity(layerId: string, opacity: number): void {
+    const layer = this.getLayer(layerId);
+    const opacityProperty = layer.type + '-opacity';
+
+    opacity = Math.max(Math.min(opacity, 1), 0);
+    layer.metadata.opacity = opacity;
+    this.setPaintProperty(layerId, opacityProperty, opacity);
+    this.setModified();
+  }
+
 
   setBasemapDetail(level: number): void {
     const basemapDetail = this.basemapDetail;
@@ -179,5 +230,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
           throw new Error(`Unsupported layer type for basemap detail: ${layer.type}`);
       }
     });
+  }
+
+  private setModified(): void {
+    this._modified = true;
+    this._modified$.next(true);
   }
 }

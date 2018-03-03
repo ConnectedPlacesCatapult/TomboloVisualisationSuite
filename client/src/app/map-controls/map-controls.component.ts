@@ -23,6 +23,7 @@ export class MapControlsComponent implements OnInit {
   basemapDetailSliderValue = 4;
   mapId = null;
   mode: 'edit' | 'view' = 'view';
+  mapModified = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -42,6 +43,11 @@ export class MapControlsComponent implements OnInit {
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       map.setBasemapDetail(this.basemapDetailSliderValue);
       this.updateURLforBasemapDetail();
+
+      // Subscribe to map-modified notification
+      this._subs.push(map.modified$().subscribe(modified => {
+        this.mapModified = modified;
+      }));
     }));
 
     // Extract mode and mapId from route
@@ -87,7 +93,7 @@ export class MapControlsComponent implements OnInit {
   }
 
   saveButtonEnabled(): boolean {
-    return false;
+    return this.mapModified;
   }
 
   editButtonEnabled(): boolean {

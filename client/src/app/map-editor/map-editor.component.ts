@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MapService} from '../services/map-service/map.service';
@@ -26,7 +26,7 @@ const debug = Debug('tombolo:map-editor');
   templateUrl: './map-editor.html',
   styleUrls: ['./map-editor.scss']
 })
-export class MapEditorComponent implements OnInit, OnDestroy {
+export class MapEditorComponent implements OnInit, OnDestroy  {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
@@ -51,7 +51,6 @@ export class MapEditorComponent implements OnInit, OnDestroy {
               private notificationService: NotificationService) {}
 
   ngOnInit() {
-
     this.activatedRoute.params.subscribe(params => {
       this.loadMap(params.mapID);
     });

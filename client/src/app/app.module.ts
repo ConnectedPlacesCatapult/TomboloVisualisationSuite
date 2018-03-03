@@ -3,13 +3,13 @@
  */
 import 'hammerjs';
 import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {APP_INITIALIZER, forwardRef, NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {APP_CONFIG, ConfigService} from './config.service';
 import {environment} from '../environments/environment';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {AppRoutingModule} from './app-routing.module';
 import {DialogsModule} from './dialogs/index';
 import {LocalStorageModule} from 'angular-2-local-storage';
@@ -54,6 +54,14 @@ import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.comp
 import {GeosearchComponent} from './map-viewer/geosearch/geosearch.component';
 import {GeosearchService} from './map-viewer/geosearch/geosearch.service';
 import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
+import {MapMetadataEditorComponent} from './map-editor/edit-panel/map-metadata-editor/map-metadata-editor.component';
+import {MapBasemapEditorComponent} from './map-editor/edit-panel/map-basemap-editor/map-basemap-editor.component';
+import {MapLayerEditorComponent} from './map-editor/edit-panel/map-layer-editor/map-layer-editor.component';
+import {NumberSliderControlComponent} from './map-editor/edit-panel/number-slider-control/number-slider-control.component';
+import {ColorPaletteComponent} from './map-editor/edit-panel/color-palette/color-palette.component';
+import {ColorPaletteSelectComponent} from './map-editor/edit-panel/color-palette-select/color-palette-select.component';
+import {ColorPickerModule} from 'ngx-color-picker';
+
 
 // APP_INITIALIZER function to load server-defined app config at startup
 export function ConfigLoader(configService: ConfigService) {
@@ -93,7 +101,13 @@ export function AppConfigFactory(configService: ConfigService) {
     AppInfoComponent,
     MyAccountDialogComponent,
     GeosearchComponent,
-    EditPanelComponent
+    EditPanelComponent,
+    MapMetadataEditorComponent,
+    MapBasemapEditorComponent,
+    MapLayerEditorComponent,
+    NumberSliderControlComponent,
+    ColorPaletteComponent,
+    ColorPaletteSelectComponent
   ],
   imports: [
     BrowserModule,
@@ -107,6 +121,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MaterialModule,
     MapboxModule,
     NgUploaderModule,
+    ColorPickerModule,
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
