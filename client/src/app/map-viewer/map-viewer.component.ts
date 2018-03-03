@@ -18,11 +18,11 @@ import {AuthService} from '../auth/auth.service';
 const debug = Debug('tombolo:maps-demo');
 
 @Component({
-  selector: 'maps-demo',
-  templateUrl: './maps-demo.html',
+  selector: 'maps-viewer',
+  templateUrl: './map-viewer.html',
   styles: []
 })
-export class MapsDemoComponent implements OnInit {
+export class MapViewerComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
@@ -57,7 +57,7 @@ export class MapsDemoComponent implements OnInit {
     if (!mapID) return;
 
     this.mapService.loadMap(mapID).then(map => {
-      //map.setBasemapDetail(this.sliderValue);
+      //map.setBasemapDetail(this.basemapDetailSliderValue);
     });
   }
 
