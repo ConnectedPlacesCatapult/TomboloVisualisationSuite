@@ -2,18 +2,18 @@ import {Injectable} from "@angular/core";
 import * as Debug from 'debug';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {environment} from '../../environments/environment';
+import {environment} from '../../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {NotificationService} from '../dialogs/notification.service';
+import {NotificationService} from '../../dialogs/notification.service';
 import 'rxjs/add/operator/do';
-import {MapRegistry} from '../mapbox/map-registry.service';
-import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
-import {FileUploadBase} from '../../../../src/shared/fileupload-base';
-import {OgrFileInfoBase} from '../../../../src/shared/ogrfileinfo-base';
-import {IMapGroup} from '../../../../src/shared/IMapGroup';
-import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
-import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
-import {IDatasetGroup} from '../../../../src/shared/IDatasetGroup';
+import {MapRegistry} from '../../mapbox/map-registry.service';
+import {TomboloMapboxMap, TomboloMapStyle} from '../../mapbox/tombolo-mapbox-map';
+import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
+import {OgrFileInfoBase} from '../../../../../src/shared/ogrfileinfo-base';
+import {IMapGroup} from '../../../../../src/shared/IMapGroup';
+import {ITomboloMap} from '../../../../../src/shared/ITomboloMap';
+import {ITomboloDataset} from '../../../../../src/shared/ITomboloDataset';
+import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
 
 const debug = Debug('tombolo:MapService');
 

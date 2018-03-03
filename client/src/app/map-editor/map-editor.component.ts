@@ -1,7 +1,7 @@
 import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {ActivatedRoute, Router} from '@angular/router';
-import {MapService} from '../map-service/map.service';
+import {MapService} from '../services/map-service/map.service';
 import {UploaderOptions, UploadFile, UploadInput, UploadOutput} from 'ngx-uploader';
 import {environment} from '../../environments/environment';
 import {Subject} from 'rxjs/Subject';
@@ -77,7 +77,7 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     if (!mapID) return;
 
     this.mapService.loadMap(mapID).then(map => {
-      //map.setBasemapDetail(this.sliderValue);
+      //map.setBasemapDetail(this.basemapDetailSliderValue);
     });
   }
 
@@ -133,7 +133,7 @@ export class MapEditorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().filter(d => !!d).subscribe((context: UploadDialogContext) => {
       if (context.openInMap) {
         this.mapService.createMapForUpload(context.file.id).subscribe(map => {
-          this.router.navigate(['/',{outlets:{primary:['mapdemo', map.id], rightBar:['mapinfo']}}]);
+          this.router.navigate(['/',{outlets:{primary:['view', map.id], rightBar:['mapinfo']}}]);
         });
       }
     });

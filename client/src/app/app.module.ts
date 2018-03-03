@@ -18,17 +18,15 @@ import {MaterialModule} from './material/index';
 import {NotificationService} from './dialogs/notification.service';
 import {MapRegistry} from './mapbox/map-registry.service';
 import {MapboxModule} from './mapbox/index';
-import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
-import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
-import {MapsDemoComponent} from './maps-demo/maps-demo.component';
-import {MapInfoComponent} from './map-info/map-info.component';
+import {MapViewerComponent} from './map-viewer/map-viewer.component';
+import {MapInfoComponent} from './rightbar-panels/map-info/map-info.component';
 import {MarkdownModule} from 'ngx-md';
 import {MapExportComponent} from './map-export/map-export.component';
 import {MatIconRegistry} from '@angular/material';
-import {BookmarkService} from './bookmark-service/bookmark.service';
-import {MapService} from './map-service/map.service';
-import {TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
-import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
+import {BookmarkService} from './services/bookmark-service/bookmark.service';
+import {MapService} from './services/map-service/map.service';
+import {TooltipRenderComponent} from './mapbox/tooltip-render/tooltip-render.component';
+import {TooltipRenderService} from './mapbox/tooltip-render/tooltip-render.service';
 import {ShareModule} from '@ngx-share/core';
 import {MapEditorComponent} from './map-editor/map-editor.component';
 import {NgUploaderModule} from 'ngx-uploader';
@@ -39,9 +37,8 @@ import {UploadPage3Component} from './map-editor/upload-dialog/upload-page3.comp
 import {UploadPage4Component} from './map-editor/upload-dialog/upload-page4.component';
 
 import {Angulartics2Module} from 'angulartics2';
-import {CustomGoogleTagManager} from './custom-google-tag-manager/custom-google-tag-manager';
+import {CustomGoogleTagManager} from './analytics/custom-google-tag-manager';
 import {RegisterIcons} from './tombolo-theme/icons';
-import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {MapControlsComponent} from './map-controls/map-controls.component';
 import {LoginControlsComponent} from './auth/login-controls/login-controls.component';
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
@@ -50,12 +47,12 @@ import {AuthService} from './auth/auth.service';
 import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/signup-confirmation.component';
 import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
 import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
-import {AccountInfoComponent} from './account-info/account-info.component';
-import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
-import {AppInfoComponent} from './app-info/app-info.component';
+import {AccountInfoComponent} from './rightbar-panels/account-info/account-info.component';
+import {TermsAndConditionsComponent} from './rightbar-panels/terms-and-conditions/terms-and-conditions.component';
+import {AppInfoComponent} from './rightbar-panels/app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
-import {GeosearchComponent} from './geosearch/geosearch.component';
-import {GeosearchService} from './geosearch/geosearch.service';
+import {GeosearchComponent} from './map-viewer/geosearch/geosearch.component';
+import {GeosearchService} from './map-viewer/geosearch/geosearch.service';
 import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -74,9 +71,7 @@ export function AppConfigFactory(configService: ConfigService) {
   ],
   declarations: [
     AppComponent,
-    CyclingDemoComponent,
-    BasemapDemoComponent,
-    MapsDemoComponent,
+    MapViewerComponent,
     MapEditorComponent,
     MapInfoComponent,
     MapExportComponent,
@@ -86,7 +81,6 @@ export function AppConfigFactory(configService: ConfigService) {
     UploadPage2Component,
     UploadPage3Component,
     UploadPage4Component,
-    IconsDemoComponent,
     MapControlsComponent,
     LoginControlsComponent,
     LoginDialogComponent,

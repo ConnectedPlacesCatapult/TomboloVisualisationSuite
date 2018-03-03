@@ -11,13 +11,13 @@ import 'rxjs/add/operator/filter';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
-import {MapService} from './map-service/map.service';
+import {MapService} from './services/map-service/map.service';
 import {TomboloMapboxMap} from './mapbox/tombolo-mapbox-map';
 import {Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
-import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
-import {AttributeRow, TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
+import {TooltipRenderService} from './mapbox/tooltip-render/tooltip-render.service';
+import {AttributeRow, TooltipRenderComponent} from './mapbox/tooltip-render/tooltip-render.component';
 import {EmuMapboxMap} from './mapbox/mapbox.component';
-import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
+import {CustomGoogleTagManager} from "./analytics/custom-google-tag-manager";
 
 const debug = Debug('tombolo:app');
 

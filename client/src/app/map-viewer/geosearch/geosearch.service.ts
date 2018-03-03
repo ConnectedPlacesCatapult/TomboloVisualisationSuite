@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
-import {APP_CONFIG, AppConfig} from '../config.service';
+import {APP_CONFIG, AppConfig} from '../../config.service';
 
 const debug = Debug('tombolo:maps-demo');
 

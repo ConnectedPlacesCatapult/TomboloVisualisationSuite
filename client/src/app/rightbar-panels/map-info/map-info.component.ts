@@ -1,9 +1,9 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
 import * as Debug from 'debug';
-import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
-import {MapService} from '../map-service/map.service';
+import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
+import {MapService} from '../../services/map-service/map.service';
 import {Subscription} from 'rxjs/Subscription';
-import {MapRegistry} from '../mapbox/map-registry.service';
+import {MapRegistry} from '../../mapbox/map-registry.service';
 
 const debug = Debug('tombolo:map-info');
 
