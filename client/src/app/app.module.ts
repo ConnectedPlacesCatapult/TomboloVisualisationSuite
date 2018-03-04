@@ -61,6 +61,7 @@ import {NumberSliderControlComponent} from './map-editor/edit-panel/number-slide
 import {ColorPaletteComponent} from './map-editor/edit-panel/color-palette/color-palette.component';
 import {ColorPaletteSelectComponent} from './map-editor/edit-panel/color-palette-select/color-palette-select.component';
 import {ColorPickerModule} from 'ngx-color-picker';
+import {ColorWellComponent} from './map-editor/edit-panel/color-well/color-well.component';
 
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -107,7 +108,8 @@ export function AppConfigFactory(configService: ConfigService) {
     MapLayerEditorComponent,
     NumberSliderControlComponent,
     ColorPaletteComponent,
-    ColorPaletteSelectComponent
+    ColorPaletteSelectComponent,
+    ColorWellComponent
   ],
   imports: [
     BrowserModule,

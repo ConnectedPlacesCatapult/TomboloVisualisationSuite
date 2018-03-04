@@ -19,6 +19,10 @@
     width: 100% !important;
   }
 
+  .float-right {
+    float: right;
+  }
+
   .top-margin {
     margin-top: $g / 2 !important;
   }
@@ -200,6 +204,24 @@
     // Remove expansion panel padding
     .mat-expansion-panel-body {
       padding: 0;
+    }
+  }
+
+  /* Left navigation expansion panel */
+
+  .sidebar-right .mat-expansion-panel {
+    background-color: inherit;
+    box-shadow: none !important;
+
+    // Truncate long group titles with ellipsis
+    .mat-expansion-panel-header {
+      @include gradient-right-expansion-header();
+      padding: 0 24px 0 $g;
+      .mat-content {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 
@@ -637,15 +659,5 @@
     }
   }
 
-  /* Radio control container */
-  .mat-radio-button.radio-control-container {
-    .mat-radio-label {
-      align-items: flex-start;
-    }
 
-    // Required for Firefox
-    .mat-radio-label, .mat-radio-label-content {
-      width: 100%;
-    }
-  }
 }

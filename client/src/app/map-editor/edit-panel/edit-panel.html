@@ -11,9 +11,9 @@
       <!-- Map layers -->
       <mat-expansion-panel *ngFor="let layerId of map.dataLayers" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
-          {{layerId}}
+          Layer Name
         </mat-expansion-panel-header>
-        <map-layer-editor [map]="map" [layerId]="layerId"></map-layer-editor>
+        <map-layer-editor [map]="map" [layerId]="layerId" mode=""></map-layer-editor>
       </mat-expansion-panel>
 
       <!-- Basemap -->

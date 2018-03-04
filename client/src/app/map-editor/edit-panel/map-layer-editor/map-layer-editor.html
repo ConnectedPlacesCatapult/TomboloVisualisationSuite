@@ -1,36 +1,57 @@
 <form [formGroup]="form">
   <!-- Colour -->
-  <label>Colour: </label>
-  <mat-radio-group>
-    <mat-radio-button value="1" class="full-width">Fixed:
-      <input [(colorPicker)]="color" cpPosition="left" [style.background]="color"/>
-    </mat-radio-button>
+  <div class="panel-group">
+    <label>Colour: </label>
+    <mat-radio-group formControlName="colorRadio">
+      <mat-radio-button value="fixed" class="full-width">Fixed:
+        <color-well formControlName="fixedColor" class="float-right"></color-well>
+      </mat-radio-button>
 
-    <mat-radio-button value="2" class="full-width radio-control-container">
-      <mat-select placeholder="Data Attribute" formControlName="label">
+      <mat-radio-button value="attribute" class="full-width radio-control-container">
+        <mat-select placeholder="Data Attribute" formControlName="colorAttribute">
+          <mat-option value="1">Data Attribute #1</mat-option>
+          <mat-option value="2">Data Attribute #2</mat-option>
+          <mat-option value="3">Data Attribute #3</mat-option>
+        </mat-select><br/>
+        <color-palette-select [palettes]="palettes" formControlName="palette"></color-palette-select>
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- Line Size -->
+  <div *ngIf="mode == 'line'" class="panel-group">
+    <label>Size:</label>
+    <mat-radio-group formControlName="sizeRadio">
+      <mat-radio-button value="fixed" class="full-width">Fixed</mat-radio-button>
+
+      <mat-radio-button value="attribute" class="full-width">
+        <mat-select placeholder="Data Attribute" formControlName="sizeAttribute">
+          <mat-option value="1">Data Attribute #1</mat-option>
+          <mat-option value="2">Data Attribute #2</mat-option>
+          <mat-option value="3">Data Attribute #3</mat-option>
+        </mat-select>
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- Label -->
+  <div class="panel-group extra-margin">
+    <label>Label:</label>
+    <mat-form-field class="full-width" floatLabel="never">
+      <mat-select #labelSelect formControlName="labelAttribute" placeholder="None">
+        <mat-option value=""><i>None</i></mat-option>
         <mat-option value="1">Data Attribute #1</mat-option>
         <mat-option value="2">Data Attribute #2</mat-option>
         <mat-option value="3">Data Attribute #3</mat-option>
       </mat-select>
-      <div class="spacer"></div>
-      <color-palette-select [palettes]="palettes" formControlName="palette"></color-palette-select>
-    </mat-radio-button>
-  </mat-radio-group>
-
-  <!-- Label -->
-  <label>Label:</label>
-  <mat-form-field class="full-width">
-    <mat-select #labelSelect formControlName="label">
-      <mat-option [value]="0"><i>None</i></mat-option>
-      <mat-option value="1">Data Attribute #1</mat-option>
-      <mat-option value="2">Data Attribute #2</mat-option>
-      <mat-option value="3">Data Attribute #3</mat-option>
-    </mat-select>
-  </mat-form-field>
+    </mat-form-field>
+  </div>
 
   <!-- Transparency -->
-  <label>Transparency:</label>
-  <number-slider-control min="0" max="100" step="1" unit="%" formControlName="opacity" class="full-width">
-  </number-slider-control>
+  <div class="panel-group">
+    <label>Transparency:</label>
+    <number-slider-control min="0" max="100" step="1" unit="%" formControlName="opacity" class="full-width">
+    </number-slider-control>
+  </div>
 
 </form>
