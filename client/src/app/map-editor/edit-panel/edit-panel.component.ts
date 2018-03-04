@@ -42,7 +42,7 @@ export class EditPanelComponent implements OnInit {
   }
 
   toggleLayerVisibility(layerId: string) {
-   
+
   }
 
   deleteLayer(layerId: string) {

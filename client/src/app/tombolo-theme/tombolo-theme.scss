@@ -237,6 +237,30 @@
         }
       }
     }
+
+    .mat-expansion-panel-body {
+      padding: 0 $g 16px $g;
+    }
+  }
+
+  /* Basemap editor */
+  .basemap-editor {
+
+    padding-top: $g;
+    
+    label {
+      @include mat-typography-level-to-styles($typography, caption);
+    }
+
+    img {
+      border: 1px solid #B2CFCF;
+    }
+
+    .mat-radio-button.mat-radio-checked {
+      img {
+        border: 5px solid mat-color($accent);
+      }
+    }
   }
 
   /* Geosearch component */
