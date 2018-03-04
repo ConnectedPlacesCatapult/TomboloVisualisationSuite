@@ -210,6 +210,7 @@
   /* Right navigation expansion panel */
 
   .sidebar-right .mat-expansion-panel {
+    color: mat-color($primary);
     background-color: inherit;
     box-shadow: none !important;
 
@@ -247,7 +248,7 @@
   .basemap-editor {
 
     padding-top: $g;
-    
+
     label {
       @include mat-typography-level-to-styles($typography, caption);
     }

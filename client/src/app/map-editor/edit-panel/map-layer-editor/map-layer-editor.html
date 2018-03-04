@@ -3,8 +3,8 @@
   <div class="panel-group">
     <label>Colour: </label>
     <mat-radio-group formControlName="colorRadio">
-      <mat-radio-button value="fixed" class="full-width">Fixed:
-        <color-well formControlName="fixedColor" class="float-right"></color-well>
+      <mat-radio-button value="fixed" class="full-width flex-label">Fixed:
+        <color-well formControlName="fixedColor"></color-well>
       </mat-radio-button>
 
       <mat-radio-button value="attribute" class="full-width radio-control-container">
@@ -13,7 +13,7 @@
           <mat-option value="2">Data Attribute #2</mat-option>
           <mat-option value="3">Data Attribute #3</mat-option>
         </mat-select><br/>
-        <color-palette-select [palettes]="palettes" formControlName="palette"></color-palette-select>
+        <color-palette-select [palettes]="palettes" formControlName="palette" class="full-width"></color-palette-select>
       </mat-radio-button>
     </mat-radio-group>
   </div>

@@ -48,6 +48,13 @@ $control-spacing: $g;
     }
   }
 
+  .mat-radio-button.flex-label {
+    .mat-radio-label-content {
+      display: inline-flex;
+      justify-content: space-between;
+    }
+  }
+
   // Putting selects in a radio button label removes the normal underline
   // Add it back here
   .mat-radio-button .mat-select-trigger {
