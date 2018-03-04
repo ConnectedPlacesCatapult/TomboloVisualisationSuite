@@ -19,7 +19,7 @@
             <button mat-icon-button class="compressed" (click)="deleteLayer($layerId); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
           </div>
         </mat-expansion-panel-header>
-        <map-layer-editor [map]="map" [layerId]="layerId" mode="line"></map-layer-editor>
+        <map-layer-editor [map]="map" [layerId]="layerId" [palettes]="palettes" mode="line"></map-layer-editor>
       </mat-expansion-panel>
 
       <!-- Basemap -->
@@ -28,7 +28,7 @@
           <mat-icon svgIcon="map"></mat-icon>
           <span class="expansion-header-title">Basemap</span>
         </mat-expansion-panel-header>
-        <map-basemap-editor ></map-basemap-editor>
+        <map-basemap-editor [map]="map" [basemaps]="basemaps"></map-basemap-editor>
       </mat-expansion-panel>
 
     </mat-accordion>

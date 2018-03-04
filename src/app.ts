@@ -37,6 +37,8 @@ import DatasetsRouter from './routes/api/datasets';
 import BookmarksRouter from './routes/api/bookmarks';
 import BookmarkRedirectRouter from './routes/bookmark-redirect';
 import AuthRouter from './routes/api/auth';
+import BasemapsRouter from './routes/api/basemaps';
+import PalettesRouter from './routes/api/palettes';
 
 import {TileRendererService} from './lib/tile-renderers/tile-renderer-service';
 import {TileliveTileRenderer} from './lib/tile-renderers/tilelive-tile-renderer';
@@ -99,6 +101,8 @@ app.use('/api/v1/datasets', DatasetsRouter);
 app.use('/api/v1/bookmarks', BookmarksRouter);
 app.use('/api/v1/uploads', UploadsRouter);
 app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/basemaps', BasemapsRouter);
+app.use('/api/v1/palettes', PalettesRouter);
 app.use('/tiles', TilesRouter);
 app.use('/maps', MapsRouter);
 app.use('/b', BookmarkRedirectRouter);

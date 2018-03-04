@@ -5,6 +5,8 @@ import {MapService} from '../../services/map-service/map.service';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from '../../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
+import {IPalette} from '../../../../../src/shared/IPalette';
+import {IBasemap} from '../../../../../src/shared/IBasemap';
 
 const debug = Debug('tombolo:map-edit-panel');
 
@@ -22,8 +24,19 @@ export class EditPanelComponent implements OnInit {
 
   _subs: Subscription[] = [];
   map: TomboloMapboxMap;
+  basemaps: IBasemap[];
+  palettes: IPalette[];
 
   ngOnInit() {
+
+    this.mapService.loadBasemaps().subscribe(basemaps => {
+      this.basemaps = basemaps;
+    });
+
+    this.mapService.loadPalettes().subscribe(palettes => {
+      this.palettes = palettes;
+    });
+
     this._subs.push(this.mapService.mapLoading$().subscribe(() => {
       debug('Map is loading');
       // Clear map so that child components don't try to access map

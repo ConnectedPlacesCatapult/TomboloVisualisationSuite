@@ -5,7 +5,6 @@ import {Subject} from 'rxjs/Subject';
 import {environment} from '../../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../dialogs/notification.service';
-import 'rxjs/add/operator/do';
 import {MapRegistry} from '../../mapbox/map-registry.service';
 import {TomboloMapboxMap, TomboloMapStyle} from '../../mapbox/tombolo-mapbox-map';
 import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
@@ -14,6 +13,10 @@ import {IMapGroup} from '../../../../../src/shared/IMapGroup';
 import {ITomboloMap} from '../../../../../src/shared/ITomboloMap';
 import {ITomboloDataset} from '../../../../../src/shared/ITomboloDataset';
 import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
+import {IBasemap} from '../../../../../src/shared/IBasemap';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/publishReplay';
+import {IPalette} from '../../../../../src/shared/IPalette';
 
 const debug = Debug('tombolo:MapService');
 
@@ -36,6 +39,8 @@ export class MapService {
 
   private _mapLoaded$ = new Subject<TomboloMapboxMap>();
   private _mapLoading$ = new Subject<void>();
+  private _basemaps$ : Observable<IBasemap[]>;
+  private _palettes$ : Observable<IPalette[]>;
 
   mapLoaded$(): Observable<TomboloMapboxMap> {
     return this._mapLoaded$.asObservable();
@@ -97,6 +102,38 @@ export class MapService {
    */
   loadDatasetsInGroup(groupId: string): Observable<ITomboloDataset[]> {
     return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
+  }
+
+  /**
+   * Load (and cache) basemaps
+   * @returns {Observable<IBasemap[]>}
+   */
+  loadBasemaps(): Observable<IBasemap[]> {
+
+    // Cache basemaps
+    if (!this._basemaps$) {
+      this._basemaps$ = this.http.get<IBasemap[]>(`${environment.apiEndpoint}/basemaps`)
+        .publishReplay(1)
+        .refCount();
+    }
+
+    return this._basemaps$;
+  }
+
+  /**
+   * Load (and cache) palettes
+   * @returns {Observable<IPalette[]>}
+   */
+  loadPalettes(): Observable<IPalette[]> {
+
+    // Cache palettes
+    if (!this._palettes$) {
+      this._palettes$ = this.http.get<IPalette[]>(`${environment.apiEndpoint}/palettes`)
+        .publishReplay(1)
+        .refCount();
+    }
+
+    return this._palettes$;
   }
 
   /**

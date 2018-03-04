@@ -22,24 +22,11 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
   @HostBinding('class.layer-editor') layerEditorClass = true;
 
   @Input() map: TomboloMapboxMap;
+  @Input() palettes: IPalette[];
   @Input() layerId: string;
   @Input() mode: 'fill' | 'line' | 'circle';
 
   form: FormGroup;
-
-
-  palettes: IPalette[] = [
-    {
-      id: 'DivGnYlRd',
-      description: 'Diverging green-yellow-red',
-      colorStops: ['#1a9641', '#a6d96a', '#ffffbf', '#fdae61', '#d7191c']
-    },
-    {
-      id: 'SeqYlOrRd',
-      description: 'Sequential yellow-orange-red',
-      colorStops: ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026']
-    }
-  ];
 
   _subs: Subscription[] = [];
 
@@ -48,7 +35,8 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
       colorRadio: new FormControl('fixed'),
       fixedColor: new FormControl('#bbb'),
       colorAttribute: new FormControl(),
-      palette: new FormControl(this.palettes[0]),
+      palette: new FormControl(),
+      size: new FormControl(5),
       sizeRadio: new FormControl('fixed'),
       sizeAttribute: new FormControl(),
       labelAttribute: new FormControl(),
@@ -74,6 +62,10 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
 
     this._subs.push(this.form.get('palette').valueChanges.subscribe(val => {
       debug('palette selected', val);
+    }));
+
+    this._subs.push(this.form.get('size').valueChanges.subscribe(val => {
+      debug('size changed', val);
     }));
 
     this._subs.push(this.form.get('sizeRadio').valueChanges.subscribe(val => {

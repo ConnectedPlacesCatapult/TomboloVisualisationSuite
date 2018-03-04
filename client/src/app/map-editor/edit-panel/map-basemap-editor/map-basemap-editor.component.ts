@@ -1,5 +1,7 @@
-import {ChangeDetectionStrategy, Component, HostBinding, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import * as Debug from 'debug';
+import {TomboloMapboxMap} from '../../../mapbox/tombolo-mapbox-map';
+import {IBasemap} from '../../../../../../src/shared/IBasemap';
 
 const debug = Debug('tombolo:map-basemap-editor');
 
@@ -13,6 +15,9 @@ const debug = Debug('tombolo:map-basemap-editor');
 export class MapBasemapEditorComponent implements OnInit {
 
   @HostBinding('class.basemap-editor') basemapEditorClass = true;
+
+  @Input() map: TomboloMapboxMap;
+  @Input() basemaps: IBasemap[];
 
   constructor() {}
 

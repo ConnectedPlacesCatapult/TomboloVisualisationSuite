@@ -34,9 +34,19 @@ $control-spacing: $g;
       align-items: flex-start;
     }
 
+    .mat-radio-label-content {
+      margin-top: -5px;
+    }
+
     // Required for Firefox
     .mat-radio-label, .mat-radio-label-content {
       width: 100%;
+    }
+
+    // Checkboxes inside radio-control-container
+    .mat-checkbox {
+      margin-top: 20px;
+      display: block;
     }
   }
 
