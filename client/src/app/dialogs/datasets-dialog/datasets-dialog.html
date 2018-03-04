@@ -1,25 +1,43 @@
-<div class="block">
-  <div class="row border">
+<div class="container">
+  <div class="block">
+    <div class="column border">
 
-    <div class="search">
-      <mat-form-field>
-        <input matInput (input)="filterByQuery()" [(ngModel)]="filterInput" class="filter" placeholder="Search datasets">
-      </mat-form-field>
+      <div class="search">
+        <mat-form-field floatLabel="never">
+          <input matInput [(ngModel)]="filterInput" class="filter" placeholder="Search datasets" (keyup)="queryOnEnter($event)">
+          <mat-icon fontSet="fa" fontIcon="fa-search" class="search-icon" (click)="filterByQuery()"></mat-icon>
+        </mat-form-field>
+      </div>
+
+      <h3>Categories</h3>
+      <mat-list *ngIf="groups">
+        <mat-list-item *ngFor="let group of groups"
+                       [ngClass]="{'darkblue': group['id']===selectedGroupId,
+        'blue': group['id']!==selectedGroupId}"
+                       (click)="loadDatasets(group['id'])">{{group['name']}}</mat-list-item>
+      </mat-list>
     </div>
 
-    <h3>Categories</h3>
-    <mat-list *ngIf="groups">
-      <mat-list-item *ngFor="let group of groups"
-        [ngClass]="{'darkblue': group['id']===selectedGroupId,
-        'blue': group['id']!==selectedGroupId}"
-        (click)="loadDatasets(group['id'])">{{group['name']}}</mat-list-item>
-    </mat-list>
+    <div class="column">
+      <h3>Datasets</h3>
+      <mat-list *ngIf="datasets && datasets.length > 0" class="datasets">
+        <mat-list-item *ngFor="let dataset of datasets"
+                       [ngClass]="{'darkblue': dataset['id']===selectedDataset['id'],
+        'blue': dataset['id']!==selectedDataset['id']}"
+                       (click)="selectDataset(dataset)">{{dataset['name']}}</mat-list-item>
+      </mat-list>
+
+      <div *ngIf="selectedDataset" class="description">
+        <h3 class="description-title">{{selectedDataset['name']}}</h3>
+
+        {{selectedDataset['description']}}
+      </div>
+    </div>
   </div>
 
-  <div class="row">
-    <h3>Datasets</h3>
-    <mat-list *ngIf="datasets">
-      <mat-list-item *ngFor="let dataset of datasets" class="blue">{{dataset['name']}}</mat-list-item>
-    </mat-list>
+  <div class="buttons">
+    <button mat-button (click)="close()">Cancel</button>
+    <button mat-button [disabled]="selectedDataset['id'] === null">Add to Map</button>
   </div>
+
 </div>

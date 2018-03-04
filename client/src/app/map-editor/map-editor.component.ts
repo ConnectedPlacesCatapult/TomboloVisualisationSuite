@@ -73,7 +73,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
     debug('Editing mapID:', mapID);
 
-    if (!mapID) return;
+    if (!mapID || mapID === 'undefined') return;
 
     this.mapService.loadMap(mapID).then(map => {
       //map.setBasemapDetail(this.basemapDetailSliderValue);
@@ -150,7 +150,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   browsePublicDatasets() {
-    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '500px', height: '400px'});
+    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '600px', height: '500px'});
   }
 
   addDataset(datasetId: string) {
