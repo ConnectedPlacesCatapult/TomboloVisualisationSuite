@@ -207,20 +207,34 @@
     }
   }
 
-  /* Left navigation expansion panel */
+  /* Right navigation expansion panel */
 
   .sidebar-right .mat-expansion-panel {
     background-color: inherit;
     box-shadow: none !important;
 
-    // Truncate long group titles with ellipsis
     .mat-expansion-panel-header {
       @include gradient-right-expansion-header();
-      padding: 0 24px 0 $g;
+      padding: 0 24px 0 $g - 4px;
       .mat-content {
-        display: inline-block;
+        display: inline-flex;
+        padding-right: 4px;
+        align-items: center;
         text-overflow: ellipsis;
         white-space: nowrap;
+
+        .expansion-header-title {
+          margin-left: 4px;
+          flex: 1 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .button-box {
+          color: mat-color($accent);
+          display: inline-block;
+        }
       }
     }
   }

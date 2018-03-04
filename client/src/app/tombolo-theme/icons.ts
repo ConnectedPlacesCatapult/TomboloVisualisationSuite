@@ -13,6 +13,7 @@ export  const ICONS = [
   'edit',
   'export',
   'eye',
+  'grab-handle',
   'gps',
   'green-space',
   'info',

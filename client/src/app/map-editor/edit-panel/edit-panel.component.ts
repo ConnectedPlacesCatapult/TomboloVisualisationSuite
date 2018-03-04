@@ -41,4 +41,12 @@ export class EditPanelComponent implements OnInit {
     this._subs.forEach(sub => sub.unsubscribe());
   }
 
+  toggleLayerVisibility(layerId: string) {
+   
+  }
+
+  deleteLayer(layerId: string) {
+
+  }
+
 }
