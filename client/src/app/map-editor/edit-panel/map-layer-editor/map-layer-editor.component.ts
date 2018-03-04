@@ -40,7 +40,8 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
     this.form = new FormGroup({
       label: new FormControl(),
       opacity: new FormControl(100),
-      palette: new FormControl(this.palettes[0])
+      palette: new FormControl(this.palettes[0]),
+      clonk: new FormControl()
     });
   }
 

@@ -638,9 +638,14 @@
   }
 
   /* Radio control container */
-  .mat-radio-button.align-button-top {
-    label {
+  .mat-radio-button.radio-control-container {
+    .mat-radio-label {
       align-items: flex-start;
+    }
+
+    // Required for Firefox
+    .mat-radio-label, .mat-radio-label-content {
+      width: 100%;
     }
   }
 }

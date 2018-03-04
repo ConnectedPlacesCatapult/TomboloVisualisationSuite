@@ -1,15 +1,12 @@
-<h2>Layer</h2>
 <form [formGroup]="form">
-
+  <!-- Colour -->
   <label>Colour: </label>
   <mat-radio-group>
     <mat-radio-button value="1" class="full-width">Fixed:
       <input [(colorPicker)]="color" cpPosition="left" [style.background]="color"/>
     </mat-radio-button>
 
-    <div class="spacer"></div>
-
-    <mat-radio-button value="2" class="full-width align-button-top">
+    <mat-radio-button value="2" class="full-width radio-control-container">
       <mat-select placeholder="Data Attribute" formControlName="label">
         <mat-option value="1">Data Attribute #1</mat-option>
         <mat-option value="2">Data Attribute #2</mat-option>
@@ -20,8 +17,7 @@
     </mat-radio-button>
   </mat-radio-group>
 
-  <div class="spacer"></div>
-
+  <!-- Label -->
   <label>Label:</label>
   <mat-form-field class="full-width">
     <mat-select #labelSelect formControlName="label">
@@ -32,9 +28,9 @@
     </mat-select>
   </mat-form-field>
 
-
-  <number-slider-control label="Transparency:" min="0" max="100" step="1" unit="%"
-                         formControlName="opacity" class="full-width">
+  <!-- Transparency -->
+  <label>Transparency:</label>
+  <number-slider-control min="0" max="100" step="1" unit="%" formControlName="opacity" class="full-width">
   </number-slider-control>
 
 </form>

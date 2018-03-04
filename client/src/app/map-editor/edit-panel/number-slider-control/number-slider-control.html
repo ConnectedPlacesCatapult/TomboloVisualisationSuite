@@ -1,7 +1,6 @@
-<label *ngIf="label">{{label}}</label>
 <div class="number-slider-component-wrapper">
 <mat-slider [min]="min" [max]="max" [step]="step" [(ngModel)]="value" (input)="value = $event.value; propagateChange(value)"></mat-slider>
 <mat-form-field>
-  <input matInput [(ngModel)]="value" (keyup)="propagateChange(value)"><span class="unit" matSuffix *ngIf="unit">{{unit}}</span>
+  <input matInput type="number" [min]="min" [max]="max" [(ngModel)]="value" (keyup)="propagateChange(value)"><span class="unit" matSuffix *ngIf="unit">{{unit}}</span>
 </mat-form-field>
 </div>

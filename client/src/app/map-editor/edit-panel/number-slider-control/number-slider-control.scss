@@ -2,12 +2,6 @@
 
 .number-slider-component {
 
-  position: relative;
-
-  label {
-    position: absolute;
-  }
-
   .number-slider-component-wrapper {
     display: flex;
   }
@@ -15,7 +9,7 @@
   .mat-slider {
     flex: 1 1;
     padding: 0;
-    margin-top: 4px;
+    height: 30px;
   }
 
   .mat-form-field {
@@ -24,10 +18,29 @@
 
   .mat-slider-wrapper {
     left: 0;
+    top: 12px;
+  }
+
+  .mat-input-infix {
+    border-top: 0;
   }
 
   input {
     text-align: right;
+  }
+
+  .unit {
+    margin-left: 1px;
+  }
+
+  // Turn off stepper controls
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: textfield;
+    margin: 0;
   }
 }
 
