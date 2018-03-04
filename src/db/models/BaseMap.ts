@@ -2,6 +2,7 @@ import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} 
 import * as sequelize from 'sequelize';
 import {literal} from 'sequelize';
 import {IBasemap} from '../../shared/IBasemap';
+import {IStyle} from '../../shared/IStyle';
 
 @Table({
   tableName: 'base_maps',
@@ -39,7 +40,7 @@ export class BaseMap extends Model<BaseMap> implements IBasemap {
     type: DataType.JSON,
     allowNull: true
   })
-  style: object;
+  style: IStyle;
 
   static getDefault() {
     return BaseMap.findOne<BaseMap>({where: { isDefault: true} as any});

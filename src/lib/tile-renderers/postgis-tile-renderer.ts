@@ -11,12 +11,13 @@ import {Logger} from '../logger';
 import {Dataset} from '../../db/models/Dataset';
 import {TileRenderer} from './tile-renderer-service';
 import {DB} from '../../db/index';
+import {DATA_LAYER_ID} from '../../shared/style-generator/style-generator';
 import * as sequelize from 'sequelize';
 
 const db = Container.get(DB);
 
 // Layer id to use for the single tile layer supported by this renderer
-export const DATA_LAYER_ID = 'data';
+
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 

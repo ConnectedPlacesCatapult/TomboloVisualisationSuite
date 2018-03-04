@@ -68,7 +68,7 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
   @Column({
     type: DataType.ARRAY(DataType.DOUBLE)
   })
-  center: number;
+  center: number[];
 
   @Column({
     type: DataType.BOOLEAN,
@@ -76,6 +76,12 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
     field: 'is_private'
   })
   isPrivate: boolean;
+
+  @Column({
+    type: DataType.INTEGER,
+    field: 'basemap_detail_level'
+  })
+  basemapDetailLevel: number;
 
   @ForeignKey(() => User)
   @Column({

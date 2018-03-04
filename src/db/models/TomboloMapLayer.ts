@@ -3,13 +3,14 @@ import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
 import {Palette} from './Palette';
 import * as sequelize from 'sequelize';
+import {IMapLayer} from '../../shared/IMapLayer';
 
 @Table({
   tableName: 'map_layers',
   timestamps: true,
   version: true
 })
-export class TomboloMapLayer extends Model<TomboloMapLayer> {
+export class TomboloMapLayer extends Model<TomboloMapLayer> implements IMapLayer {
 
   @ForeignKey(() => TomboloMap)
   @Column({

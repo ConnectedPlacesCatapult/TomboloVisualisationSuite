@@ -4,6 +4,8 @@ import {DataAttribute} from './DataAttribute';
 import {DatasetGroup} from './DatasetGroup';
 import * as sequelize from 'sequelize';
 import {QueryInterface} from 'sequelize';
+import {ITomboloDataset} from '../../shared/ITomboloDataset';
+import {ITomboloDatasetAttribute} from '../../shared/ITomboloDatasetAttribute';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
@@ -14,7 +16,7 @@ const CATEGORY_MAX_COUNT = 7;
   timestamps: true,
   version: true
 })
-export class Dataset extends Model<Dataset> {
+export class Dataset extends Model<Dataset> implements ITomboloDataset {
 
   @Column({
     type: DataType.UUID,
@@ -135,7 +137,7 @@ export class Dataset extends Model<Dataset> {
   owner: User;
 
   @HasMany(() => DataAttribute)
-  dataAttributes: DataAttribute[];
+  dataAttributes: ITomboloDatasetAttribute[];
 
   // Find all datasets by userId
   static findByUserId(userId: string) {
