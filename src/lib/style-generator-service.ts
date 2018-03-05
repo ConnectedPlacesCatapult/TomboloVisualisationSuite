@@ -59,6 +59,7 @@ export class StyleGeneratorService {
       id: map.id,
       name: map.name,
       description: map.description,
+      isPrivate: map.isPrivate,
       zoom: map.zoom,
       center: map.center,
       datasets: this.datasetsForMap(map),
@@ -69,7 +70,7 @@ export class StyleGeneratorService {
 
     return mapDefinition;
   }
-  
+
   /**
    * Return datasets for map
    *
@@ -119,7 +120,8 @@ export class StyleGeneratorService {
 
     return map.layers.map(layer => {
       const datalayer: IMapLayer = {
-        layerId: layer.layerId,
+        layerId: DATA_LAYER_PREFIX + layer.layerId,
+        originalLayerId: layer.layerId,
         name: layer.name,
         description: layer.description,
         layerType: layer.layerType,
@@ -127,8 +129,12 @@ export class StyleGeneratorService {
         paletteInverted: layer.paletteInverted,
         datasetId: layer.datasetId,
         datasetAttribute: layer.datasetAttribute,
+        fixedColor: layer.fixedColor,
+        sizeAttribute: layer.sizeAttribute,
+        fixedSize: layer.fixedSize,
         labelAttribute: layer.labelAttribute,
         opacity: layer.opacity,
+        visible: layer.visible,
         order: layer.order
       };
 

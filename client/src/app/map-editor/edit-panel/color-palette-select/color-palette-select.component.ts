@@ -18,11 +18,15 @@ export class ColorPaletteSelectComponent implements ControlValueAccessor {
   @HostBinding('class.color-palette-select') colorPaletteSelectClass = true;
 
   @Input() palettes: IPalette[];
-  @Input() value: IPalette;
+  @Input() value: string; // palette id
 
   propagateChange = (_: any) => {};
 
   constructor() {}
+
+  paletteForId(id: string) : IPalette {
+    return this.palettes.find(p => p.id === id);
+  }
 
   writeValue(value: any) {
     if (value !== undefined) {

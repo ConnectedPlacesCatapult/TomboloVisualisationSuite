@@ -7,6 +7,7 @@ export interface IMapDefinition {
   id: string;
   name: string;
   description: string;
+  isPrivate: boolean;
   zoom: number;
   center: number[];
   datasets: ITomboloDataset[];

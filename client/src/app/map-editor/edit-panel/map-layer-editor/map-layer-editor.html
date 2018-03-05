@@ -9,27 +9,23 @@
 
       <mat-radio-button value="attribute" class="full-width radio-control-container">
         <mat-select placeholder="Data Attribute" formControlName="colorAttribute">
-          <mat-option value="1">Data Attribute #1</mat-option>
-          <mat-option value="2">Data Attribute #2</mat-option>
-          <mat-option value="3">Data Attribute #3</mat-option>
+          <mat-option *ngFor="let attr of rampAttributes" [value]="attr.field">{{attr.name}}</mat-option>
         </mat-select><br/>
         <color-palette-select [palettes]="palettes" formControlName="palette" class="full-width"></color-palette-select>
-        <mat-checkbox class="full-width">Invert palette</mat-checkbox>
+        <mat-checkbox class="full-width" formControlName="paletteInverted">Invert palette</mat-checkbox>
       </mat-radio-button>
     </mat-radio-group>
   </div>
 
   <!-- Size -->
-  <div *ngIf="mode == 'line'" class="panel-group">
+  <div *ngIf="mode == 'circle'" class="panel-group">
     <label>Size:</label>
     <mat-radio-group formControlName="sizeRadio">
       <number-slider-control min="5" max="50" step="1" unit="px" formControlName="size" class="full-width"></number-slider-control>
       <mat-radio-button value="fixed" class="full-width radio-control-container">Fixed</mat-radio-button>
       <mat-radio-button value="attribute" class="full-width">
         <mat-select placeholder="Data Attribute" formControlName="sizeAttribute">
-          <mat-option value="1">Data Attribute #1</mat-option>
-          <mat-option value="2">Data Attribute #2</mat-option>
-          <mat-option value="3">Data Attribute #3</mat-option>
+          <mat-option *ngFor="let attr of rampAttributes" [value]="attr.field">{{attr.name}}</mat-option>
         </mat-select>
       </mat-radio-button>
     </mat-radio-group>
@@ -41,9 +37,7 @@
     <mat-form-field class="full-width" floatLabel="never">
       <mat-select #labelSelect formControlName="labelAttribute" placeholder="None">
         <mat-option value=""><i>None</i></mat-option>
-        <mat-option value="1">Data Attribute #1</mat-option>
-        <mat-option value="2">Data Attribute #2</mat-option>
-        <mat-option value="3">Data Attribute #3</mat-option>
+        <mat-option *ngFor="let attr of allAttributes" [value]="attr.field">{{attr.name}}</mat-option>
       </mat-select>
     </mat-form-field>
   </div>

@@ -9,17 +9,17 @@
 
     <mat-accordion multi="true" displayMode="flat">
       <!-- Map layers -->
-      <mat-expansion-panel *ngFor="let layerId of map.dataLayers" expanded="true">
+      <mat-expansion-panel *ngFor="let layer of map.dataLayers" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
           <mat-icon svgIcon="grab-handle"></mat-icon>
           <mat-icon svgIcon="polygon"></mat-icon>
-          <span class="expansion-header-title">Layer Name that is very long</span>
+          <span class="expansion-header-title">{{layer.name}}</span>
           <div class="button-box">
-            <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layerId); $event.stopPropagation()"><mat-icon svgIcon="eye"></mat-icon></button>
+            <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layer); $event.stopPropagation()"><mat-icon [svgIcon]="eyeIconForLayer(layer)"></mat-icon></button>
             <button mat-icon-button class="compressed" (click)="deleteLayer($layerId); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
           </div>
         </mat-expansion-panel-header>
-        <map-layer-editor [map]="map" [layerId]="layerId" [palettes]="palettes" mode="line"></map-layer-editor>
+        <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes"></map-layer-editor>
       </mat-expansion-panel>
 
       <!-- Basemap -->

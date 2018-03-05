@@ -27,11 +27,13 @@ export class MapInfoComponent implements OnInit {
 
     // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.mapName = map.name;
-      this.mapDescription = map.description;
+      if (map.mapLoaded) {
+        this.mapName = map.name;
+        this.mapDescription = map.description;
+      }
     });
 
-    // Update name and description if map is loaded
+    // Update name and description when map is loaded
     this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
       this.mapName = map.name;
       this.mapDescription = map.description;

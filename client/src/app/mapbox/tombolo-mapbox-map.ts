@@ -1,103 +1,74 @@
 import {EmuMapboxMap} from './mapbox.component';
-import {Style as MapboxStyle, Layer as MapboxLayer} from 'mapbox-gl';
+import * as Debug from 'debug';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {IMapDefinition} from '../../../../src/shared/IMapDefinition';
+import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
+import {IMapLayer} from '../../../../src/shared/IMapLayer';
+import {IBasemapDetailMetadata, IStyle, IStyleMetadata} from '../../../../src/shared/IStyle';
+import {ITomboloDatasetAttribute} from '../../../../src/shared/ITomboloDatasetAttribute';
+import {LABEL_LAYER_PREFIX, StyleGenerator} from '../../../../src/shared/style-generator/style-generator';
+import {IPalette} from '../../../../src/shared/IPalette';
+import {MapboxOptions, Layer as MapboxLayer} from 'mapbox-gl';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/throttleTime';
+import 'rxjs/add/operator/auditTime';
 
-export interface TomboloMapStyle extends MapboxStyle {
-  metadata: TomboloStyleMetadata;
-  layers: TomboloStyleLayer[];
-}
+const debug = Debug('tombolo:mapboxgl');
 
-export interface TomboloStyleLayer extends MapboxLayer {
-  metadata: TomboloLayerMetadata;
-}
-
-export interface TomboloStyleMetadata {
-  id: string;
-  description: string;
-  isPrivate: boolean;
-  insertionPoints: {[key: string]: string};
-  basemapDetail: TombolBasemapDetailMetadata;
-  datasets: TomboloDatasetMetadata[],
-  dataLayers: string[];
-  recipe: string;
-}
-
-export interface TombolBasemapDetailMetadata {
-  defaultDetailLevel: number;
-  layers: {[key: string]: number};
-}
-
-export interface TomboloDatasetMetadata {
-  id: string;
-  name: string;
-  description: string | null;
-  geometryType: 'Polygon' | 'LineString' | 'Point';
-  attributes: TomboloDataAttributeMetadata[];
-}
-
-export interface TomboloDataAttributeMetadata {
-  id: string;
-  name: string;
-  description: string | null;
-  unit: string | null;
-  minValue: number | null;
-  maxValue: number | null;
-  quantiles5: number[] | null;
-  qualtiles10: number[] | null;
-  type: 'number' | 'string';
-  categories: string[] | null;
-}
-
-export interface TomboloLayerMetadata {
-  dataset: string;
-  attribute: string;
-  opacity: number;
-  palette: {
-    id: string;
-    colorStops: string[];
-    inverted: boolean
-  }
-}
+const PAINT_LAYER_REGENERATION_DEBOUNCE = 300;
+const LABEL_LAYER_REGENERATION_DEBOUNCE = 500;
 
 export class TomboloMapboxMap extends EmuMapboxMap {
 
-  private _cachedStyle: TomboloMapStyle = null;
+  private _metadata: IStyleMetadata;
+  private _mapDefinition: IMapDefinition;
   private _modified: boolean = false;
   private _modified$ = new Subject<boolean>();
+  private _mapLoaded = false;
+  private _styleGenerater: StyleGenerator;
+
+  private _regeneratePainStyle$ = new Subject<IMapLayer>();
+  private _regenerateLabelLayer$ = new Subject<IMapLayer>();
+
+  constructor(options?: MapboxOptions) {
+    super(options);
+
+    // Hook up debounced paint style regeneration
+    this._regeneratePainStyle$.auditTime(PAINT_LAYER_REGENERATION_DEBOUNCE).subscribe((layer) => {
+      this.debouncedRegeneratePaintStyle(layer);
+    });
+
+    // Hook up debounced label layer regeneration
+    this._regenerateLabelLayer$.auditTime(LABEL_LAYER_REGENERATION_DEBOUNCE).subscribe((layer) => {
+      this.debouncedRegenerateLabelLayer(layer);
+    });
+  }
 
   modified$(): Observable<boolean> {
     return this._modified$.asObservable();
   }
 
-  getStyle(): TomboloMapStyle {
+  beginLoad() {
+    this._metadata = null;
+    this._mapDefinition = null;
+    this._mapLoaded = false;
+    this._styleGenerater = null;
 
-    if (!this._cachedStyle) {
-      this._cachedStyle = super.getStyle() as TomboloMapStyle;
-    }
-
-    return this._cachedStyle
+    debug('beginning map load');
   }
 
-  setStyle(style: string | MapboxStyle, options?: any): this {
+  finalizeLoad() {
+    this._metadata = this.getStyle().metadata;
+    this._mapDefinition = this._metadata.mapDefinition;
+    this._mapLoaded = true;
+    this._styleGenerater = new StyleGenerator(this._mapDefinition);
 
-    // Setting the style will overwrite any map modifications made in the editor
-    // Save or clear modified flag first
-    if (this._modified) {
-      throw new Error('Overwriting modified map style!');
-    }
-
-    this._cachedStyle = null;
-
-    // Workaround for missing options parameter in @types/mapbox
-    const untypedSetStyle: any = super.setStyle.bind(this);
-    untypedSetStyle(style, options);
-
-    return this;
+    debug('map load finalized');
   }
 
-  getLayer(layerID: string): TomboloStyleLayer {
-    return super.getLayer(layerID) as TomboloStyleLayer;
+  get mapLoaded(): boolean {
+    return this._mapLoaded;
   }
 
   get isModified(): boolean {
@@ -105,107 +76,243 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   get id(): string {
-    return this.getStyle().metadata.id;
+    return (this._mapDefinition) ? this._mapDefinition.id : null;
   }
 
   get name(): string {
-    return this.getStyle().name;
+    return (this._mapDefinition) ? this._mapDefinition.name : null;
   }
 
   set name(val: string) {
-    this._cachedStyle.name = val;
+    this._mapDefinition.name = val;
     this.setModified();
   }
 
   get description(): string {
-    return this.getStyle().metadata.description;
+    return (this._mapDefinition) ? this._mapDefinition.description : null;
   }
 
   set description(val: string) {
-    this._cachedStyle.metadata.description = val;
+    this._mapDefinition.description = val;
     this.setModified();
   }
 
   get isPrivate(): boolean {
-    return !!(this.getStyle().metadata.isPrivate);
+    return (this._mapDefinition) ? !!(this._mapDefinition.isPrivate) : false;
   }
 
   set isPrivate(val: boolean) {
-    this._cachedStyle.metadata.isPrivate = val;
+    this._mapDefinition.isPrivate = val;
     this.setModified();
   }
 
-  get datasets(): TomboloDatasetMetadata[] {
-    return this.getStyle().metadata.datasets;
+  get datasets(): ITomboloDataset[] {
+    return (this._mapDefinition) ? this._mapDefinition.datasets : [];
   }
 
-  get dataLayers(): string[] {
-    return this.getStyle().metadata.dataLayers;
+
+  get dataLayers(): IMapLayer[] {
+    return (this._mapDefinition) ? this._mapDefinition.layers : [];
   }
 
-  get basemapDetail(): TombolBasemapDetailMetadata {
-    return this.getStyle().metadata.basemapDetail;
+  getDataLayer(layerId: string): IMapLayer {
+    return this.dataLayers.find(d => d.layerId === layerId);
+  }
+
+  getLabelLayerId(layerId: string): string {
+    const dataLayer = this.dataLayers.find(d => d.layerId === layerId);
+
+    return (dataLayer && dataLayer.labelAttribute)? LABEL_LAYER_PREFIX + dataLayer.originalLayerId : null;
+  }
+
+  get dataLayerIds(): string[] {
+    return (this._mapDefinition) ? this._mapDefinition.layers.map(l => l.layerId) : [];
+  }
+
+  get basemapDetail(): IBasemapDetailMetadata {
+    return this._metadata.basemapDetail;
   }
 
   get recipe(): string {
-    return this.getStyle().metadata.recipe;
+    return (this._mapDefinition) ? this._mapDefinition.recipe : null;
   }
 
   // Return zoom level below which data layers are not displayed
   get dataMinZoom(): number {
 
-    if (!this.dataLayers) return 0;
+    if (!this._mapDefinition) return 0;
 
-    const minZooms = this.dataLayers.map(d => {
-      return this.getLayer(d).minzoom;
+    const minZooms = this._mapDefinition.datasets.map(d => {
+      return d.minZoom;
     });
 
     return Math.max(...minZooms);
   }
 
-  getDatasetForLayer(layerID: string): TomboloDatasetMetadata {
-    const layer = this.getLayer(layerID);
-    const datasetID = layer.metadata.dataset;
-    const dataset = this.datasets.find(d => d.id === datasetID);
+  getDatasetForLayer(layerId: string): ITomboloDataset {
 
-    if (!dataset) {
-      throw new Error(`Dataset not found on layer: ${layerID}`);
-    }
+    const dataLayer = this.getDataLayer(layerId);
+
+    if (!dataLayer) throw new Error(`Data layer ${layerId} not found`);
+
+    const dataset = this.datasets.find(d => d.id === dataLayer.datasetId);
 
     return dataset;
   }
 
-  getDataAttributesForLayer(layerID: string): TomboloDataAttributeMetadata[] {
-    return this.getDatasetForLayer(layerID).attributes;
+  getDataAttributesForLayer(layerId: string): ITomboloDatasetAttribute[] {
+    return this.getDatasetForLayer(layerId).dataAttributes;
   }
 
-  getDataAttributeForLayer(layerID: string, attributeID: string): TomboloDataAttributeMetadata {
-    const attribute = this.getDataAttributesForLayer(layerID).find(a => a.id === attributeID);
+  getDataAttributeForLayer(layerId: string, attributeId: string): ITomboloDatasetAttribute {
+    const attribute = this.getDataAttributesForLayer(layerId).find(a => a.field === attributeId);
 
     if (!attribute) {
-      throw new Error(`Data attribute '${attributeID} not found on layer: ${layerID}`);
+      throw new Error(`Data attribute '${attributeId} not found on layer: ${layerId}`);
     }
 
     return attribute;
   }
 
-  clearCache(): void {
-    // Warning - this will clear and unsaved modifications to the map
-    this._cachedStyle = null;
-  }
+  setDataLayerVisibility(layerId: string, visible: boolean): void {
 
-  setDataLayerOpacity(layerId: string, opacity: number): void {
-    const layer = this.getLayer(layerId);
-    const opacityProperty = layer.type + '-opacity';
+    const layer = this.getDataLayer(layerId);
+    const labelLayerId = this.getLabelLayerId(layerId);
+    layer.visible = visible;
 
-    opacity = Math.max(Math.min(opacity, 1), 0);
-    layer.metadata.opacity = opacity;
-    this.setPaintProperty(layerId, opacityProperty, opacity);
+    this.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+    if (labelLayerId) {
+      this.setLayoutProperty(labelLayerId,'visibility', visible ? 'visible' : 'none');
+    }
+
     this.setModified();
   }
 
+  setDataLayerOpacity(layerId: string, opacity: number): void {
 
-  setBasemapDetail(level: number): void {
+    const layer = this.getDataLayer(layerId);
+    const labelLayerId = this.getLabelLayerId(layerId);
+
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    const opacityProperty = layer.layerType + '-opacity';
+
+    layer.opacity = Math.max(Math.min(opacity, 1), 0);
+
+    this.setPaintProperty(layerId, opacityProperty, opacity);
+
+    if (labelLayerId) {
+      this.setPaintProperty(labelLayerId, 'text-opacity', opacity);
+    }
+
+    this.setModified();
+  }
+
+  setDataLayerFixedColor(layerId: string, color: string): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.fixedColor = color;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerColorAttribute(layerId: string, colorAttribute: string): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.datasetAttribute = colorAttribute;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerColorMode(layerId: string, colorMode: 'attribute' | 'fixed'): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.colorMode = colorMode;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerPalette(layerId: string, palette: IPalette): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.palette = palette;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerPaletteInverted(layerId: string, paletteInverted: boolean): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.paletteInverted = paletteInverted;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerFixedSize(layerId: string, size: number): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.fixedSize = size;
+    this.regenerateLayerPaintStyle(layer);
+
+    if (layer.labelAttribute) {
+      // Reposition label based on fixed size
+      this.regenerateLabelLayer(layer);
+    }
+
+    this.setModified();
+  }
+
+  setDataLayerSizeAttribute(layerId: string, sizeAttribute: string): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.sizeAttribute = sizeAttribute;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerSizeMode(layerId: string, sizeMode: 'attribute' | 'fixed'): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.sizeMode = sizeMode;
+    this.regenerateLayerPaintStyle(layer);
+
+    this.setModified();
+  }
+
+  setDataLayerLabelAttribute(layerId: string, labelAttribute: string): void {
+
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    layer.labelAttribute  = labelAttribute;
+    this.regenerateLabelLayer(layer);
+
+    this.setModified();
+  }
+
+  setBasemapDetail(level: number, setModified = true): void {
     const basemapDetail = this.basemapDetail;
 
     if (!basemapDetail) return;
@@ -230,10 +337,59 @@ export class TomboloMapboxMap extends EmuMapboxMap {
           throw new Error(`Unsupported layer type for basemap detail: ${layer.type}`);
       }
     });
+
+    if (setModified) this.setModified();
   }
 
   private setModified(): void {
     this._modified = true;
     this._modified$.next(true);
   }
+
+  private regenerateLayerPaintStyle(layer: IMapLayer): void {
+    this._regeneratePainStyle$.next(layer);
+  }
+
+  private regenerateLabelLayer(layer: IMapLayer): void {
+    this._regenerateLabelLayer$.next(layer);
+  }
+
+  /**
+   * Regenerate layer paint style and apply paint properties to map
+   *
+   * @param {IMapLayer} layer
+   */
+  private debouncedRegeneratePaintStyle(layer: IMapLayer): void {
+
+    try {
+      const paintStyle = this._styleGenerater.paintStyleForLayer(layer);
+      Object.keys(paintStyle).forEach(key => {
+        this.setPaintProperty(layer.layerId, key, paintStyle[key]);
+      });
+    }
+    catch (e) {
+      console.error('Style generation error', e);
+    }
+  }
+
+  private debouncedRegenerateLabelLayer(layer: IMapLayer): void {
+
+    // Remove old label layer
+    const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
+    const exisitingLabelLayer = this.getLayer(labelLayerId);
+    if (exisitingLabelLayer) {
+      this.removeLayer(labelLayerId);
+    }
+
+    if (layer.labelAttribute) {
+      // Generate updated layer
+      const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
+
+      debug(labelLayer);
+
+      // Insert new label layer
+      this.addLayer(labelLayer as MapboxLayer);
+    }
+  }
+
 }

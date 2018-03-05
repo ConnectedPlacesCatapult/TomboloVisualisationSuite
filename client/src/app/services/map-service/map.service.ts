@@ -6,7 +6,7 @@ import {environment} from '../../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../dialogs/notification.service';
 import {MapRegistry} from '../../mapbox/map-registry.service';
-import {TomboloMapboxMap, TomboloMapStyle} from '../../mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
 import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
 import {OgrFileInfoBase} from '../../../../../src/shared/ogrfileinfo-base';
 import {IMapGroup} from '../../../../../src/shared/IMapGroup';
@@ -17,6 +17,7 @@ import {IBasemap} from '../../../../../src/shared/IBasemap';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/publishReplay';
 import {IPalette} from '../../../../../src/shared/IPalette';
+import {IStyle} from '../../../../../src/shared/IStyle';
 
 const debug = Debug('tombolo:MapService');
 
@@ -64,13 +65,15 @@ export class MapService {
 
     return Promise.all([
       this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),
-      this.http.get<TomboloMapStyle>(`/maps/${mapId}/style.json`).toPromise()
+      this.http.get<IStyle>(`/maps/${mapId}/style.json`).toPromise()
     ])
       .then(([map, style]) => {
+        map.beginLoad();
         return this.setStyleAndWait(map, style);
       })
       .then(map => {
         debug(`Map ${mapId} loaded.`);
+        map.finalizeLoad();
         this._mapLoaded$.next(map);
         return map;
       })
@@ -218,14 +221,16 @@ export class MapService {
    * @param {TomboloMapboxMap} map
    * @param {TomboloMapStyle} style
    */
-  private setStyleAndWait(map: TomboloMapboxMap, style: TomboloMapStyle): Promise<TomboloMapboxMap> {
+  private setStyleAndWait(map: TomboloMapboxMap, style: IStyle): Promise<TomboloMapboxMap> {
     return new Promise((resolve) => {
       map.once('style.load', () => {
         debug('Style loaded');
         resolve(map);
       });
 
-      map.setStyle(style, {diff: false});
+      // Workaround for missing options parameter in @types/mapbox
+      const untypedSetStyle: any = map.setStyle.bind(map);
+      untypedSetStyle(style, {diff: false});
     });
   }
 

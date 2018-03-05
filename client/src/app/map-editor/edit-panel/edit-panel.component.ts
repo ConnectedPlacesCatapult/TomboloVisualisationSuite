@@ -7,6 +7,7 @@ import {MapRegistry} from '../../mapbox/map-registry.service';
 import {ActivatedRoute} from '@angular/router';
 import {IPalette} from '../../../../../src/shared/IPalette';
 import {IBasemap} from '../../../../../src/shared/IBasemap';
+import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 
 const debug = Debug('tombolo:map-edit-panel');
 
@@ -29,6 +30,14 @@ export class EditPanelComponent implements OnInit {
 
   ngOnInit() {
 
+    // Initial setting of map
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      debug('initial settting of map', map.mapLoaded);
+      if (map.mapLoaded) {
+        this.map = map;
+      }
+    });
+
     this.mapService.loadBasemaps().subscribe(basemaps => {
       this.basemaps = basemaps;
     });
@@ -44,6 +53,7 @@ export class EditPanelComponent implements OnInit {
       this.map = null;
     }));
 
+    // Update when map loaded
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       debug('Edit panel got map', map.id);
       this.map = map;
@@ -54,12 +64,16 @@ export class EditPanelComponent implements OnInit {
     this._subs.forEach(sub => sub.unsubscribe());
   }
 
-  toggleLayerVisibility(layerId: string) {
-
+  toggleLayerVisibility(layer: IMapLayer) {
+    this.map.setDataLayerVisibility(layer.layerId, !layer.visible);
   }
 
   deleteLayer(layerId: string) {
 
+  }
+
+  eyeIconForLayer(layer: IMapLayer): string {
+    return layer.visible ? 'eye' : 'eye-off';
   }
 
 }

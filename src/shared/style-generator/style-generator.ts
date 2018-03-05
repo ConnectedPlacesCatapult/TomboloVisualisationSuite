@@ -5,17 +5,15 @@ import {IMapLayer} from '../IMapLayer';
 import {ITomboloDataset} from '../ITomboloDataset';
 
 export const DATA_LAYER_ID = 'data';
-const DATA_LAYER_PREFIX = 'datalayer-';
-const LABEL_LAYER_PREFIX = 'labellayer-';
+export const DATA_LAYER_PREFIX = 'datalayer-';
+export const LABEL_LAYER_PREFIX = 'labellayer-';
 
 const MIN_POINT_RADIUS = 3;
 const MAX_POINT_RADIUS = 20;
 
 export class StyleGenerator {
 
-  private mapDefinition: IMapDefinition;
-
-  constructor() {}
+  constructor(private mapDefinition: IMapDefinition) {}
 
   generateMapStyle(basemap: IBasemap, mapDefinition: IMapDefinition, baseUrl: string) {
 
@@ -28,7 +26,6 @@ export class StyleGenerator {
     style.center = mapDefinition.center || style.center;
     style.sources = {...style['sources'], ...this.generateSources(mapDefinition)};
     style.sources = this.expandTileSources(baseUrl, style.sources);
-
 
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};
@@ -54,6 +51,93 @@ export class StyleGenerator {
     }
 
     return style;
+  }
+
+  layoutStyleForLayer(layer: IMapLayer): object {
+    return {
+      'visibility': layer.visible ? 'visible' : 'none'
+    };
+  }
+
+  paintStyleForLayer(layer: IMapLayer): object {
+
+    const dataset = this.datasetForLayer(layer);
+
+    if (layer.layerType === 'fill') {
+      return {
+        'fill-color': this.colorRampForLayer(layer),
+        'fill-outline-color': 'white',
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'],
+          dataset.minZoom, 0,
+          dataset.minZoom + 0.5, layer.opacity || 1
+        ]
+      };
+    }
+    else if (layer.layerType === 'circle') {
+      return {
+        'circle-color': this.colorRampForLayer(layer),
+        'circle-radius': this.radiusRampForLayer(layer),
+        'circle-opacity': ['interpolate', ['linear'], ['zoom'],
+          dataset.minZoom, 0,
+          dataset.minZoom + 0.5, layer.opacity || 1
+        ]
+      };
+    }
+    else if (layer.layerType === 'line') {
+      return {
+        'line-color': this.colorRampForLayer(layer),
+        'line-width': {
+          base: 1.3,
+          stops: [[10, 2], [20, 20]]
+        },
+        'line-opacity': ['interpolate', ['linear'], ['zoom'],
+          dataset.minZoom, 0,
+          dataset.minZoom + 0.5, layer.opacity || 1
+        ]
+      };
+    }
+  }
+
+  generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): object {
+
+    if (layer.labelAttribute === null) return null;
+
+    let layout = {
+      ...labelAttributeStyle.layout,
+      'visibility': layer.visible ? 'visible' : 'none',
+
+      // TODO - shouldn't need to override these - change the basemap label style
+      'text-anchor': 'top',
+      'text-justify': 'center',
+      'text-offset': [0, 0],
+      'text-field': `{${layer.labelAttribute}}`
+    };
+
+    let paint = {...labelAttributeStyle.paint};
+
+    switch (layer.layerType) {
+      case 'circle':
+        paint['text-translate'] = [0, layer.fixedSize + 4];
+        break;
+      case 'line':
+        layout['symbol-placement'] = 'line';
+        break;
+    }
+
+    return {
+      id: LABEL_LAYER_PREFIX + layer.originalLayerId,
+      type: 'symbol',
+      source: layer.datasetId,
+      'source-layer': DATA_LAYER_ID,
+      layout: layout,
+      paint: paint,
+      filter: ['has', layer.datasetAttribute]
+    };
+  }
+
+  insertMapLayer(insertionPoint: string, style: IStyle, layer: object): void {
+    const index = style.layers.findIndex(l => l['id'] === insertionPoint);
+    style['layers'].splice(index, 0, layer);
   }
 
   private generateSources(mapDefinition: IMapDefinition): object {
@@ -103,89 +187,34 @@ export class StyleGenerator {
     const dataset = this.datasetForLayer(layer);
 
     return {
-      id: DATA_LAYER_PREFIX + layer.layerId,
+      id: layer.layerId,
       source: layer.datasetId,
       'source-layer':  DATA_LAYER_ID,
       type: layer.layerType,
       minzoom: dataset.minZoom,
       maxzoom: dataset.maxZoom,
+      layout: this.layoutStyleForLayer(layer),
       paint: this.paintStyleForLayer(layer),
       filter: ['has', layer.datasetAttribute]
     };
   }
 
-  private generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): object {
 
-    if (layer.labelAttribute === null) return null;
 
-    let layout = {...labelAttributeStyle.layout, 'text-field': `{${layer.labelAttribute}}`};
-    let paint = {...labelAttributeStyle.paint};
 
-    switch (layer.layerType) {
-      case 'circle':
-        // TODO - make label offset based on circle radius when expressions returning arrays are supported by mapboxgl.
-        layout['text-offset'] = [0, 2.5];
-        break;
-      case 'line':
-        layout['symbol-placement'] = 'line';
-        break;
-    }
-
-    return {
-      layout: layout, paint: paint,
-      source: layer.datasetId,
-      'source-layer': DATA_LAYER_ID,
-      type: 'symbol',
-      id: LABEL_LAYER_PREFIX + layer.layerId,
-      filter: ['has', layer.datasetAttribute]
-    };
-  }
 
   private datasetForLayer(layer: IMapLayer): ITomboloDataset {
     return this.mapDefinition.datasets.find(ds => ds.id === layer.datasetId);
   }
 
-  private paintStyleForLayer(layer: IMapLayer): object {
-
-    const dataset = this.datasetForLayer(layer);
-
-    if (layer.layerType === 'fill') {
-      return {
-        'fill-color': this.colorRampForLayer(layer),
-        'fill-outline-color': 'white',
-        'fill-opacity': ['interpolate', ['linear'], ['zoom'],
-          dataset.minZoom, 0,
-          dataset.minZoom + 0.5, layer.opacity || 1
-        ]
-      };
-    }
-    else if (layer.layerType === 'circle') {
-      return {
-        'circle-color': this.colorRampForLayer(layer),
-        'circle-radius': this.radiusRampForLayer(layer),
-        'circle-opacity': ['interpolate', ['linear'], ['zoom'],
-          dataset.minZoom, 0,
-          dataset.minZoom + 0.5, layer.opacity || 1
-        ]
-      };
-    }
-    else if (layer.layerType === 'line') {
-      return {
-        'line-color': this.colorRampForLayer(layer),
-        'line-width': {
-          base: 1.3,
-          stops: [[10, 2], [20, 20]]
-        },
-        'line-opacity': ['interpolate', ['linear'], ['zoom'],
-          dataset.minZoom, 0,
-          dataset.minZoom + 0.5, layer.opacity || 1
-        ]
-      };
-    }
-  }
-
   private colorRampForLayer(layer: IMapLayer): any {
 
+    // Fixed color
+    if (layer.colorMode === 'fixed') {
+      return layer.fixedColor;
+    }
+
+    // Data-driven color
     const dataset = this.datasetForLayer(layer);
     const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
 
@@ -193,12 +222,11 @@ export class StyleGenerator {
       throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
     }
 
-    const colorStops = layer.palette.colorStops;
+    const colorStops = [...layer.palette.colorStops];
     if (layer.paletteInverted) colorStops.reverse();
 
-    // TODO - support fixed colors
     if (dataAttribute.quantiles5) {
-      const stops = dataAttribute.quantiles5.map((val, i) => [val, layer.palette.colorStops[i]]).reduce((a, b) => a.concat(b), []);
+      const stops = dataAttribute.quantiles5.map((val, i) => [val, colorStops[i]]).reduce((a, b) => a.concat(b), []);
 
       return [
         'interpolate',
@@ -212,16 +240,22 @@ export class StyleGenerator {
     }
   }
 
-  private radiusRampForLayer(layer: IMapLayer): object {
+  private radiusRampForLayer(layer: IMapLayer): any {
 
-    const dataset = this.datasetForLayer(layer);
-    const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
-
-    if (!dataAttribute) {
-      throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
+    // Fixed radius
+    if (layer.sizeMode === 'fixed') {
+      return layer.fixedSize;
     }
 
-    const radiusRange = MAX_POINT_RADIUS - MIN_POINT_RADIUS;
+    // Data-driven radius
+    const dataset = this.datasetForLayer(layer);
+    const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.sizeAttribute);
+
+    if (!dataAttribute) {
+      throw new Error(`Data attribute '${layer.sizeAttribute} not found on dataset`);
+    }
+
+    const radiusRange = layer.fixedSize - MIN_POINT_RADIUS;
     const radiusPerStop = radiusRange / 5;
 
     const stops = dataAttribute.quantiles5.map((val, i) => [val, MIN_POINT_RADIUS + radiusPerStop * i]).reduce((a, b) => a.concat(b), []);
@@ -229,13 +263,10 @@ export class StyleGenerator {
     return [
       'interpolate',
       ['linear'],
-      ['get', layer.datasetAttribute],
+      ['get', layer.sizeAttribute],
       ...stops
     ];
   }
 
-  private insertMapLayer(insertionPoint: string, style: IStyle, layer: object): void {
-    const index = style.layers.findIndex(l => l['id'] === insertionPoint);
-    style['layers'].splice(index, 0, layer);
-  }
+
 }

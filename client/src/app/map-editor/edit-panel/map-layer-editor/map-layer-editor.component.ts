@@ -7,6 +7,8 @@ import {TomboloMapboxMap} from '../../../mapbox/tombolo-mapbox-map';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
 import {IPalette} from '../../../../../../src/shared/IPalette';
+import {ITomboloDatasetAttribute} from '../../../../../../src/shared/ITomboloDatasetAttribute';
+import {IMapLayer} from '../../../../../../src/shared/IMapLayer';
 
 const debug = Debug('tombolo:map-layer-editor');
 
@@ -22,11 +24,13 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
   @HostBinding('class.layer-editor') layerEditorClass = true;
 
   @Input() map: TomboloMapboxMap;
+  @Input() layer: IMapLayer;
   @Input() palettes: IPalette[];
-  @Input() layerId: string;
-  @Input() mode: 'fill' | 'line' | 'circle';
 
   form: FormGroup;
+  allAttributes: ITomboloDatasetAttribute[];
+  rampAttributes: ITomboloDatasetAttribute[];
+  mode: 'fill' | 'line' | 'circle' = 'fill';
 
   _subs: Subscription[] = [];
 
@@ -36,6 +40,7 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
       fixedColor: new FormControl('#bbb'),
       colorAttribute: new FormControl(),
       palette: new FormControl(),
+      paletteInverted: new FormControl(),
       size: new FormControl(5),
       sizeRadio: new FormControl('fixed'),
       sizeAttribute: new FormControl(),
@@ -47,44 +52,45 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
   ngOnInit() {
     // Save form changes to map as user changes controls
 
-
     this._subs.push(this.form.get('colorRadio').valueChanges.subscribe(val => {
-      debug('color radio selected', val);
+      this.map.setDataLayerColorMode(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('fixedColor').valueChanges.subscribe(val => {
-      debug('fixed color selected', val);
+      this.map.setDataLayerFixedColor(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('colorAttribute').valueChanges.subscribe(val => {
-      debug('color attribute selected', val);
+      this.map.setDataLayerColorAttribute(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('palette').valueChanges.subscribe(val => {
-      debug('palette selected', val);
+      this.map.setDataLayerPalette(this.layer.layerId, this.palettes.find(p => p.id === val));
+    }));
+
+    this._subs.push(this.form.get('paletteInverted').valueChanges.subscribe(val => {
+      this.map.setDataLayerPaletteInverted(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('size').valueChanges.subscribe(val => {
-      debug('size changed', val);
+      this.map.setDataLayerFixedSize(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('sizeRadio').valueChanges.subscribe(val => {
-      debug('size radio selected', val);
+      this.map.setDataLayerSizeMode(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('sizeAttribute').valueChanges.subscribe(val => {
-      debug('size attribute selected', val);
+      this.map.setDataLayerSizeAttribute(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('labelAttribute').valueChanges.subscribe(val => {
-      debug('label attribute selected', val);
+      this.map.setDataLayerLabelAttribute(this.layer.layerId, val);
     }));
 
     this._subs.push(this.form.get('opacity').valueChanges.subscribe(val => {
-      debug('opacity changed', val);
-      this.map.setDataLayerOpacity(this.layerId, val / 100);
+      this.map.setDataLayerOpacity(this.layer.layerId, val / 100);
     }));
-
   }
 
   ngOnDestroy() {
@@ -93,11 +99,26 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes) {
     // Transfer values to form
-    if (changes.map && changes.map.currentValue) {
-      const val: TomboloMapboxMap = changes.map.currentValue;
-      // this.form.setValue({
-      //
-      // });
+    if ((changes.map || changes.layerId) && this.map) {
+      const map = this.map;
+      const layer = this.layer;
+
+      this.allAttributes = map.getDataAttributesForLayer(this.layer.layerId);
+      this.rampAttributes = this.allAttributes.filter(a => a.type === 'number' || a.categories);
+      this.mode = layer.layerType;
+
+      this.form.setValue({
+        colorRadio: layer.datasetAttribute ? 'attribute' : 'fixed',
+        fixedColor: layer.fixedColor,
+        colorAttribute: layer.datasetAttribute,
+        palette: layer.palette.id,
+        paletteInverted: layer.paletteInverted,
+        size: layer.fixedSize,
+        sizeRadio: layer.sizeAttribute ? 'attribute' : 'fixed',
+        sizeAttribute: layer.sizeAttribute,
+        labelAttribute: layer.labelAttribute,
+        opacity: layer.opacity * 100
+      });
     }
   }
 

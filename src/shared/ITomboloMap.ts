@@ -11,6 +11,7 @@ export interface ITomboloMap {
   basemapId: string;
   mapGroupId: string;
   basemapDetailLevel: number;
+  isPrivate: boolean;
   order: number;
 
   basemap: any;
