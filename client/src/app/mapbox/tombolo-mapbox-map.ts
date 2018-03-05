@@ -9,15 +9,17 @@ import {IBasemapDetailMetadata, IStyle, IStyleMetadata} from '../../../../src/sh
 import {ITomboloDatasetAttribute} from '../../../../src/shared/ITomboloDatasetAttribute';
 import {LABEL_LAYER_PREFIX, StyleGenerator} from '../../../../src/shared/style-generator/style-generator';
 import {IPalette} from '../../../../src/shared/IPalette';
-import {MapboxOptions, Layer as MapboxLayer} from 'mapbox-gl';
+import {MapboxOptions, Layer as MapboxLayer, Style as MapboxStyle} from 'mapbox-gl';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/auditTime';
+import {IBasemap} from '../../../../src/shared/IBasemap';
 
 const debug = Debug('tombolo:mapboxgl');
 
 const PAINT_LAYER_REGENERATION_DEBOUNCE = 300;
 const LABEL_LAYER_REGENERATION_DEBOUNCE = 500;
+const MAP_REGENERATION_DEBOUNCE = 500;
 
 export class TomboloMapboxMap extends EmuMapboxMap {
 
@@ -30,18 +32,24 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
   private _regeneratePainStyle$ = new Subject<IMapLayer>();
   private _regenerateLabelLayer$ = new Subject<IMapLayer>();
+  private _regenerateMap$ = new Subject<IBasemap>();
 
   constructor(options?: MapboxOptions) {
     super(options);
 
     // Hook up debounced paint style regeneration
-    this._regeneratePainStyle$.auditTime(PAINT_LAYER_REGENERATION_DEBOUNCE).subscribe((layer) => {
+    this._regeneratePainStyle$.auditTime(PAINT_LAYER_REGENERATION_DEBOUNCE).subscribe(layer => {
       this.debouncedRegeneratePaintStyle(layer);
     });
 
     // Hook up debounced label layer regeneration
-    this._regenerateLabelLayer$.auditTime(LABEL_LAYER_REGENERATION_DEBOUNCE).subscribe((layer) => {
+    this._regenerateLabelLayer$.auditTime(LABEL_LAYER_REGENERATION_DEBOUNCE).subscribe(layer => {
       this.debouncedRegenerateLabelLayer(layer);
+    });
+
+    // Hook up debounced basemap regeneration
+    this._regenerateMap$.auditTime(MAP_REGENERATION_DEBOUNCE).subscribe(basemap => {
+      this.debouncedRegenerateMap(basemap);
     });
   }
 
@@ -59,12 +67,13 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   finalizeLoad() {
+
     this._metadata = this.getStyle().metadata;
     this._mapDefinition = this._metadata.mapDefinition;
     this._mapLoaded = true;
 
     // TODO baseURL
-    this._styleGenerater = new StyleGenerator(this._mapDefinition, '');
+    this._styleGenerater = new StyleGenerator(this._mapDefinition);
 
     debug('map load finalized');
   }
@@ -97,6 +106,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   set description(val: string) {
     this._mapDefinition.description = val;
     this.setModified();
+  }
+
+  get basemapId(): string {
+    return (this._mapDefinition) ? this._mapDefinition.basemapId : null;
   }
 
   get isPrivate(): boolean {
@@ -314,7 +327,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
-  setBasemapDetail(level: number, setModified = true): void {
+  setBasemapDetail(level: number): void {
     const basemapDetail = this.basemapDetail;
 
     if (!basemapDetail) return;
@@ -340,7 +353,54 @@ export class TomboloMapboxMap extends EmuMapboxMap {
       }
     });
 
-    if (setModified) this.setModified();
+    this.setModified();
+  }
+
+  setBasemap(basemap: IBasemap): void {
+    this._mapDefinition.basemapId = basemap.id;
+    this._regenerateMap$.next(basemap);
+
+    this.setModified();
+  }
+
+  removeDataLayer(layerId: string): void {
+    const layer = this.getDataLayer(layerId);
+    if (!layer) throw new Error(`Data layer ${layerId} not found`);
+
+    // Remove layer from map definition
+    const layerIndex = this._mapDefinition.layers.findIndex(l => l.layerId === layerId);
+
+    // Deletion without mutation
+    const layersCopy = [...this._mapDefinition.layers];
+    layersCopy.splice(layerIndex, 1);
+    this._mapDefinition.layers = layersCopy;
+
+    // Remove layer from map
+    this.removeLayer(layerId);
+
+    // Remove label layer if it exists
+    const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
+    const exisitingLabelLayer = this.getLayer(labelLayerId);
+    if (exisitingLabelLayer) {
+      this.removeLayer(labelLayerId);
+    }
+
+    this.setModified();
+  }
+
+  // Insert a new data layer
+  // This requires a clean basemap to regenerate the complete map
+  insertDataLayer(basemap: IBasemap, layer: IMapLayer, index: number): void {
+
+    // Insertion without mutation
+    const layersCopy = [...this._mapDefinition.layers];
+    layersCopy.splice(index, 0, layer);
+    this._mapDefinition.layers = layersCopy;
+
+    // Regenerate the map
+    this._regenerateMap$.next(basemap);
+
+    this.setModified();
   }
 
   private setModified(): void {
@@ -392,6 +452,11 @@ export class TomboloMapboxMap extends EmuMapboxMap {
       // Insert new label layer
       this.addLayer(labelLayer as MapboxLayer);
     }
+  }
+
+  private debouncedRegenerateMap(basemap: IBasemap): void {
+    const style = this._styleGenerater.generateMapStyle(basemap);
+    this.setStyle(style as MapboxStyle);
   }
 
 }

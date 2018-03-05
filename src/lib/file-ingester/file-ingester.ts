@@ -124,7 +124,7 @@ export class FileIngester {
 
         const columnTypeSql = `
           ALTER TABLE ${file.sqlSafeTableName()} 
-          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType};`;
+          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
         return file.sequelize.query(columnTypeSql);
       }));
 
@@ -185,7 +185,7 @@ export class FileIngester {
               const value = keyValues[key];
               const type = value.match(/^(\w*)/)[1].toLowerCase();
               const precision = +(value.match(/\((.*)\)/)[1]);
-              attributes.push({id: keys[i].toLowerCase(), type, precision});
+              attributes.push({id: keys[i].toLowerCase().replace('-', '_'), type, precision});
             }
           }
 
@@ -194,6 +194,7 @@ export class FileIngester {
           resolve(fileInfo);
         }
         catch (e) {
+          this.logger.error('Validation error', e);
           reject(e);
         }
       });

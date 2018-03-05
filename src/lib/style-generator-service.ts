@@ -1,20 +1,12 @@
 import {Container, Service} from 'typedi';
 import {Logger, LoggerService} from './logger';
 import {TomboloMap} from '../db/models/TomboloMap';
-import {TomboloMapLayer} from '../db/models/TomboloMapLayer';
 import {IMapDefinition} from '../shared/IMapDefinition';
 import {ITomboloDataset} from '../shared/ITomboloDataset';
 import {IMapLayer} from '../shared/IMapLayer';
-import {StyleGenerator} from '../shared/style-generator/style-generator';
-import {IBasemap} from '../shared/IBasemap';
+import {DATA_LAYER_PREFIX, StyleGenerator} from '../shared/style-generator/style-generator';
 
 const { URL } = require('url');
-
-const DATA_LAYER_PREFIX = 'datalayer-';
-const LABEL_LAYER_PREFIX = 'labellayer-';
-
-const MIN_POINT_RADIUS = 3;
-const MAX_POINT_RADIUS = 20;
 
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
@@ -41,8 +33,8 @@ export class StyleGeneratorService {
    */
   generateMapStyle(map: TomboloMap, baseUrl: string): object {
 
-    const mapDefinition = this.generateMapDefinition(map);
-    const styleGenerator = new StyleGenerator(mapDefinition, baseUrl);
+    const mapDefinition = this.generateMapDefinition(map, baseUrl);
+    const styleGenerator = new StyleGenerator(mapDefinition);
     return styleGenerator.generateMapStyle(map.basemap);
   }
 
@@ -52,7 +44,7 @@ export class StyleGeneratorService {
    * @param {TomboloMap} map
    * @returns {IMapDefinition}
    */
-  generateMapDefinition(map: TomboloMap): IMapDefinition {
+  generateMapDefinition(map: TomboloMap, baseUrl: string): IMapDefinition {
     let mapDefinition: IMapDefinition = {
       id: map.id,
       name: map.name,
@@ -63,7 +55,9 @@ export class StyleGeneratorService {
       datasets: this.datasetsForMap(map),
       layers: this.datalayersForMap(map),
       recipe: map.recipe,
-      basemapDetailLevel: map.basemapDetailLevel
+      basemapId: map.basemapId,
+      basemapDetailLevel: map.basemapDetailLevel,
+      tileBaseUrl: baseUrl
     };
 
     return mapDefinition;
