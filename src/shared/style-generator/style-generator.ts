@@ -131,7 +131,7 @@ export class StyleGenerator {
       'source-layer': DATA_LAYER_ID,
       layout: layout,
       paint: paint,
-      filter: ['has', layer.datasetAttribute]
+      filter: ['has', layer.labelAttribute]
     };
   }
 
@@ -194,14 +194,9 @@ export class StyleGenerator {
       minzoom: dataset.minZoom,
       maxzoom: dataset.maxZoom,
       layout: this.layoutStyleForLayer(layer),
-      paint: this.paintStyleForLayer(layer),
-      filter: ['has', layer.datasetAttribute]
+      paint: this.paintStyleForLayer(layer)
     };
   }
-
-
-
-
 
   private datasetForLayer(layer: IMapLayer): ITomboloDataset {
     return this.mapDefinition.datasets.find(ds => ds.id === layer.datasetId);
@@ -211,33 +206,40 @@ export class StyleGenerator {
 
     // Fixed color
     if (layer.colorMode === 'fixed') {
-      return layer.fixedColor;
+      return layer.fixedColor || 'black';
     }
 
     // Data-driven color
     const dataset = this.datasetForLayer(layer);
+
+    if (!dataset) {
+      throw new Error(`Layer'${layer.datasetAttribute} has no dataset`);
+    }
+
     const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
 
     if (!dataAttribute) {
       throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
     }
 
+    if (!dataAttribute.quantiles5) {
+      // Missing quantiles
+      return 'black'
+    }
+
     const colorStops = [...layer.palette.colorStops];
     if (layer.paletteInverted) colorStops.reverse();
+    const rampStops = dataAttribute.quantiles5.map((val, i) => [val, colorStops[i]]);
+    const defaultColor = colorStops[0];
 
-    if (dataAttribute.quantiles5) {
-      const stops = dataAttribute.quantiles5.map((val, i) => [val, colorStops[i]]).reduce((a, b) => a.concat(b), []);
+    // TODO - convert to new-style expression once I've figured out how to replicate the 'default' value for missing data
+    const ramp =  {
+      property: layer.datasetAttribute,
+      stops: rampStops,
+      'default': layer.fixedColor || defaultColor
+    };
 
-      return [
-        'interpolate',
-        ['linear'],
-        ['get', layer.datasetAttribute],
-        ...stops
-      ];
-    }
-    else {
-      return 'red';
-    }
+    return ramp;
   }
 
   private radiusRampForLayer(layer: IMapLayer): any {
@@ -263,10 +265,8 @@ export class StyleGenerator {
     return [
       'interpolate',
       ['linear'],
-      ['get', layer.sizeAttribute],
+      ['number', ['get', layer.sizeAttribute], layer.fixedSize],
       ...stops
     ];
   }
-
-
 }
