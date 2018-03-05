@@ -1,13 +1,15 @@
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import * as sequelize from 'sequelize';
 import {literal} from 'sequelize';
+import {IBasemap} from '../../shared/IBasemap';
+import {IStyle} from '../../shared/IStyle';
 
 @Table({
   tableName: 'base_maps',
   timestamps: true,
   version: true
 })
-export class BaseMap extends Model<BaseMap> {
+export class BaseMap extends Model<BaseMap> implements IBasemap {
 
   @Column({
     type: DataType.UUID,
@@ -38,7 +40,7 @@ export class BaseMap extends Model<BaseMap> {
     type: DataType.JSON,
     allowNull: true
   })
-  style: object;
+  style: IStyle;
 
   static getDefault() {
     return BaseMap.findOne<BaseMap>({where: { isDefault: true} as any});

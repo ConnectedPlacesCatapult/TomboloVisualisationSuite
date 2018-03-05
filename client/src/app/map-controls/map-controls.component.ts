@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MapService} from '../map-service/map.service';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {MapService} from '../services/map-service/map.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
-import {BookmarkService} from '../bookmark-service/bookmark.service';
+import {BookmarkService} from '../services/bookmark-service/bookmark.service';
 import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
 import {MatDialog} from '@angular/material';
@@ -20,7 +20,10 @@ const debug = Debug('tombolo:maps-demo');
 })
 export class MapControlsComponent implements OnInit {
 
-  sliderValue = 4;
+  basemapDetailSliderValue = 4;
+  mapId = null;
+  mode: 'edit' | 'view' = 'view';
+  mapModified = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -38,13 +41,25 @@ export class MapControlsComponent implements OnInit {
 
     // Ensure basemap detail is applied whenever a map is loaded
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
-      map.setBasemapDetail(this.sliderValue);
+      map.setBasemapDetail(this.basemapDetailSliderValue);
       this.updateURLforBasemapDetail();
+
+      // Subscribe to map-modified notification
+      this._subs.push(map.modified$().subscribe(modified => {
+        this.mapModified = modified;
+      }));
     }));
+
+    // Extract mode and mapId from route
+    this._subs.push(this.router.events.filter(event => event instanceof NavigationEnd)
+      .subscribe((event: NavigationEnd) => {
+        this.mapId = this.router.routerState.snapshot.root.firstChild.params['mapID'];
+        this.mode = (this.router.routerState.snapshot.root.firstChild.url[0].path === 'edit')? 'edit' : 'view';
+      }));
 
     this.activatedRoute.queryParams.subscribe(params => {
       if (params.basemapDetail) {
-        this.sliderValue = +params.basemapDetail;
+        this.basemapDetailSliderValue = +params.basemapDetail;
       }
     });
   }
@@ -68,12 +83,7 @@ export class MapControlsComponent implements OnInit {
   }
 
   editMap(): void {
-    if (!this.authService.getUserSync()) {
-      this.router.navigate(['/', {outlets: {loginBox: 'login'}}])
-    }
-    else {
-      this.router.navigate(['/edit'])
-    }
+    this.router.navigate(['/', {outlets: {primary: ['edit', this.mapId], rightBar: 'editpanel'}}]);
   }
 
   showRecipeDialog(): void {
@@ -82,9 +92,17 @@ export class MapControlsComponent implements OnInit {
     });
   }
 
+  saveButtonEnabled(): boolean {
+    return this.mapModified;
+  }
+
+  editButtonEnabled(): boolean {
+    return this.mode === 'view' && this.mapId;
+  }
+
   private updateURLforBasemapDetail() {
     const url = new URL(window.location.href);
-    url.searchParams.set('basemapDetail', this.sliderValue.toString());
+    url.searchParams.set('basemapDetail', this.basemapDetailSliderValue.toString());
     this.location.replaceState(url.pathname, url.search);
   }
 

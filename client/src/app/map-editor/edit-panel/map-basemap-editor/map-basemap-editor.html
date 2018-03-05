@@ -1,0 +1,6 @@
+<mat-radio-group class="basemap-radio-group">
+  <mat-radio-button *ngFor="let basemap of basemaps" [value]="basemap.id">
+    <img [src]="'/assets/images/' + basemap.id + '.png'">
+    <label>{{basemap.name}}</label>
+  </mat-radio-button>
+</mat-radio-group>

@@ -1,6 +1,6 @@
 import {Component, HostBinding, Input, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
-import {MapService} from '../../map-service/map.service';
+import {MapService} from '../../services/map-service/map.service';
 import {UploadDialogContext} from './upload-dialog.component';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';

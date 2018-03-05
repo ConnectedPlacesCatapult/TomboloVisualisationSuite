@@ -7,7 +7,7 @@ import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core
 import {APP_CONFIG, AppConfig} from '../../config.service';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {MapService} from '../../map-service/map.service';
+import {MapService} from '../../services/map-service/map.service';
 
 @Component({
   selector: 'share-dialog',

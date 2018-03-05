@@ -1,8 +1,40 @@
 <h3 class="sidebar-header">
-  Map Edit
+  Map Editor
 </h3>
 
-<div class="sidebar-content with-padding"></div>
+<div class="sidebar-content">
+  <ng-container *ngIf="map">
+
+    <map-metadata-editor [map]="map"></map-metadata-editor>
+
+    <mat-accordion multi="true" displayMode="flat">
+      <!-- Map layers -->
+      <mat-expansion-panel *ngFor="let layer of map.dataLayers" expanded="true">
+        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+          <mat-icon svgIcon="grab-handle"></mat-icon>
+          <mat-icon svgIcon="polygon"></mat-icon>
+          <span class="expansion-header-title">{{layer.name}}</span>
+          <div class="button-box">
+            <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layer); $event.stopPropagation()"><mat-icon [svgIcon]="eyeIconForLayer(layer)"></mat-icon></button>
+            <button mat-icon-button class="compressed" (click)="deleteLayer($layerId); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
+          </div>
+        </mat-expansion-panel-header>
+        <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes"></map-layer-editor>
+      </mat-expansion-panel>
+
+      <!-- Basemap -->
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+          <mat-icon svgIcon="map"></mat-icon>
+          <span class="expansion-header-title">Basemap</span>
+        </mat-expansion-panel-header>
+        <map-basemap-editor [map]="map" [basemaps]="basemaps"></map-basemap-editor>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+  </ng-container>
+</div>
 
 <div class="sidebar-footer">
 
