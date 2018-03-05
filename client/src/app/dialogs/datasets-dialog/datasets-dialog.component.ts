@@ -20,6 +20,7 @@ export class DatasetsDialog implements OnInit {
   datasets: object[];
   filterInput: string;
   selectedGroupId: string;
+  selectedDataset: object = {id: null};
 
   constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
               private mapService: MapService,
@@ -44,12 +45,27 @@ export class DatasetsDialog implements OnInit {
       .subscribe(group => this.datasets = group['datasets']);
   }
 
+  selectDataset(dataset: object): void {
+    this.selectedDataset = dataset;
+  }
+
   filterByQuery(): void {
     this.selectedGroupId = null;
+    this.selectedDataset = {id: null};
 
     if (this.filterInput === '') return;
 
     this.mapService.findDatasetsByQuery(this.filterInput)
       .subscribe(datasets => this.datasets = datasets);
+  }
+
+  queryOnEnter(ev): void {
+    if (ev['key'] === 'Enter') {
+      this.filterByQuery();
+    }
+  }
+
+  close(): void {
+    this.dialogRef.close();
   }
 }
