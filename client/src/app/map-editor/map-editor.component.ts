@@ -154,7 +154,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   addDataset(datasetId: string) {
-    debug('Add dataset');
+
   }
 
   deleteMap(map: ITomboloMap) {
