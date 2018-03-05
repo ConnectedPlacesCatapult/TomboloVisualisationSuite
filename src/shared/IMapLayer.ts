@@ -10,7 +10,7 @@ export interface IMapLayer {
   palette: IPalette;
   paletteInverted: boolean;
   datasetId: string;
-  datasetAttribute: string;
+  colorAttribute: string;
   fixedColor: string;
   colorMode: 'fixed' | 'attribute';
   sizeAttribute: string;

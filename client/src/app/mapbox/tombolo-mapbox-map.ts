@@ -62,7 +62,9 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._metadata = this.getStyle().metadata;
     this._mapDefinition = this._metadata.mapDefinition;
     this._mapLoaded = true;
-    this._styleGenerater = new StyleGenerator(this._mapDefinition);
+
+    // TODO baseURL
+    this._styleGenerater = new StyleGenerator(this._mapDefinition, '');
 
     debug('map load finalized');
   }
@@ -224,7 +226,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     const layer = this.getDataLayer(layerId);
     if (!layer) throw new Error(`Data layer ${layerId} not found`);
 
-    layer.datasetAttribute = colorAttribute;
+    layer.colorAttribute = colorAttribute;
     this.regenerateLayerPaintStyle(layer);
 
     this.setModified();

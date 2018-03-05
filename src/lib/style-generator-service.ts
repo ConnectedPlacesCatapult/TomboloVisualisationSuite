@@ -17,9 +17,8 @@ const MIN_POINT_RADIUS = 3;
 const MAX_POINT_RADIUS = 20;
 
 function ServiceFactory() {
-  let styleGenerator = new StyleGenerator();
   let logger = Container.get(LoggerService);
-  return new StyleGeneratorService(styleGenerator, logger);
+  return new StyleGeneratorService(logger);
 }
 
 /**
@@ -30,7 +29,7 @@ function ServiceFactory() {
 @Service({factory: ServiceFactory})
 export class StyleGeneratorService {
 
-  constructor(private styleGenerator: StyleGenerator, private logger: Logger) {
+  constructor(private logger: Logger) {
   }
 
   /**
@@ -43,9 +42,8 @@ export class StyleGeneratorService {
   generateMapStyle(map: TomboloMap, baseUrl: string): object {
 
     const mapDefinition = this.generateMapDefinition(map);
-
-    // Delegate to shared styleGenerator
-    return this.styleGenerator.generateMapStyle(map.basemap, mapDefinition, baseUrl);
+    const styleGenerator = new StyleGenerator(mapDefinition, baseUrl);
+    return styleGenerator.generateMapStyle(map.basemap);
   }
 
   /**
@@ -128,8 +126,10 @@ export class StyleGeneratorService {
         palette: layer.palette,
         paletteInverted: layer.paletteInverted,
         datasetId: layer.datasetId,
-        datasetAttribute: layer.datasetAttribute,
+        colorMode: layer.colorMode,
+        colorAttribute: layer.colorAttribute,
         fixedColor: layer.fixedColor,
+        sizeMode: layer.sizeMode,
         sizeAttribute: layer.sizeAttribute,
         fixedSize: layer.fixedSize,
         labelAttribute: layer.labelAttribute,
