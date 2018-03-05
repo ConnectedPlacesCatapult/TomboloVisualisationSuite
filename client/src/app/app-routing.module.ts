@@ -2,46 +2,31 @@
  * Top-level routing module
  */
 
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import {CyclingDemoComponent} from './cyling-demo/cycling-demo.component';
-import {BasemapDemoComponent} from './basemap-demo/basemap-demo.component';
-import {MapsDemoComponent} from './maps-demo/maps-demo.component';
-import {MapInfoComponent} from './map-info/map-info.component';
-import {MapExportComponent} from "./map-export/map-export.component";
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {MapViewerComponent} from './map-viewer/map-viewer.component';
+import {MapInfoComponent} from './rightbar-panels/map-info/map-info.component';
+import {MapExportComponent} from './map-export/map-export.component';
 import {MapEditorComponent} from './map-editor/map-editor.component';
-import {IconsDemoComponent} from './icons-demo/icons-demo.component';
 import {LoginDialogComponent} from './auth/login-dialog/login-dialog.component';
 import {SignupDialogComponent} from './auth/signup-dialog/signup-dialog.component';
 import {SignupConfirmationComponent} from './auth/signup-confirmation-dialog/signup-confirmation.component';
 import {ChangePasswordDialogComponent} from './auth/change-password-dialog/change-password-dialog.component';
 import {ResetPasswordDialogComponent} from './auth/reset-password-dialog/reset-password-dialog.component';
-import {AccountInfoComponent} from './account-info/account-info.component';
-import {TermsAndConditionsComponent} from './terms-and-conditions/terms-and-conditions.component';
-import {AppInfoComponent} from './app-info/app-info.component';
+import {AccountInfoComponent} from './rightbar-panels/account-info/account-info.component';
+import {TermsAndConditionsComponent} from './rightbar-panels/terms-and-conditions/terms-and-conditions.component';
+import {AppInfoComponent} from './rightbar-panels/app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
 import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 
 const routes: Routes = [
   {
-    path: 'cyclingdemo',
-    component: CyclingDemoComponent
-  },
-  {
-    path: 'basemaps',
-    component: BasemapDemoComponent
-  },
-  {
     path: 'view',
-    component: MapsDemoComponent
+    component: MapViewerComponent
   },
   {
-    path: 'icons',
-    component: IconsDemoComponent
-  },
-  {
-    path: 'mapdemo/:mapID',
-    component: MapsDemoComponent
+    path: 'view/:mapID',
+    component: MapViewerComponent
   },
   {
     path: 'edit/:mapID',

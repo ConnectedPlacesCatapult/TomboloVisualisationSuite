@@ -3,13 +3,19 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~font-awesome/scss/font-awesome';
 @import '~@angular/material/theming';
 @import '~mapbox-gl/dist/mapbox-gl.css';
-@import 'app/app-theme';
+
 @import 'app/tombolo-theme/tombolo-theme';
 @import 'app/dialogs/dialog-theme.scss';
 @import 'variables.scss';
 
-@include mat-core();
+// Codemirror styles
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/addon/lint/lint.css';
+@import '~codemirror/theme/dracula.css';
+@import '~codemirror/theme/material.css';
+@import '~codemirror/theme/ambiance.css';
 
+@include mat-core();
 
 $app-primary: mat-palette($tombolo-darkblue);
 $app-accent:  mat-palette($tombolo-cyan);
@@ -17,7 +23,7 @@ $app-warn:    mat-palette($mat-red);
 $dark-theme:  mat-dark-theme($app-primary, $app-accent, $app-warn);
 $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 
-// Apply theme to base components
+// Apply material theme to base components
 @include angular-material-theme($light-theme);
 
 // Apply tombolo theme
@@ -31,12 +37,6 @@ tombolo-root {
   @include tombolo-theme($dark-theme);
 }
 
-// Codemirror styles
-@import '~codemirror/lib/codemirror.css';
-@import '~codemirror/addon/lint/lint.css';
-@import '~codemirror/theme/dracula.css';
-@import '~codemirror/theme/material.css';
-@import '~codemirror/theme/ambiance.css';
 
 html {
     // Disable 'bounce' overscroll on Chrome
@@ -86,4 +86,3 @@ body {
 .mat-horizontal-stepper-header{
   pointer-events: none !important;
 }
-

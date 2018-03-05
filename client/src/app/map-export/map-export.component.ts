@@ -58,7 +58,6 @@ export class MapExportComponent implements OnInit {
 
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
       .then(map => {
-        map.clearCache();
         return map.export(
           this.exportForm.get('name').value,
           this.exportForm.get('width').value,

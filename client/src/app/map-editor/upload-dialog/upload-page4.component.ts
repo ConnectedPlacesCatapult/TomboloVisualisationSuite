@@ -1,6 +1,6 @@
 import {Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import * as Debug from 'debug';
-import {MapService} from '../../map-service/map.service';
+import {MapService} from '../../services/map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
 import {Subscription} from 'rxjs/Subscription';
 

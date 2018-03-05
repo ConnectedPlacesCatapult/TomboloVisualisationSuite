@@ -11,13 +11,13 @@ import 'rxjs/add/operator/filter';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from './mapbox/map-registry.service';
-import {MapService} from './map-service/map.service';
+import {MapService} from './services/map-service/map.service';
 import {TomboloMapboxMap} from './mapbox/tombolo-mapbox-map';
 import {Map as MapboxMap, Popup as MapboxPopup} from 'mapbox-gl';
-import {TooltipRenderService} from './tooltip-render/tooltip-render.service';
-import {AttributeRow, TooltipRenderComponent} from './tooltip-render/tooltip-render.component';
+import {TooltipRenderService} from './mapbox/tooltip-render/tooltip-render.service';
+import {AttributeRow, TooltipRenderComponent} from './mapbox/tooltip-render/tooltip-render.component';
 import {EmuMapboxMap} from './mapbox/mapbox.component';
-import {CustomGoogleTagManager} from "./custom-google-tag-manager/custom-google-tag-manager";
+import {CustomGoogleTagManager} from "./analytics/custom-google-tag-manager";
 
 const debug = Debug('tombolo:app');
 
@@ -178,7 +178,8 @@ export class AppComponent implements OnInit {
 
   onMapClick(event): void {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      const dataFeature = map.queryRenderedFeatures(event.point, {layers: map.dataLayers})[0];
+
+      const dataFeature = map.queryRenderedFeatures(event.point, {layers: map.dataLayerIds})[0];
 
       if (!dataFeature) {
         return;
@@ -191,7 +192,7 @@ export class AppComponent implements OnInit {
 
   onMapMouseMoved(ev): void {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      const features = map.queryRenderedFeatures(ev.point, {layers: map.dataLayers});
+      const features = map.queryRenderedFeatures(ev.point, {layers: map.dataLayerIds});
       this.showHover = features.length > 0;
     });
   }
@@ -218,8 +219,8 @@ export class AppComponent implements OnInit {
     return attributes.map(attribute => ({
       name: attribute.name,
       description: attribute.description,
-      id: attribute.id,
-      value: properties[attribute.id],
+      id: attribute.field,
+      value: properties[attribute.field],
       unit: attribute.unit
     }));
   }

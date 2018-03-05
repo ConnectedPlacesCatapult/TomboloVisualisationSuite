@@ -28,6 +28,17 @@ export class Palette extends Model<Palette> {
   })
   isDefault: boolean;
 
+  @Column({
+    type: DataType.TEXT,
+    field: 'group_id'
+  })
+  groupId: string;
+
+  @Column({
+    type: DataType.INTEGER
+  })
+  order: number;
+
   static getDefault() {
     return Palette.findOne<Palette>({where: { isDefault: true} as any});
   }
