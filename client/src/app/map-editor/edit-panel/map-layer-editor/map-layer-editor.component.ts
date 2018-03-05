@@ -108,18 +108,17 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
       this.mode = layer.layerType;
 
       this.form.setValue({
-        colorRadio: layer.datasetAttribute ? 'attribute' : 'fixed',
-        fixedColor: layer.fixedColor,
-        colorAttribute: layer.datasetAttribute,
+        colorRadio: layer.colorMode || 'fixed',
+        fixedColor: layer.fixedColor || '#ddd',
+        colorAttribute: layer.colorAttribute,
         palette: layer.palette.id,
         paletteInverted: layer.paletteInverted,
-        size: layer.fixedSize,
-        sizeRadio: layer.sizeAttribute ? 'attribute' : 'fixed',
+        size: layer.fixedSize || 10,
+        sizeRadio: layer.sizeMode || 'fixed',
         sizeAttribute: layer.sizeAttribute,
         labelAttribute: layer.labelAttribute,
         opacity: layer.opacity * 100
       });
     }
   }
-
 }

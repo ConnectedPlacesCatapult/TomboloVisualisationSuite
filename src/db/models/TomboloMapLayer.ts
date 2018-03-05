@@ -78,9 +78,9 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> implements IMapLayer
   // TODO rename colorAttribute
   @Column({
     type: DataType.TEXT,
-    field: 'data_attribute'
+    field: 'color_attribute'
   })
-  datasetAttribute: string;
+  colorAttribute: string;
 
   @Column({
     type: DataType.TEXT,

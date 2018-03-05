@@ -9,29 +9,26 @@ export const DATA_LAYER_PREFIX = 'datalayer-';
 export const LABEL_LAYER_PREFIX = 'labellayer-';
 
 const MIN_POINT_RADIUS = 3;
-const MAX_POINT_RADIUS = 20;
 
 export class StyleGenerator {
 
-  constructor(private mapDefinition: IMapDefinition) {}
+  constructor(private mapDefinition: IMapDefinition, private baseUrl: string) {}
 
-  generateMapStyle(basemap: IBasemap, mapDefinition: IMapDefinition, baseUrl: string) {
-
-    this.mapDefinition = mapDefinition;
+  generateMapStyle(basemap: IBasemap) {
 
     let style = basemap.style;
     style.metadata = style.metadata || {} as IStyleMetadata;
-    style.metadata.mapDefinition = mapDefinition;
-    style.zoom = mapDefinition.zoom || style.zoom;
-    style.center = mapDefinition.center || style.center;
-    style.sources = {...style['sources'], ...this.generateSources(mapDefinition)};
-    style.sources = this.expandTileSources(baseUrl, style.sources);
+    style.metadata.mapDefinition = this.mapDefinition;
+    style.zoom = this.mapDefinition.zoom || style.zoom;
+    style.center = this.mapDefinition.center || style.center;
+    style.sources = {...style['sources'], ...this.generateSources(this.mapDefinition)};
+    style.sources = this.expandTileSources(this.baseUrl, style.sources);
 
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};
 
     // Create and insert map layers
-    mapDefinition.layers.forEach(layer => {
+    this.mapDefinition.layers.forEach(layer => {
       const layerStyle = this.generateMapLayer(layer);
       const insertionPoint = insertionPoints[layer.layerType];
       this.insertMapLayer(insertionPoint, style, layerStyle);
@@ -43,7 +40,7 @@ export class StyleGenerator {
       throw new Error(`No label layer style for basemap ${basemap.name}`);
     }
     else {
-      mapDefinition.layers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
+      this.mapDefinition.layers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
         const labelLayerStyle = this.generateLabelLayer(layer, labelAttributeStyle);
         const insertionPoint = insertionPoints['label'];
         this.insertMapLayer(insertionPoint, style, labelLayerStyle);
@@ -122,7 +119,7 @@ export class StyleGenerator {
     const dataset = this.datasetForLayer(layer);
 
     if (!dataset) {
-      throw new Error(`Layer'${layer.datasetAttribute} has no dataset`);
+      throw new Error(`Layer'${layer.layerId} has no dataset`);
     }
 
     const labelAttribute = dataset.dataAttributes.find(d => d.field === layer.labelAttribute);
@@ -223,13 +220,13 @@ export class StyleGenerator {
     const dataset = this.datasetForLayer(layer);
 
     if (!dataset) {
-      throw new Error(`Layer'${layer.datasetAttribute} has no dataset`);
+      throw new Error(`Layer'${layer.layerId} has no dataset`);
     }
 
-    const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.datasetAttribute);
+    const dataAttribute = dataset.dataAttributes.find(d => d.field === layer.colorAttribute);
 
     if (!dataAttribute) {
-      throw new Error(`Data attribute '${layer.datasetAttribute} not found on dataset`);
+      throw new Error(`Data attribute '${layer.colorAttribute} not found on dataset`);
     }
 
     if (!dataAttribute.quantiles5) {
@@ -244,7 +241,7 @@ export class StyleGenerator {
 
     // TODO - convert to new-style expression once I've figured out how to replicate the 'default' value for missing data
     const ramp =  {
-      property: layer.datasetAttribute,
+      property: layer.colorAttribute,
       stops: rampStops,
       'default': layer.fixedColor || defaultColor
     };
