@@ -12,11 +12,11 @@
       <mat-expansion-panel *ngFor="let layer of map.dataLayers" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
           <mat-icon svgIcon="grab-handle"></mat-icon>
-          <mat-icon svgIcon="polygon"></mat-icon>
+          <mat-icon [svgIcon]="typeIconForLayer(layer)"></mat-icon>
           <span class="expansion-header-title">{{layer.name}}</span>
           <div class="button-box">
             <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layer); $event.stopPropagation()"><mat-icon [svgIcon]="eyeIconForLayer(layer)"></mat-icon></button>
-            <button mat-icon-button class="compressed" (click)="deleteLayer($layerId); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
+            <button mat-icon-button class="compressed" (click)="deleteLayer(layer); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
           </div>
         </mat-expansion-panel-header>
         <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes"></map-layer-editor>

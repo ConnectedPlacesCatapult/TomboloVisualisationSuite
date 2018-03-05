@@ -26,6 +26,7 @@ export  const ICONS = [
   'map-pin',
   'minus',
   'plus',
+  'point',
   'polygon',
   'radio-off',
   'radio-on',

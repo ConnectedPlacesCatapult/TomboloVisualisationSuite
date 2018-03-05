@@ -8,6 +8,7 @@ import {ActivatedRoute} from '@angular/router';
 import {IPalette} from '../../../../../src/shared/IPalette';
 import {IBasemap} from '../../../../../src/shared/IBasemap';
 import {IMapLayer} from '../../../../../src/shared/IMapLayer';
+import {DialogsService} from '../../dialogs/dialogs.service';
 
 const debug = Debug('tombolo:map-edit-panel');
 
@@ -21,7 +22,8 @@ export class EditPanelComponent implements OnInit {
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   constructor(private mapService: MapService,
-              private mapRegistry: MapRegistry) {}
+              private mapRegistry: MapRegistry,
+              private dialogsService: DialogsService) {}
 
   _subs: Subscription[] = [];
   map: TomboloMapboxMap;
@@ -68,12 +70,29 @@ export class EditPanelComponent implements OnInit {
     this.map.setDataLayerVisibility(layer.layerId, !layer.visible);
   }
 
-  deleteLayer(layerId: string) {
-
+  deleteLayer(layer: IMapLayer) {
+    this.dialogsService
+      .confirm('Delete Layer', `Are you sure you want to delete the layer?<p><b>${layer.name}</b>`)
+      .filter(result => result)
+      .subscribe(() => {
+        this.map.removeDataLayer(layer.layerId);
+      });
   }
 
   eyeIconForLayer(layer: IMapLayer): string {
     return layer.visible ? 'eye' : 'eye-off';
   }
 
+  typeIconForLayer(layer: IMapLayer): string {
+    switch (layer.layerType) {
+      case 'fill':
+        return 'polygon';
+      case 'line':
+        return 'line';
+      case 'circle':
+        return 'point';
+      default:
+        return 'point';
+    }
+  }
 }
