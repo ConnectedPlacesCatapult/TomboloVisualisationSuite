@@ -4,6 +4,8 @@ import {ILabelLayerStyleMetadata, IStyle, IStyleMetadata} from '../IStyle';
 import {IMapLayer} from '../IMapLayer';
 import {ITomboloDataset} from '../ITomboloDataset';
 
+import {clone} from './clone';
+
 export const DATA_LAYER_ID = 'data';
 export const DATA_LAYER_PREFIX = 'datalayer-';
 export const LABEL_LAYER_PREFIX = 'labellayer-';
@@ -12,17 +14,18 @@ const MIN_POINT_RADIUS = 3;
 
 export class StyleGenerator {
 
-  constructor(private mapDefinition: IMapDefinition, private baseUrl: string) {}
+  constructor(private mapDefinition: IMapDefinition) {}
 
   generateMapStyle(basemap: IBasemap) {
 
-    let style = basemap.style;
+    let style = clone(basemap.style);
+
     style.metadata = style.metadata || {} as IStyleMetadata;
     style.metadata.mapDefinition = this.mapDefinition;
     style.zoom = this.mapDefinition.zoom || style.zoom;
     style.center = this.mapDefinition.center || style.center;
     style.sources = {...style['sources'], ...this.generateSources(this.mapDefinition)};
-    style.sources = this.expandTileSources(this.baseUrl, style.sources);
+    style.sources = this.expandTileSources(this.mapDefinition.tileBaseUrl, style.sources);
 
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};

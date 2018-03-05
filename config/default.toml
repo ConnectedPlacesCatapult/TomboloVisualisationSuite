@@ -47,7 +47,6 @@ consumerKey = "QWEAgUk3nlZjxNkCrk9Zg5ilZ"
 consumerSecret = "NBNSxKBIu12QHXZDGvMViM5YdsioAUtW5wrpehzFdS9p71Cyv6"
 
 [client]
-authEndpoint = "/accounts/api/v1"
 socialMediaTitle = "My Tombolo Map"
 socialMediaDescription = "Check out this amazing map I built with Tombolo!"
 socialMediaTags = "tombolo, emuanalytics"

@@ -13,5 +13,7 @@ export interface IMapDefinition {
   datasets: ITomboloDataset[];
   layers: IMapLayer[];
   recipe: string;
+  basemapId: string;
   basemapDetailLevel: number;
+  tileBaseUrl: string;
 }
