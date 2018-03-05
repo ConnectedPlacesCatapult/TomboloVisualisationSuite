@@ -3,7 +3,7 @@
 </h3>
 
 <div class="sidebar-content">
-  <ng-container *ngIf="map">
+  <ng-container *ngIf="map && palettes && basemaps">
 
     <map-metadata-editor [map]="map"></map-metadata-editor>
 

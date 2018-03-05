@@ -12,9 +12,8 @@ import {IStyle} from '../../shared/IStyle';
 export class BaseMap extends Model<BaseMap> implements IBasemap {
 
   @Column({
-    type: DataType.UUID,
-    primaryKey: true,
-    defaultValue: sequelize.literal('uuid_generate_v4()')
+    type: DataType.TEXT,
+    primaryKey: true
   })
   id: string;
 

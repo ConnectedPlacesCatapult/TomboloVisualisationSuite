@@ -98,9 +98,35 @@ export class StyleGenerator {
     }
   }
 
+  generateMapLayer(layer: IMapLayer): object {
+
+    const dataset = this.datasetForLayer(layer);
+
+    return {
+      id: layer.layerId,
+      source: layer.datasetId,
+      'source-layer':  DATA_LAYER_ID,
+      type: layer.layerType,
+      minzoom: dataset.minZoom,
+      maxzoom: dataset.maxZoom,
+      layout: this.layoutStyleForLayer(layer),
+      paint: this.paintStyleForLayer(layer)
+    };
+  }
+
   generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): object {
 
+    // Do nothing of no label attribute
     if (layer.labelAttribute === null) return null;
+
+    const dataset = this.datasetForLayer(layer);
+
+    if (!dataset) {
+      throw new Error(`Layer'${layer.datasetAttribute} has no dataset`);
+    }
+
+    const labelAttribute = dataset.dataAttributes.find(d => d.field === layer.labelAttribute);
+    const labelText = `{${labelAttribute.field}} ${labelAttribute.unit ? labelAttribute.unit : ''}`;
 
     let layout = {
       ...labelAttributeStyle.layout,
@@ -110,7 +136,7 @@ export class StyleGenerator {
       'text-anchor': 'top',
       'text-justify': 'center',
       'text-offset': [0, 0],
-      'text-field': `{${layer.labelAttribute}}`
+      'text-field': labelText
     };
 
     let paint = {...labelAttributeStyle.paint};
@@ -182,22 +208,6 @@ export class StyleGenerator {
     return (url.startsWith('http')) ? url : baseUrl + url;
   }
 
-  private generateMapLayer(layer: IMapLayer): object {
-
-    const dataset = this.datasetForLayer(layer);
-
-    return {
-      id: layer.layerId,
-      source: layer.datasetId,
-      'source-layer':  DATA_LAYER_ID,
-      type: layer.layerType,
-      minzoom: dataset.minZoom,
-      maxzoom: dataset.maxZoom,
-      layout: this.layoutStyleForLayer(layer),
-      paint: this.paintStyleForLayer(layer)
-    };
-  }
-
   private datasetForLayer(layer: IMapLayer): ITomboloDataset {
     return this.mapDefinition.datasets.find(ds => ds.id === layer.datasetId);
   }
@@ -224,7 +234,7 @@ export class StyleGenerator {
 
     if (!dataAttribute.quantiles5) {
       // Missing quantiles
-      return 'black'
+      return 'black';
     }
 
     const colorStops = [...layer.palette.colorStops];

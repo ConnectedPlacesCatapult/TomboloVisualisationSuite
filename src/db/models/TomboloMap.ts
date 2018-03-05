@@ -92,7 +92,7 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
   @ForeignKey(() => BaseMap)
   @Column({
-    type: DataType.UUID,
+    type: DataType.TEXT,
     field: 'basemap_id'
   })
   basemapId: string;
