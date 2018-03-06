@@ -9,6 +9,7 @@ import {IPalette} from '../../../../../src/shared/IPalette';
 import {IBasemap} from '../../../../../src/shared/IBasemap';
 import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 import {DialogsService} from '../../dialogs/dialogs.service';
+import {DragulaService} from 'ng2-dragula';
 
 const debug = Debug('tombolo:map-edit-panel');
 
@@ -23,12 +24,20 @@ export class EditPanelComponent implements OnInit {
 
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,
-              private dialogsService: DialogsService) {}
+              private dialogsService: DialogsService,
+              private dragulaService: DragulaService) {}
 
   _subs: Subscription[] = [];
   map: TomboloMapboxMap;
   basemaps: IBasemap[];
   palettes: IPalette[];
+
+  dragulaOptions = {
+    moves: (el, container, handle) => {
+
+      return handle.closest('.mat-icon.grab-handle') !== null;
+    }
+  };
 
   ngOnInit() {
 
@@ -59,6 +68,10 @@ export class EditPanelComponent implements OnInit {
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       debug('Edit panel got map', map.id);
       this.map = map;
+    }));
+
+    this._subs.push(this.dragulaService.drop.subscribe((value) => {
+      this.onDropMapLayer(value);
     }));
   }
 
@@ -94,5 +107,9 @@ export class EditPanelComponent implements OnInit {
       default:
         return 'point';
     }
+  }
+
+  onDropMapLayer(val) {
+    debug(val);
   }
 }
