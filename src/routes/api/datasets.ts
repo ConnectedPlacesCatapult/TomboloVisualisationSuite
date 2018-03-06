@@ -19,6 +19,20 @@ const db = Container.get(DB);
 const baseUrl = config.get('server.baseUrl');
 
 /**
+ * Load all dataset groups and contained datasets
+ */
+router.get('/groups', async (req, res, next) => {
+  try {
+    const datasetGroups = await DatasetGroup.scope('full').findAll<DatasetGroup>();
+    res.json(datasetGroups);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+/**
  * Load a dataset by ID
  */
 router.get('/:datasetId', async (req, res, next) => {
@@ -30,20 +44,6 @@ router.get('/:datasetId', async (req, res, next) => {
     }
 
     res.json(dataset);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
-/**
- * Load all dataset groups and contained datasets
- */
-router.get('/groups', async (req, res, next) => {
-  try {
-    const datasetGroups = await DatasetGroup.scope('full').findAll<DatasetGroup>();
-    res.json(datasetGroups);
   }
   catch (e) {
     logger.error(e);

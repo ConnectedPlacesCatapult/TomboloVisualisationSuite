@@ -19,9 +19,9 @@
     </div>
   </div>
 
-  <div class="column" *ngIf="datasets">
-    <h3>Datasets</h3>
-    <div class="datasets" *ngIf="datasets.length > 0">
+  <div class="column">
+    <div class="datasets" *ngIf="datasets && datasets?.length > 0">
+      <h3>Datasets</h3>
       <mat-list>
         <mat-list-item *ngFor="let dataset of datasets"
                        [ngClass]="{'darkblue': dataset['id']===selectedDataset['id'],
@@ -30,22 +30,19 @@
       </mat-list>
     </div>
 
-    <div *ngIf="datasets.length === 0" class="row-flex-item">
+    <div *ngIf="datasets && datasets?.length === 0" class="row-flex-item">
       Search returned no relevant datasets.
     </div>
 
-    <div *ngIf="selectedDataset" class="description row-flex-item" Markdown [data]="selectedDataset['description']"></div>
+    <div *ngIf="selectedDataset['id']!==null" class="description row-flex-item" Markdown [data]="selectedDataset['description']"></div>
+
+      <div class="info" *ngIf="!datasets">
+        Information column
+      </div>
 
     <div class="buttons row-flex-item">
       <button mat-button (click)="close()">Cancel</button>
-      <button mat-button [disabled]="selectedDataset['id'] === null">Add to Map</button>
+      <button mat-button [disabled]="selectedDataset['id'] === null" (click)="addToMap()">Add to Map</button>
     </div>
   </div>
-
-  <div class="column" *ngIf="!datasets">
-    <div class="row-flex-item">
-      Information column
-    </div>
-  </div>
-
 </div>

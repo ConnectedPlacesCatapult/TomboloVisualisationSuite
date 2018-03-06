@@ -156,6 +156,10 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
   browsePublicDatasets() {
     const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px', height: '500px'});
+
+    dialogRef.afterClosed().filter(res => res.result).subscribe(res => {
+      this.addDataLayerToMap(res['dataset']);
+    });
   }
 
   /**
@@ -174,9 +178,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
         this.mapService.loadPalettes(),
         this.mapService.loadDataset(dataset.id))
         .subscribe(([basemaps, palettes, ds]) => {
-
         const basemap = basemaps.find(b => b.id === map.basemapId);
-
         map.addDataLayer(ds, basemap, palettes[0]);
       });
     });
