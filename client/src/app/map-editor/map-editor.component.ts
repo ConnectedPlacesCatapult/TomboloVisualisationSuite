@@ -1,8 +1,8 @@
-import {AfterContentInit, AfterViewInit, Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MapService} from '../services/map-service/map.service';
-import {UploaderOptions, UploadFile, UploadInput, UploadOutput} from 'ngx-uploader';
+import {UploaderOptions, UploadInput, UploadOutput} from 'ngx-uploader';
 import {environment} from '../../environments/environment';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
@@ -18,6 +18,10 @@ import {DialogsService} from '../dialogs/dialogs.service';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/mergeMap';
 import {NotificationService} from '../dialogs/notification.service';
+import 'rxjs/add/observable/forkJoin';
+import {MapRegistry} from '../mapbox/map-registry.service';
+import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
+
 
 const debug = Debug('tombolo:map-editor');
 
@@ -45,6 +49,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private mapService: MapService,
+              private mapRegistry: MapRegistry,
               private authService: AuthService,
               private dialogsService: DialogsService,
               private matDialog: MatDialog,
@@ -153,8 +158,28 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '600px', height: '500px'});
   }
 
-  addDataset(datasetId: string) {
+  /**
+   * Add a new data layer to the map using the specified dataset
+   *
+   * @param {ITomboloDataset} dataset
+   */
+  addDataLayerToMap(dataset: ITomboloDataset) {
 
+    // Note: to add a data layer we need a clean basemap to regenerate the style, a palette and
+    // the full dataset object with nested data attributes
+
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      Observable.forkJoin(
+        this.mapService.loadBasemaps(),
+        this.mapService.loadPalettes(),
+        this.mapService.loadDataset(dataset.id))
+        .subscribe(([basemaps, palettes, ds]) => {
+
+        const basemap = basemaps.find(b => b.id === map.basemapId);
+
+        map.addDataLayer(ds, basemap, palettes[0]);
+      });
+    });
   }
 
   deleteMap(map: ITomboloMap) {
@@ -182,7 +207,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
           const list = `<ul>${maps.map(map => '<li>' + map.name + '</li>')}</ul>`;
 
-          message = `There are maps that require this dataset:
+          message = `There are maps that are using this dataset:
                         ${list}
                         Are you sure you want to continue?`;
         }

@@ -388,13 +388,23 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
-  // Insert a new data layer
-  // This requires a clean basemap to regenerate the complete map
-  insertDataLayer(basemap: IBasemap, layer: IMapLayer, index: number): void {
+  addDataLayer(dataset: ITomboloDataset, basemap: IBasemap, palette: IPalette): void {
 
-    // Insertion without mutation
-    const layersCopy = [...this._mapDefinition.layers];
-    layersCopy.splice(index, 0, layer);
+    debug('Old style:', this.getStyle());
+
+    // Insert dataset in map definition if it's not already referenced
+    if (!this.datasets.find(ds => ds.id === dataset.id)) {
+      debug('Adding dataset to map definition');
+      this.datasets.push(dataset);
+    }
+
+    // Generate a default data layer for the dataset
+    const newDataLayer = this._styleGenerater.generateDefaultDataLayer(dataset, palette);
+
+    // Insert the data layer
+    let layersCopy = [...this._mapDefinition.layers];
+    layersCopy.push(newDataLayer);
+    layersCopy.forEach((layer, index) => layer.order = index);
     this._mapDefinition.layers = layersCopy;
 
     // Regenerate the map

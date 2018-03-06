@@ -4,7 +4,11 @@ import {ILabelLayerStyleMetadata, IStyle, IStyleMetadata} from '../IStyle';
 import {IMapLayer} from '../IMapLayer';
 import {ITomboloDataset} from '../ITomboloDataset';
 
+import * as uuid from 'uuid/v4';
+
+
 import {clone} from './clone';
+import {IPalette} from '../IPalette';
 
 export const DATA_LAYER_ID = 'data';
 export const DATA_LAYER_PREFIX = 'datalayer-';
@@ -117,7 +121,7 @@ export class StyleGenerator {
   generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): object {
 
     // Do nothing of no label attribute
-    if (layer.labelAttribute === null) return null;
+    if (!layer.labelAttribute) return null;
 
     const dataset = this.datasetForLayer(layer);
 
@@ -164,6 +168,40 @@ export class StyleGenerator {
   insertMapLayer(insertionPoint: string, style: IStyle, layer: object): void {
     const index = style.layers.findIndex(l => l['id'] === insertionPoint);
     style['layers'].splice(index, 0, layer);
+  }
+
+
+  /**
+   * Generate a default map layer for the given dataset
+   *
+   * @param {ITomboloDataset} dataset
+   */
+  generateDefaultDataLayer(dataset: ITomboloDataset, defaultPalette: IPalette): IMapLayer {
+
+    const newId = uuid();
+
+    let mapLayer: IMapLayer = {
+      layerId: DATA_LAYER_PREFIX + newId,
+      originalLayerId: newId,
+      datasetId: dataset.id,
+      name: dataset.name,
+      description: dataset.description,
+      visible: true,
+      opacity: 1,
+      layerType: this.layerTypeForGeometryType(dataset.geometryType),
+      palette: defaultPalette,
+      paletteInverted: false,
+      colorAttribute: null,
+      fixedColor: '#888',
+      colorMode: 'fixed',
+      sizeAttribute: null,
+      fixedSize: 10,
+      sizeMode: 'fixed',
+      labelAttribute: null,
+      order: null,
+    };
+
+    return mapLayer;
   }
 
   private generateSources(mapDefinition: IMapDefinition): object {
@@ -215,7 +253,7 @@ export class StyleGenerator {
   private colorRampForLayer(layer: IMapLayer): any {
 
     // Fixed color
-    if (layer.colorMode === 'fixed') {
+    if (layer.colorMode === 'fixed' || !layer.colorAttribute) {
       return layer.fixedColor || 'black';
     }
 
@@ -255,7 +293,7 @@ export class StyleGenerator {
   private radiusRampForLayer(layer: IMapLayer): any {
 
     // Fixed radius
-    if (layer.sizeMode === 'fixed') {
+    if (layer.sizeMode === 'fixed' || !layer.sizeAttribute) {
       return layer.fixedSize;
     }
 
@@ -278,5 +316,16 @@ export class StyleGenerator {
       ['number', ['get', layer.sizeAttribute], layer.fixedSize],
       ...stops
     ];
+  }
+
+  private layerTypeForGeometryType(geometryType: string): 'circle' | 'line' | 'fill' {
+    switch (geometryType) {
+      case 'ST_MultiPoint': return 'circle';
+      case 'ST_Point': return 'circle';
+      case 'ST_MultiLineString': return 'line';
+      case 'ST_LineString': return 'line';
+      case 'ST_MultiPolygon': return 'fill';
+      case 'ST_Polygon': return 'fill';
+    }
   }
 }

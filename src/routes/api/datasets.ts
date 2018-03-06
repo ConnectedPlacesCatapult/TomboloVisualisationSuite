@@ -18,31 +18,12 @@ const db = Container.get(DB);
 // Tile server config options
 const baseUrl = config.get('server.baseUrl');
 
-router.get('/groups', async (req, res, next) => {
-  try {
-    const datasetGroups = await DatasetGroup.scope('full').findAll<DatasetGroup>();
-    res.json(datasetGroups);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
-router.get('/groups/:groupId', async (req, res, next) => {
-  try {
-    const datasetGroups = await DatasetGroup.scope('full').findById<DatasetGroup>(req.params.groupId);
-    res.json(datasetGroups);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
+/**
+ * Load a dataset by ID
+ */
 router.get('/:datasetId', async (req, res, next) => {
   try {
-    const dataset = await Dataset.findById<Dataset>(req.params.datasetId);
+    const dataset = await Dataset.scope('withAttributes').findById<Dataset>(req.params.datasetId);
 
     if (!dataset) {
       return next({status: 404, message: 'Dataset not found'});
@@ -56,6 +37,38 @@ router.get('/:datasetId', async (req, res, next) => {
   }
 });
 
+/**
+ * Load all dataset groups and contained datasets
+ */
+router.get('/groups', async (req, res, next) => {
+  try {
+    const datasetGroups = await DatasetGroup.scope('full').findAll<DatasetGroup>();
+    res.json(datasetGroups);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+/**
+ * Load a dataset group and contained datasets
+ */
+router.get('/groups/:groupId', async (req, res, next) => {
+  try {
+    const datasetGroups = await DatasetGroup.scope('full').findById<DatasetGroup>(req.params.groupId);
+    res.json(datasetGroups);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+
+/**
+ * Query datasets by userId or full-text search
+ */
 router.get('/', async (req, res, next) => {
   try {
     if (req.query.userId) {
@@ -74,8 +87,9 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// get maps that reference the given dataset
-// Used to warn user when deleting a dataset
+/**
+ * Load maps that are referencing the specified dataset
+ */
 router.get('/:datasetId/maps', async (req, res, next) => {
   try {
     const maps = await TomboloMap.findAll<TomboloMap>({
@@ -95,7 +109,9 @@ router.get('/:datasetId/maps', async (req, res, next) => {
   }
 });
 
-// Delete a dataset - user must be logged in and own map
+/**
+ * Delete a dataset - user must be logged in and own map
+ */
 router.delete('/:datasetId', isAuthenticated, async (req, res, next) => {
 
   try {

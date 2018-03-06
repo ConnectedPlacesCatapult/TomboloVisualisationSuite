@@ -1,6 +1,6 @@
 <mat-select placeholder="Color palette" [value]="value" (selectionChange)="value = $event.value; propagateChange(value)">
   <mat-select-trigger>
-    <color-palette [colors]="paletteForId(value).colorStops"></color-palette>
+    <color-palette [colors]="paletteForId(value)?.colorStops"></color-palette>
   </mat-select-trigger>
   <mat-option *ngFor="let palette of palettes" [value]="palette.id">
     <color-palette [colors]="palette.colorStops"></color-palette>

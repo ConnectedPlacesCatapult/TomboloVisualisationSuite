@@ -9,7 +9,7 @@
 
     <mat-accordion multi="true" displayMode="flat">
       <!-- Map layers -->
-      <mat-expansion-panel *ngFor="let layer of map.dataLayers" expanded="true">
+      <mat-expansion-panel *ngFor="let layer of map.dataLayers.slice().reverse()" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
           <mat-icon svgIcon="grab-handle"></mat-icon>
           <mat-icon [svgIcon]="typeIconForLayer(layer)"></mat-icon>
