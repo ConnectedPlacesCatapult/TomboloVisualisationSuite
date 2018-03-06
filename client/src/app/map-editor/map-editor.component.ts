@@ -150,7 +150,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   browsePublicDatasets() {
-    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '600px', height: '500px'});
+    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px', height: '500px'});
   }
 
   addDataset(datasetId: string) {

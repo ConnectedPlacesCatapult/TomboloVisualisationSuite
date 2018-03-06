@@ -1,5 +1,6 @@
 /deep/ .mat-dialog-container {
   overflow: hidden !important;
+  padding: 25px;
 }
 
 :host {
@@ -7,17 +8,28 @@
   overflow: hidden;
 
   .container {
-    position: relative;
+    display: flex;
+    flex-direction: row;
     width: 100%;
     height: 100%;
   }
 
+  .fixed-width {
+    flex: 0 0 30% !important;
+  }
+
   .column {
-    width: 40%;
-    height: 600px;
-    overflow: hidden;
-    padding: 2px 20px;
-    float: left;
+    padding: 5px 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 5px;
+  }
+
+  .row-flex-item {
+    padding-top: 5px;
+    flex: 1;
+    overflow: scroll;
   }
 
   h3 {
@@ -46,16 +58,23 @@
     color: rgb(41,182,206);
   }
 
-  .block {
-    width: 100%;
-    zoom: 1;
-  }
-
   .search {
-    width: 100%;
+    flex: 0 0 10%;
     margin-bottom: 5px;
     padding-bottom: 5px;
     border-bottom: 1px solid rgba(15,45,58,0.5);
+
+    /deep/ .mat-input-container {
+      width: 100%;
+    }
+  }
+
+  .datasets {
+    flex: 0 0 30%;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(15,45,58,0.5);
+    overflow: scroll;
   }
 
   .search-icon {
@@ -68,23 +87,15 @@
     width: 80%;
   }
 
-  .datasets {
-    border-bottom: 1px solid rgba(15,45,58,0.5);
-    max-height: 40%;
-    overflow: scroll;
-  }
-
   .description {
-    margin-top: 10px;
-  }
-
-  .description-title {
-    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 14px;
+    flex-grow: 1;
   }
 
   .buttons {
-    position: absolute;
-    bottom: -10px;
-    right: 0;
+    margin-top: auto;
+    flex: 0 0 7%;
+    text-align: right;
   }
 }
