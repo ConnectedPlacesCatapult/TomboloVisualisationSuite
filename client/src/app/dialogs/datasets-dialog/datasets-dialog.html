@@ -19,15 +19,19 @@
     </div>
   </div>
 
-  <div class="column" *ngIf="datasets && datasets.length > 0">
+  <div class="column" *ngIf="datasets">
     <h3>Datasets</h3>
-    <div class="datasets">
+    <div class="datasets" *ngIf="datasets.length > 0">
       <mat-list>
         <mat-list-item *ngFor="let dataset of datasets"
                        [ngClass]="{'darkblue': dataset['id']===selectedDataset['id'],
       'blue': dataset['id']!==selectedDataset['id']}"
                        (click)="selectDataset(dataset)">{{dataset['name']}}</mat-list-item>
       </mat-list>
+    </div>
+
+    <div *ngIf="datasets.length === 0" class="row-flex-item">
+      Search returned no relevant datasets.
     </div>
 
     <div *ngIf="selectedDataset" class="description row-flex-item" Markdown [data]="selectedDataset['description']"></div>
@@ -38,7 +42,7 @@
     </div>
   </div>
 
-  <div class="column" *ngIf="!datasets || datasets.length === 0">
+  <div class="column" *ngIf="!datasets">
     <div class="row-flex-item">
       Information column
     </div>
