@@ -1,43 +1,51 @@
 <div class="container">
-  <div class="block">
-    <div class="column border">
+  <div class="column border fixed-width">
 
-      <div class="search">
-        <mat-form-field floatLabel="never">
-          <input matInput [(ngModel)]="filterInput" class="filter" placeholder="Search datasets" (keyup)="queryOnEnter($event)">
-          <mat-icon fontSet="fa" fontIcon="fa-search" class="search-icon" (click)="filterByQuery()"></mat-icon>
-        </mat-form-field>
-      </div>
+    <div class="search">
+      <mat-form-field floatLabel="never">
+        <input matInput [(ngModel)]="filterInput" class="filter" placeholder="Search datasets" (keyup)="queryOnEnter($event)">
+        <mat-icon fontSet="fa" fontIcon="fa-search" class="search-icon" (click)="filterByQuery()"></mat-icon>
+      </mat-form-field>
+    </div>
 
+    <div class="row-flex-item">
       <h3>Categories</h3>
       <mat-list *ngIf="groups">
         <mat-list-item *ngFor="let group of groups"
                        [ngClass]="{'darkblue': group['id']===selectedGroupId,
-        'blue': group['id']!==selectedGroupId}"
+      'blue': group['id']!==selectedGroupId}"
                        (click)="loadDatasets(group['id'])">{{group['name']}}</mat-list-item>
       </mat-list>
     </div>
+  </div>
 
-    <div class="column">
-      <h3>Datasets</h3>
-      <mat-list *ngIf="datasets && datasets.length > 0" class="datasets">
+  <div class="column" *ngIf="datasets">
+    <h3>Datasets</h3>
+    <div class="datasets" *ngIf="datasets.length > 0">
+      <mat-list>
         <mat-list-item *ngFor="let dataset of datasets"
                        [ngClass]="{'darkblue': dataset['id']===selectedDataset['id'],
-        'blue': dataset['id']!==selectedDataset['id']}"
+      'blue': dataset['id']!==selectedDataset['id']}"
                        (click)="selectDataset(dataset)">{{dataset['name']}}</mat-list-item>
       </mat-list>
+    </div>
 
-      <div *ngIf="selectedDataset" class="description">
-        <h3 class="description-title">{{selectedDataset['name']}}</h3>
+    <div *ngIf="datasets.length === 0" class="row-flex-item">
+      Search returned no relevant datasets.
+    </div>
 
-        {{selectedDataset['description']}}
-      </div>
+    <div *ngIf="selectedDataset" class="description row-flex-item" Markdown [data]="selectedDataset['description']"></div>
+
+    <div class="buttons row-flex-item">
+      <button mat-button (click)="close()">Cancel</button>
+      <button mat-button [disabled]="selectedDataset['id'] === null">Add to Map</button>
     </div>
   </div>
 
-  <div class="buttons">
-    <button mat-button (click)="close()">Cancel</button>
-    <button mat-button [disabled]="selectedDataset['id'] === null">Add to Map</button>
+  <div class="column" *ngIf="!datasets">
+    <div class="row-flex-item">
+      Information column
+    </div>
   </div>
 
 </div>
