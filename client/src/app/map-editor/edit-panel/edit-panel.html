@@ -21,8 +21,10 @@
         </mat-expansion-panel-header>
         <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes" ></map-layer-editor>
       </mat-expansion-panel>
+    </mat-accordion>
 
       <!-- Basemap -->
+    <mat-accordion multi="true" displayMode="flat">
       <mat-expansion-panel id="basemap-panel" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
           <mat-icon svgIcon="map"></mat-icon>

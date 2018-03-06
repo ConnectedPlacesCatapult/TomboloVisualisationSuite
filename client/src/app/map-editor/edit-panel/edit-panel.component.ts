@@ -109,7 +109,18 @@ export class EditPanelComponent implements OnInit {
     }
   }
 
-  onDropMapLayer(val) {
-    debug(val);
+  onDropMapLayer(dropPayload) {
+    const droppedId = dropPayload[1].id;
+    const beforeId = dropPayload[4] && dropPayload[4].id;
+
+    const fromIndex = this.map.dataLayers.findIndex(l => l.layerId === droppedId);
+    const toIndex = (beforeId)?  this.map.dataLayers.findIndex(l => l.layerId === beforeId) : 0;
+
+    debug(fromIndex, toIndex);
+
+
+    const basemap = this.basemaps.find(b => b.id === this.map.basemapId);
+
+    this.map.moveDataLayer(fromIndex, toIndex, basemap);
   }
 }

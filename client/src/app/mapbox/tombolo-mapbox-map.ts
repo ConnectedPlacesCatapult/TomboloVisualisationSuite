@@ -413,6 +413,20 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
+  moveDataLayer(fromIndex: number, toIndex: number, basemap: IBasemap) {
+    debug(`Moving from index ${fromIndex}`);
+
+    const deletedLayers = this.dataLayers.splice(fromIndex, 1);
+
+    debug(`Inserting at index ${toIndex}`);
+    this.dataLayers.splice(toIndex, 0, deletedLayers[0]);
+
+    // Regenerate the map
+    this._regenerateMap$.next(basemap);
+
+    this.setModified();
+  }
+
   private setModified(): void {
     this._modified = true;
     this._modified$.next(true);
