@@ -6,10 +6,14 @@ export interface ITomboloMap {
   description: string;
   icon: string;
   zoom: number;
-  center: number;
+  center: number[];
   ownerId: string;
   basemapId: string;
   mapGroupId: string;
+  basemapDetailLevel: number;
+  isPrivate: boolean;
   order: number;
+
+  basemap: any;
  // layers: TomboloMapLayer[];
 }

@@ -3,13 +3,14 @@ import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
 import {Palette} from './Palette';
 import * as sequelize from 'sequelize';
+import {IMapLayer} from '../../shared/IMapLayer';
 
 @Table({
   tableName: 'map_layers',
   timestamps: true,
   version: true
 })
-export class TomboloMapLayer extends Model<TomboloMapLayer> {
+export class TomboloMapLayer extends Model<TomboloMapLayer> implements IMapLayer {
 
   @ForeignKey(() => TomboloMap)
   @Column({
@@ -44,7 +45,7 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
     type: DataType.TEXT,
     field: 'layer_type'
   })
-  layerType: string;
+  layerType: 'fill' | 'line' | 'circle';
 
   @ForeignKey(() => Palette)
   @Column({
@@ -55,7 +56,8 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
 
   @Column({
     type: DataType.BOOLEAN,
-    field: 'palette_inverted'
+    field: 'palette_inverted',
+    defaultValue: false
   })
   paletteInverted: boolean;
 
@@ -68,9 +70,44 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
 
   @Column({
     type: DataType.TEXT,
-    field: 'data_attribute'
+    field: 'color_mode',
+    defaultValue: 'fixed'
   })
-  datasetAttribute: string;
+  colorMode: 'fixed' | 'attribute';
+
+  // TODO rename colorAttribute
+  @Column({
+    type: DataType.TEXT,
+    field: 'color_attribute'
+  })
+  colorAttribute: string;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'fixed_color',
+    defaultValue: '#888888'
+  })
+  fixedColor: string;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'size_attribute'
+  })
+  sizeAttribute: string;
+
+  @Column({
+    type: DataType.FLOAT,
+    field: 'fixed_size',
+    defaultValue: 10
+  })
+  fixedSize: number;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'size_mode',
+    defaultValue: 'fixed'
+  })
+  sizeMode: 'fixed' | 'attribute';
 
   @Column({
     type: DataType.TEXT,
@@ -80,6 +117,7 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
 
   @Column({
     type: DataType.FLOAT,
+    defaultValue: 10
   })
   opacity: number;
 
@@ -87,6 +125,12 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> {
     type: DataType.FLOAT,
   })
   order: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: true,
+  })
+  visible: boolean;
 
   @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;

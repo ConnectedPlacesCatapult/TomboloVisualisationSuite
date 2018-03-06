@@ -1,6 +1,7 @@
 
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
+import {ITomboloDatasetAttribute} from '../../shared/ITomboloDatasetAttribute';
 
 @Table({
   tableName: 'data_attributes',
@@ -12,7 +13,7 @@ import {Dataset} from './Dataset';
     order: [['order', 'ASC']]
   }
 })
-export class DataAttribute extends Model<DataAttribute> {
+export class DataAttribute extends Model<DataAttribute> implements ITomboloDatasetAttribute {
 
   @ForeignKey(() => Dataset)
   @Column({
@@ -28,7 +29,6 @@ export class DataAttribute extends Model<DataAttribute> {
   })
   field: string;
 
-
   @Column({
     type: DataType.TEXT,
     field: 'field_sql'
@@ -39,7 +39,7 @@ export class DataAttribute extends Model<DataAttribute> {
     type: DataType.TEXT,
     allowNull: false
   })
-  type: string;
+  type: 'number' | 'string' | 'datetime';
 
   @Column({
     type: DataType.TEXT
@@ -83,7 +83,7 @@ export class DataAttribute extends Model<DataAttribute> {
   @Column({
     type: DataType.ARRAY(DataType.TEXT),
   })
-  categories: string;
+  categories: string[];
 
   @Column({
     type: DataType.BOOLEAN,

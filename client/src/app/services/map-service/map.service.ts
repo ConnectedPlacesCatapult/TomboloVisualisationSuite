@@ -5,15 +5,19 @@ import {Subject} from 'rxjs/Subject';
 import {environment} from '../../../environments/environment';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../dialogs/notification.service';
-import 'rxjs/add/operator/do';
 import {MapRegistry} from '../../mapbox/map-registry.service';
-import {TomboloMapboxMap, TomboloMapStyle} from '../../mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
 import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
 import {OgrFileInfoBase} from '../../../../../src/shared/ogrfileinfo-base';
 import {IMapGroup} from '../../../../../src/shared/IMapGroup';
 import {ITomboloMap} from '../../../../../src/shared/ITomboloMap';
 import {ITomboloDataset} from '../../../../../src/shared/ITomboloDataset';
 import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
+import {IBasemap} from '../../../../../src/shared/IBasemap';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/publishReplay';
+import {IPalette} from '../../../../../src/shared/IPalette';
+import {IStyle} from '../../../../../src/shared/IStyle';
 
 const debug = Debug('tombolo:MapService');
 
@@ -36,6 +40,8 @@ export class MapService {
 
   private _mapLoaded$ = new Subject<TomboloMapboxMap>();
   private _mapLoading$ = new Subject<void>();
+  private _basemaps$ : Observable<IBasemap[]>;
+  private _palettes$ : Observable<IPalette[]>;
 
   mapLoaded$(): Observable<TomboloMapboxMap> {
     return this._mapLoaded$.asObservable();
@@ -59,13 +65,15 @@ export class MapService {
 
     return Promise.all([
       this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),
-      this.http.get<TomboloMapStyle>(`/maps/${mapId}/style.json`).toPromise()
+      this.http.get<IStyle>(`/maps/${mapId}/style.json`).toPromise()
     ])
       .then(([map, style]) => {
+        map.beginLoad();
         return this.setStyleAndWait(map, style);
       })
       .then(map => {
         debug(`Map ${mapId} loaded.`);
+        map.finalizeLoad();
         this._mapLoaded$.next(map);
         return map;
       })
@@ -97,6 +105,47 @@ export class MapService {
    */
   loadDatasetsInGroup(groupId: string): Observable<ITomboloDataset[]> {
     return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
+  }
+
+  /**
+   * Load a dataset
+   *
+   * @returns {Promise<IDataset[]>}
+   */
+  loadDataset(datasetId: string): Observable<ITomboloDataset> {
+    return this.http.get<ITomboloDataset>(`${environment.apiEndpoint}/datasets/${datasetId}`);
+  }
+
+  /**
+   * Load (and cache) basemaps
+   * @returns {Observable<IBasemap[]>}
+   */
+  loadBasemaps(): Observable<IBasemap[]> {
+
+    // Cache basemaps
+    if (!this._basemaps$) {
+      this._basemaps$ = this.http.get<IBasemap[]>(`${environment.apiEndpoint}/basemaps`)
+        .publishReplay(1)
+        .refCount();
+    }
+
+    return this._basemaps$;
+  }
+
+  /**
+   * Load (and cache) palettes
+   * @returns {Observable<IPalette[]>}
+   */
+  loadPalettes(): Observable<IPalette[]> {
+
+    // Cache palettes
+    if (!this._palettes$) {
+      this._palettes$ = this.http.get<IPalette[]>(`${environment.apiEndpoint}/palettes`)
+        .publishReplay(1)
+        .refCount();
+    }
+
+    return this._palettes$;
   }
 
   /**
@@ -181,14 +230,16 @@ export class MapService {
    * @param {TomboloMapboxMap} map
    * @param {TomboloMapStyle} style
    */
-  private setStyleAndWait(map: TomboloMapboxMap, style: TomboloMapStyle): Promise<TomboloMapboxMap> {
+  private setStyleAndWait(map: TomboloMapboxMap, style: IStyle): Promise<TomboloMapboxMap> {
     return new Promise((resolve) => {
       map.once('style.load', () => {
         debug('Style loaded');
         resolve(map);
       });
 
-      map.setStyle(style, {diff: false});
+      // Workaround for missing options parameter in @types/mapbox
+      const untypedSetStyle: any = map.setStyle.bind(map);
+      untypedSetStyle(style, {diff: false});
     });
   }
 

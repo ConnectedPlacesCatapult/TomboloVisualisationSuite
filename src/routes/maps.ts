@@ -3,12 +3,12 @@ import * as config from 'config';
 import {Container} from 'typedi';
 import {LoggerService} from '../lib/logger';
 import {TomboloMap} from '../db/models/TomboloMap';
-import {StyleGenerator} from '../lib/style-generator';
+import {StyleGeneratorService} from '../lib/style-generator-service';
 import {MapGroup} from '../db/models/MapGroup';
 import {isAuthenticated} from '../lib/utils';
 
 const logger = Container.get(LoggerService);
-const styleGenerator = Container.get(StyleGenerator);
+const styleGeneratorService = Container.get(StyleGeneratorService);
 const router = express.Router();
 
 // Tile server config options
@@ -118,13 +118,14 @@ router.get('/:mapId/style.json', async (req, res, next) => {
       return next({status: 404, message: 'Map not found'});
     }
 
-    res.json(styleGenerator.generateMapStyle(map, baseUrl + '/tiles/'));
+    res.json(styleGeneratorService.generateMapStyle(map, baseUrl + '/tiles/'));
   }
   catch (e) {
     logger.error(e);
     next(e);
   }
 });
+
 
 ////////////////
 // Route helpers

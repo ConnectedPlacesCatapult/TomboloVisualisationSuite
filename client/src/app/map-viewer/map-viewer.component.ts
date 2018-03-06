@@ -7,7 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Style} from 'mapbox-gl';
 import {MapService} from '../services/map-service/map.service';
-import {TomboloMapboxMap, TomboloMapStyle} from '../mapbox/tombolo-mapbox-map';
+import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {Angulartics2} from 'angulartics2';
 import {IMapGroup} from '../../../../src/shared/IMapGroup';
 import {GeosearchItem} from './geosearch/geosearch.service';

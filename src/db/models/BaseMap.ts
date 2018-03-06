@@ -1,18 +1,19 @@
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import * as sequelize from 'sequelize';
 import {literal} from 'sequelize';
+import {IBasemap} from '../../shared/IBasemap';
+import {IStyle} from '../../shared/IStyle';
 
 @Table({
   tableName: 'base_maps',
   timestamps: true,
   version: true
 })
-export class BaseMap extends Model<BaseMap> {
+export class BaseMap extends Model<BaseMap> implements IBasemap {
 
   @Column({
-    type: DataType.UUID,
-    primaryKey: true,
-    defaultValue: sequelize.literal('uuid_generate_v4()')
+    type: DataType.TEXT,
+    primaryKey: true
   })
   id: string;
 
@@ -38,7 +39,7 @@ export class BaseMap extends Model<BaseMap> {
     type: DataType.JSON,
     allowNull: true
   })
-  style: object;
+  style: IStyle;
 
   static getDefault() {
     return BaseMap.findOne<BaseMap>({where: { isDefault: true} as any});
