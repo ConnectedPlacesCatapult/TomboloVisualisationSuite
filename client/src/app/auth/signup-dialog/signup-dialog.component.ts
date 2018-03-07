@@ -49,7 +49,7 @@ export class SignupDialogComponent implements OnInit {
   }
 
   close() {
-    this.router.navigate([{outlets: {loginBox: null, rightBar: null}}]);
+    this.router.navigate([{outlets: {loginBox: null}}]);
   }
 
   signup() {

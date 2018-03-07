@@ -5,7 +5,7 @@
   <geosearch-component (selectItem)="geosearchSelected($event)"></geosearch-component>
 
   <mat-accordion multi="false" displayMode="flat">
-    <mat-expansion-panel *ngFor="let i = index; let group of mapGroups$ | async" [expanded]="i == 0">
+    <mat-expansion-panel *ngFor="let i = index; let group of mapGroups$ | async" [expanded]="i == expandedSection">
       <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
         {{group.name}}
       </mat-expansion-panel-header>

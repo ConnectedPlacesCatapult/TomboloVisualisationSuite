@@ -8,6 +8,11 @@ import {TomboloMapLayer} from './TomboloMapLayer';
 import {Palette} from './Palette';
 import {MapGroup} from './MapGroup';
 import {ITomboloMap} from '../../shared/ITomboloMap';
+import {IMapDefinition} from '../../shared/IMapDefinition';
+import {LoggerService} from '../../lib/logger';
+import {Container} from 'typedi';
+
+const logger = Container.get(LoggerService);
 
 @Table({
   tableName: 'maps',
@@ -120,5 +125,69 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
   @BelongsTo(() => BaseMap, {onDelete: 'SET NULL'})
   basemap: BaseMap;
+
+
+  static async saveMap(mapDefinition: IMapDefinition): Promise<TomboloMap> {
+    try {
+
+      // Could do an upsert here but Sequelize doesn't update version
+      let [map, created] = await this.findOrCreate<TomboloMap>({
+        where: {id: mapDefinition.id},
+        defaults: mapDefinition
+      });
+
+      if (!created) {
+        logger.debug(`Updating map ${map.id}`);
+        await map.update(mapDefinition, {
+          fields: ['name', 'description', 'recipe', 'isPrivate', 'zoom', 'center', 'basemapDetailLevel', 'basemapId']
+        });
+      }
+      else {
+        logger.debug(`Created map ${map.id}`);
+      }
+
+      const mapLayers: TomboloMapLayer[] = await map.$get('layers') as TomboloMapLayer[];
+
+      // Update existing layers and insert new layers
+      const updatesAndInserts = mapDefinition.layers.map(defLayer => {
+        const mapLayer = mapLayers.find(mapLayer => defLayer.originalLayerId === mapLayer.layerId);
+
+        if (mapLayer) {
+          logger.debug(`Updating map layer ${mapLayer.layerId}`);
+          return mapLayer.update({...defLayer, paletteId: defLayer.palette.id});
+        }
+        else {
+          logger.debug(`Creating new map layer ${defLayer.originalLayerId}`);
+          return TomboloMapLayer.create<TomboloMapLayer>({
+            ...defLayer,
+            layerId: defLayer.originalLayerId,
+            mapId: map.id,
+            paletteId: defLayer.palette.id
+          });
+        }
+      });
+
+      await Promise.all(updatesAndInserts);
+
+      // Remove layers that have been deleted
+      const deletions = mapLayers.map(mapLayer => {
+        const found = mapDefinition.layers.find(defLayer => defLayer.originalLayerId === mapLayer.layerId);
+        if (found) {
+          return Promise.resolve();
+        }
+        else {
+          logger.debug(`Deleting map layer ${mapLayer.layerId}`);
+          return mapLayer.destroy();
+        }
+      });
+
+      await Promise.all(deletions);
+
+      return map;
+    }
+    catch (e) {
+      throw e;
+    }
+  }
 
 }

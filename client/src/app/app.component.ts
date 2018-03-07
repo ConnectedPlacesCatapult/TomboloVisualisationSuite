@@ -48,6 +48,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   showHover = true;
   minZoomWarning: boolean = false;
 
+  private _subs: Subscription[] = [];
+  private _mapLoaded = false;
+
   constructor(private router: Router,
               private mapRegistry: MapRegistry,
               private location: Location,
@@ -64,21 +67,26 @@ export class AppComponent implements OnInit, AfterViewInit {
     debug(`App loaded - environment = ${environment.name} `);
 
     // Automatically open and close right bar depending on router state
-    this.routerEventSubscription = this.router.events.filter(event => event instanceof NavigationEnd)
+    this._subs.push(this.router.events.filter(event => event instanceof NavigationEnd)
       .subscribe((event: NavigationEnd) => {
         const routeChildren = this.router.routerState.snapshot.root.children;
         this.rightBarOpen = routeChildren.findIndex(child => child.outlet === 'rightBar') > -1;
-      });
+      }));
 
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.positionMapFromURLParams(params);
-    });
+    this._subs.push(this.activatedRoute.queryParams.subscribe(params => {
+      //this.positionMapFromURLParams(params);
+    }));
 
-    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+    this._subs.push(this.mapService.mapLoading$().subscribe(() => {
+      this._mapLoaded = false;
+    }));
+
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       this.mapLoadedHandler(map);
-    });
+      this._mapLoaded = true;
+    }));
 
-    this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
+    this._subs.push(this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
       const popupContent = this.getTooltipInnerHtml(tooltipData);
       this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
         const popup = new MapboxPopup()
@@ -87,10 +95,11 @@ export class AppComponent implements OnInit, AfterViewInit {
           .addTo(map);
         popup.on('close', () => this.tooltipRenderService.componentInstance.destroy() );
       });
-    });
+    }));
   }
 
   ngOnDestroy() {
+    this._subs.forEach(sub => sub.unsubscribe());
     this.routerEventSubscription.unsubscribe();
     this.mapServiceSubscription.unsubscribe();
   }
@@ -133,12 +142,14 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     // Fly to default location if not set in URL
     const url = new URL(window.location.href);
-    let zoom = url.searchParams.get('zoom');
 
-    if (!zoom) {
-      const style = map.getStyle();
-      map.flyTo({center: style.center, zoom: style.zoom, bearing: style.bearing, pitch: style.pitch});
-    }
+    debug('url params', url.searchParams);
+
+    const zoom = url.searchParams.get('zoom') ? +url.searchParams.get('zoom') : map.defaultZoom || map.getZoom();
+    const lng = url.searchParams.get('lng') ? +url.searchParams.get('lng') : map.defaultCenter[0] || map.getCenter().lng;
+    const lat = url.searchParams.get('lat') ? +url.searchParams.get('lat') : map.defaultCenter[1] || map.getCenter().lat;
+
+    map.flyTo({center: [lng, lat], zoom});
 
     this.minZoomWarning = map.getZoom() < map.dataMinZoom;
   }
@@ -150,14 +161,18 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   private setURLFromMap(map: MapboxMap) {
 
+    if (!this._mapLoaded) return;
+
     debug('Updating URL zoom, lng and lat');
 
-    const url = new URL(window.location.href);
-    url.searchParams.set('zoom', map.getZoom().toFixed(1));
-    url.searchParams.set('lng', map.getCenter().lng.toFixed(5));
-    url.searchParams.set('lat', map.getCenter().lat.toFixed(5));
-
-    this.location.replaceState(url.pathname, url.search);
+    this.router.navigate([], {
+      queryParamsHandling: 'merge',
+      queryParams: {
+        zoom: map.getZoom().toFixed(1),
+        lng: map.getCenter().lng.toFixed(5),
+        lat: map.getCenter().lat.toFixed(5)
+      }
+    })
   }
 
   private positionMapFromURLParams(params): boolean {

@@ -6,6 +6,7 @@ import {TomboloMap} from '../db/models/TomboloMap';
 import {StyleGeneratorService} from '../lib/style-generator-service';
 import {MapGroup} from '../db/models/MapGroup';
 import {isAuthenticated} from '../lib/utils';
+import {IMapDefinition} from '../shared/IMapDefinition';
 
 const logger = Container.get(LoggerService);
 const styleGeneratorService = Container.get(StyleGeneratorService);
@@ -46,6 +47,25 @@ router.get('/', async (req, res, next) => {
     next(e);
   }
 });
+
+// Save a map
+router.put('/:mapId', isAuthenticated, async (req, res, next) => {
+
+  try {
+    const mapDefinition = req.body as IMapDefinition;
+
+    await TomboloMap.saveMap(mapDefinition);
+
+    // Generate style from updated map and respond
+    const map = await TomboloMap.scope('full').findById<TomboloMap>(req.params.mapId);
+    res.json(styleGeneratorService.generateMapStyle(map, baseUrl + '/tiles/'));
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
 
 // Delete a map - user must be logged in and own map
 router.delete('/:mapId', isAuthenticated, async (req, res, next) => {
