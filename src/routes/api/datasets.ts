@@ -19,6 +19,29 @@ const db = Container.get(DB);
 const baseUrl = config.get('server.baseUrl');
 
 /**
+ * Query datasets by userId or full-text search
+ */
+router.get('/', async (req, res, next) => {
+  try {
+    if (req.query.userId) {
+      res.json(await Dataset.findByUserId(req.query.userId));
+    }
+    else if (req.query.query) {
+      res.json(await Dataset.findByFullTextQuery(req.query.query));
+    }
+    else {
+      next({status: 400, message: 'Must specify userId or query parameter'});
+    }
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+///// Dataset groups
+
+/**
  * Load all dataset groups and contained datasets
  */
 router.get('/groups', async (req, res, next) => {
@@ -46,26 +69,7 @@ router.get('/groups/:groupId', async (req, res, next) => {
   }
 });
 
-/**
- * Query datasets by userId or full-text search
- */
-router.get('/', async (req, res, next) => {
-  try {
-    if (req.query.userId) {
-      res.json(await Dataset.findByUserId(req.query.userId));
-    }
-    else if (req.query.query) {
-      res.json(await Dataset.findByFullTextQuery(req.query.query));
-    }
-    else {
-      next({status: 400, message: 'Must specify userId or query parameter'});
-    }
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
+////////// Dataset-specific routes
 
 /**
  * Load a dataset by ID
@@ -79,28 +83,6 @@ router.get('/:datasetId', async (req, res, next) => {
     }
 
     res.json(dataset);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
-/**
- * Load maps that are referencing the specified dataset
- */
-router.get('/:datasetId/maps', async (req, res, next) => {
-  try {
-    const maps = await TomboloMap.findAll<TomboloMap>({
-      include: [{
-        model: TomboloMapLayer,
-        where: {
-          datasetId: req.params.datasetId
-        }
-      }]
-    });
-
-    res.json(maps);
   }
   catch (e) {
     logger.error(e);
@@ -139,5 +121,29 @@ router.delete('/:datasetId', isAuthenticated, async (req, res, next) => {
     next(e);
   }
 });
+
+/**
+ * Load maps that are referencing the specified dataset
+ */
+router.get('/:datasetId/maps', async (req, res, next) => {
+  try {
+    const maps = await TomboloMap.findAll<TomboloMap>({
+      include: [{
+        model: TomboloMapLayer,
+        where: {
+          datasetId: req.params.datasetId
+        }
+      }]
+    });
+
+    res.json(maps);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+
 
 export default router;

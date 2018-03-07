@@ -66,6 +66,10 @@ export class DatasetsDialog implements OnInit {
   }
 
   close(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({result: false});
+  }
+
+  addToMap(): void {
+    this.dialogRef.close({result: true, dataset: this.selectedDataset});
   }
 }
