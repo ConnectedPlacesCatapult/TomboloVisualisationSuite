@@ -72,6 +72,8 @@ export class MapViewerComponent implements OnInit {
 
       let route;
 
+      debug()
+
       if (map.id) {
         route = ['/', {outlets: {
           primary: ['edit', map.id],
@@ -86,7 +88,7 @@ export class MapViewerComponent implements OnInit {
       }
 
       this.router.navigate(route,{
-        preserveQueryParams: true
+        queryParamsHandling: 'merge'
       });
     });
   }

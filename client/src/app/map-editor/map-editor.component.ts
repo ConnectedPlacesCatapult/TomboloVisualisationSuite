@@ -167,7 +167,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
     dialogRef.afterClosed().filter(d => !!d).subscribe((context: UploadDialogContext) => {
 
-      
+      // Cancel all uploads
       this.uploadInput.next({type: 'cancelAll'});
 
       if (context.openInMap) {

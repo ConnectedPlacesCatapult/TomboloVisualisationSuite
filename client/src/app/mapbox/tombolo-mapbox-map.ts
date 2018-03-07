@@ -5,9 +5,12 @@ import {Subject} from 'rxjs/Subject';
 import {IMapDefinition} from '../../../../src/shared/IMapDefinition';
 import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
 import {IMapLayer} from '../../../../src/shared/IMapLayer';
-import {IBasemapDetailMetadata, IStyle, IStyleMetadata} from '../../../../src/shared/IStyle';
+import {IBasemapDetailMetadata, IStyleMetadata} from '../../../../src/shared/IStyle';
 import {ITomboloDatasetAttribute} from '../../../../src/shared/ITomboloDatasetAttribute';
-import {LABEL_LAYER_PREFIX, StyleGenerator} from '../../../../src/shared/style-generator/style-generator';
+import {
+  DATA_LAYER_PREFIX, LABEL_LAYER_PREFIX,
+  StyleGenerator
+} from '../../../../src/shared/style-generator/style-generator';
 import {IPalette} from '../../../../src/shared/IPalette';
 import {MapboxOptions, Layer as MapboxLayer, Style as MapboxStyle} from 'mapbox-gl';
 import 'rxjs/add/operator/debounceTime';
@@ -15,6 +18,7 @@ import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/auditTime';
 import {IBasemap} from '../../../../src/shared/IBasemap';
 import {ArgumentOutOfRangeError} from 'rxjs/Rx';
+import * as uuid from 'uuid/v4';
 
 const debug = Debug('tombolo:mapboxgl');
 
@@ -58,6 +62,11 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return this._modified$.asObservable();
   }
 
+  setModified(modified = true): void {
+    this._modified = modified;
+    this._modified$.next(modified);
+  }
+
   beginLoad() {
     this._metadata = null;
     this._mapDefinition = null;
@@ -85,6 +94,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
   get isModified(): boolean {
     return this._modified;
+  }
+
+  get mapDefinition(): IMapDefinition {
+    return this._mapDefinition;
   }
 
   get id(): string {
@@ -122,10 +135,36 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
+  get defaultZoom(): number {
+    return (this._mapDefinition) ? this._mapDefinition.zoom : null;
+  }
+
+  set defaultZoom(zoom: number) {
+    this._mapDefinition.zoom = zoom;
+    this.setModified();
+  }
+
+  get defaultCenter(): number[] {
+    return (this._mapDefinition) ? this._mapDefinition.center : null;
+  }
+
+  set defaultCenter(center: number[]) {
+    this._mapDefinition.center = center;
+    this.setModified();
+  }
+
+  get ownerId(): string {
+    return (this._mapDefinition) ? this._mapDefinition.ownerId : null;
+  }
+
+  set ownerId(val: string) {
+    this._mapDefinition.ownerId = val;
+    this.setModified();
+  }
+
   get datasets(): ITomboloDataset[] {
     return (this._mapDefinition) ? this._mapDefinition.datasets : [];
   }
-
 
   get dataLayers(): IMapLayer[] {
     return (this._mapDefinition) ? this._mapDefinition.layers : [];
@@ -328,15 +367,14 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
-  setBasemapDetail(level: number): void {
-    const basemapDetail = this.basemapDetail;
+  setBasemapDetail(level: number, setModified = true): void {
 
-    if (!basemapDetail) return;
+    if (!this.basemapDetail) return;
 
-    Object.keys(basemapDetail.layers).forEach(key => {
+    Object.keys(this.basemapDetail.layers).forEach(key => {
       const layer = this.getLayer(key);
       if (!layer) throw new Error(`Unknown layer ${key}`);
-      const opacity = (basemapDetail.layers[key] <= level) ? 1 : 0;
+      const opacity = (this.basemapDetail.layers[key] <= level) ? 1 : 0;
 
       switch (layer.type) {
         case 'line':
@@ -354,7 +392,9 @@ export class TomboloMapboxMap extends EmuMapboxMap {
       }
     });
 
-    this.setModified();
+    this._mapDefinition.basemapDetailLevel = level;
+
+    if (setModified) this.setModified();
   }
 
   setBasemap(basemap: IBasemap): void {
@@ -497,9 +537,23 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return true;
   }
 
-  private setModified(): void {
-    this._modified = true;
-    this._modified$.next(true);
+  /**
+   * Turn this map into a copy for the specified user
+   *
+   * This simply sets new uuids for the map and its layers and changes the ownerID
+   * A new map will be created by the backend when it is saved.
+   *
+   * @param {string} userId
+   */
+  copyMap(userId: string) {
+    this._mapDefinition.id = uuid();
+    this._mapDefinition.ownerId = userId;
+
+    const layersCopy = [...this.dataLayers];
+    layersCopy.forEach(layer => {
+      layer.originalLayerId = uuid();
+      layer.layerId = DATA_LAYER_PREFIX + layer.originalLayerId;
+    });
   }
 
   private regenerateLayerPaintStyle(layer: IMapLayer): void {

@@ -6,7 +6,7 @@ import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {NotificationService} from '../dialogs/notification.service';
-import {UserBase} from '../../../../src/shared/user-base';
+import {IUser} from '../../../../src/shared/IUser';
 import {Router} from '@angular/router';
 
 const debug = Debug('tombolo:AuthService');
@@ -48,6 +48,7 @@ export class AuthService {
     return this.http.post<User>(`${environment.apiEndpoint}/auth/login`, body.toString(), options)
       .map(u => {
         debug(`Logged in user`, u);
+        this._user = u;
         this._user$.next(u);
         return u;
       })
@@ -137,10 +138,17 @@ export class AuthService {
     return this.http.get<User>(`${environment.apiEndpoint}/auth/me`)
       .map(user => {
         debug(`Loaded user: ${user.email}`);
-        this._user = user;
-        this._user$.next(user);
 
-        return user;
+        this._user = null;
+
+        if (user) {
+          // Convert to User instance to give access to instance methods
+          this._user = new User(user);
+        }
+
+        this._user$.next(this._user);
+
+        return this._user;
       })
       .catch(e => {
         this._user = null;

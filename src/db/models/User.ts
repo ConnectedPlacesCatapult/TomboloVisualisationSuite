@@ -1,14 +1,14 @@
 import {Column, DataType, HasMany, Model, Table, Unique} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
 import * as sequelize from 'sequelize';
-import {UserBase} from '../../shared/user-base';
+import {IUser} from '../../shared/IUser';
 
 @Table({
   tableName: 'users',
   timestamps: true,
   version: true
 })
-export class User extends Model<User> implements UserBase {
+export class User extends Model<User> implements IUser {
 
   @Column({
     type: DataType.UUID,
@@ -50,6 +50,11 @@ export class User extends Model<User> implements UserBase {
   twitterId: string;
 
   @Column({
+    type: DataType.ARRAY(DataType.TEXT),
+  })
+  roles: string[];
+
+  @Column({
     type: DataType.BOOLEAN,
     defaultValue: false
   })
@@ -82,7 +87,8 @@ export class User extends Model<User> implements UserBase {
     return {
       id: this.id,
       email: this.email,
-      name: this.name
+      name: this.name,
+      roles: this.roles
     };
   }
 }

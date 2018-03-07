@@ -80,6 +80,10 @@ export class MapService {
       .catch(e => this.handleError(e));
   }
 
+  saveMap(map: TomboloMapboxMap): Observable<IStyle> {
+    return this.http.put<IStyle>(`/maps/${map.id}`, map.mapDefinition);
+  }
+
   /**
    * Load maps groups and nested maps for populating left-hand navigation panel
    *

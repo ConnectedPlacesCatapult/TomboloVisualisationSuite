@@ -7,9 +7,12 @@ import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {BookmarkService} from '../services/bookmark-service/bookmark.service';
 import {DialogsService} from '../dialogs/dialogs.service';
 import {Location} from '@angular/common';
-import {MatDialog} from '@angular/material';
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../auth/auth.service';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/mergeMap';
+import {NotificationService} from '../dialogs/notification.service';
+import {IStyle} from '../../../../src/shared/IStyle';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -33,7 +36,8 @@ export class MapControlsComponent implements OnInit {
     private location: Location,
     private authService: AuthService,
     private mapService: MapService,
-    private router: Router) {}
+    private router: Router,
+    private notificationService: NotificationService) {}
 
   private _subs: Subscription[] = [];
 
@@ -41,7 +45,7 @@ export class MapControlsComponent implements OnInit {
 
     // Ensure basemap detail is applied whenever a map is loaded
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
-      map.setBasemapDetail(this.basemapDetailSliderValue);
+      map.setBasemapDetail(this.basemapDetailSliderValue, false);
       this.updateURLforBasemapDetail();
 
       // Subscribe to map-modified notification
@@ -100,10 +104,69 @@ export class MapControlsComponent implements OnInit {
     return this.mode === 'view' && this.mapId;
   }
 
-  private updateURLforBasemapDetail() {
-    const url = new URL(window.location.href);
-    url.searchParams.set('basemapDetail', this.basemapDetailSliderValue.toString());
-    this.location.replaceState(url.pathname, url.search);
+  saveMap() {
+    const user = this.authService.getUserSync();
+
+    if (!user) {
+      this.dialogsService
+        .confirm('Login', 'You must be logged in to save a map.', 'Go to login')
+        .filter(ok => ok)
+        .subscribe(() => {
+          this.router.navigate([{outlets: {loginBox: 'login'}}]);
+        });
+    }
+    else {
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+
+        map.defaultCenter = [map.getCenter().lng, map.getCenter().lat];
+        map.defaultZoom = map.getZoom();
+
+        if (user.hasRole('editor') || user.id === map.ownerId) {
+          this.internalSaveMap(map).subscribe();
+        }
+        else {
+          // Map needs to be copied
+          // Editors can save any map. For normal users, a copy is made if the user doesn't
+          // own the map.
+          this.dialogsService
+            .confirm('Save as Copy', `
+                    You are editing a shared map.<p>
+                    A copy wil be made and saved under your personal account.`, 'Save as Copy')
+            .filter(ok => ok)
+            .mergeMap(() => {
+              // Copy and save map
+              map.copyMap(user.id);
+              return this.internalSaveMap(map);
+            })
+            .subscribe(() => {
+              // Navigate back to editor with the new copied map
+              this.router.navigate(['/', {
+                outlets: {
+                  primary: ['edit', map.id],
+                  loginBar: null,
+                  rightBar: ['editpanel']
+                }
+              }]);
+            });
+        }
+      });
+    }
   }
 
+  private updateURLforBasemapDetail() {
+    this.router.navigate([], {
+      queryParamsHandling: 'merge',
+      queryParams: {basemapDetail: this.basemapDetailSliderValue}
+    })
+  }
+
+  private internalSaveMap(map: TomboloMapboxMap): Observable<IStyle> {
+    debug(`Saving map ${map.id} for user ${map.ownerId}`);
+
+    return this.mapService.saveMap(map)
+      .do(() => {
+        map.setModified(false);
+        this.notificationService.info('Map saved');
+      });
+  }
 }
