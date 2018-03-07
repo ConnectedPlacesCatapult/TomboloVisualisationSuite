@@ -57,10 +57,12 @@ export class EditPanelComponent implements OnInit, DoCheck {
 
     this.mapService.loadBasemaps().subscribe(basemaps => {
       this.basemaps = basemaps;
+      this.cd.markForCheck();
     });
 
     this.mapService.loadPalettes().subscribe(palettes => {
       this.palettes = palettes;
+      this.cd.markForCheck();
     });
 
     this._subs.push(this.mapService.mapLoading$().subscribe(() => {
@@ -68,6 +70,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
       // Clear map so that child components don't try to access map
       // while it is loading
       this.map = null;
+      this.cd.markForCheck();
     }));
 
     // Update when map loaded
