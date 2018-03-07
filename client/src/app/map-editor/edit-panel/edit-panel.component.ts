@@ -74,6 +74,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       debug('Edit panel got map', map.id);
       this.map = map;
+      this.cd.markForCheck();
     }));
 
     this._subs.push(this.dragulaService.drop.subscribe((value) => {
