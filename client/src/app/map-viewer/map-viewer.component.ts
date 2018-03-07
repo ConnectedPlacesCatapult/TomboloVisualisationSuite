@@ -30,6 +30,8 @@ export class MapViewerComponent implements OnInit {
 
   mapGroups$: Observable<IMapGroup[]> = null;
 
+  expandedSection = 0;
+
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
               private mapService: MapService,
@@ -56,9 +58,7 @@ export class MapViewerComponent implements OnInit {
     debug('mapID:', mapID);
     if (!mapID) return;
 
-    this.mapService.loadMap(mapID).then(map => {
-      //map.setBasemapDetail(this.basemapDetailSliderValue);
-    });
+    this.mapService.loadMap(mapID);
   }
 
   geosearchSelected(item: GeosearchItem) {
@@ -72,8 +72,6 @@ export class MapViewerComponent implements OnInit {
 
       let route;
 
-      debug()
-
       if (map.id) {
         route = ['/', {outlets: {
           primary: ['edit', map.id],
@@ -84,7 +82,7 @@ export class MapViewerComponent implements OnInit {
         route = ['/', {outlets: {
           primary: ['edit'],
           loginBar: null,
-          rightBar: ['editpanel']}}]
+          rightBar: ['editinfo']}}]
       }
 
       this.router.navigate(route,{

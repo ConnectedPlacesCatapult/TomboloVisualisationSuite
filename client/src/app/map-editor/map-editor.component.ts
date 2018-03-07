@@ -98,7 +98,33 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   backToView() {
-    this.router.navigate(['/', {outlets: {primary: 'view', rightBar: 'appinfo'}}]);
+
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+      let route;
+
+      if (map.id) {
+        route = ['/', {
+          outlets: {
+            primary: ['view', map.id],
+            loginBar: null,
+            rightBar: ['mapinfo']
+          }
+        }]
+      }
+      else {
+        route = ['/', {
+          outlets: {
+            primary: ['edit'],
+            loginBar: null,
+            rightBar: ['appinfo']
+          }
+        }]
+      }
+
+      this.router.navigate(route, {
+        queryParamsHandling: 'merge'
+      });
+    });
   }
 
   handleUploadOutput(output: UploadOutput): void {

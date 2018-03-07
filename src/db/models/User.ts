@@ -51,6 +51,7 @@ export class User extends Model<User> implements IUser {
 
   @Column({
     type: DataType.ARRAY(DataType.TEXT),
+    defaultValue: []
   })
   roles: string[];
 

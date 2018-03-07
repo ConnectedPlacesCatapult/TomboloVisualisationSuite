@@ -28,6 +28,8 @@ export class MapControlsComponent implements OnInit {
   mode: 'edit' | 'view' = 'view';
   mapModified = false;
 
+  private _saving = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private mapRegistry: MapRegistry,
@@ -87,7 +89,27 @@ export class MapControlsComponent implements OnInit {
   }
 
   editMap(): void {
-    this.router.navigate(['/', {outlets: {primary: ['edit', this.mapId], rightBar: 'editpanel'}}]);
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+
+      let route;
+
+      if (map.id) {
+        route = ['/', {outlets: {
+          primary: ['edit', map.id],
+          loginBar: null,
+          rightBar: ['editpanel']}}]
+      }
+      else {
+        route = ['/', {outlets: {
+          primary: ['edit'],
+          loginBar: null,
+          rightBar: ['editinfo']}}]
+      }
+
+      this.router.navigate(route,{
+        queryParamsHandling: 'merge'
+      });
+    });
   }
 
   showRecipeDialog(): void {
@@ -97,11 +119,15 @@ export class MapControlsComponent implements OnInit {
   }
 
   saveButtonEnabled(): boolean {
-    return this.mapModified;
+    return this.mapModified && !this._saving;
   }
 
   editButtonEnabled(): boolean {
     return this.mode === 'view' && this.mapId;
+  }
+
+  shareButtonEnabled(): boolean {
+    return this.mapId && this.mode === 'view';
   }
 
   saveMap() {
@@ -163,10 +189,17 @@ export class MapControlsComponent implements OnInit {
   private internalSaveMap(map: TomboloMapboxMap): Observable<IStyle> {
     debug(`Saving map ${map.id} for user ${map.ownerId}`);
 
+    this._saving = true;
+
     return this.mapService.saveMap(map)
       .do(() => {
         map.setModified(false);
         this.notificationService.info('Map saved');
+        this._saving = false;
+      })
+      .catch(e => {
+        this._saving = false;
+        return Observable.throw(e);
       });
   }
 }
