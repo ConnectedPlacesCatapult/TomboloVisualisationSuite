@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, OnInit, DoCheck, ChangeDetectorRef} from '@angular/core';
 import * as Debug from 'debug';
 import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
 import {MapService} from '../../services/map-service/map.service';
@@ -16,19 +16,22 @@ const debug = Debug('tombolo:map-edit-panel');
 @Component({
   selector: 'map-info',
   templateUrl: './edit-panel.html',
-  styleUrls: ['./edit-panel.scss']
+  styleUrls: ['./edit-panel.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditPanelComponent implements OnInit {
+export class EditPanelComponent implements OnInit, DoCheck {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,
               private dialogsService: DialogsService,
-              private dragulaService: DragulaService) {}
+              private dragulaService: DragulaService,
+              private cd: ChangeDetectorRef) {}
 
   _subs: Subscription[] = [];
   map: TomboloMapboxMap;
+  layers: IMapLayer[];
   basemaps: IBasemap[];
   palettes: IPalette[];
 
@@ -46,6 +49,7 @@ export class EditPanelComponent implements OnInit {
       debug('initial settting of map', map.mapLoaded);
       if (map.mapLoaded) {
         this.map = map;
+        this.cd.markForCheck();
       }
     });
 
@@ -77,6 +81,15 @@ export class EditPanelComponent implements OnInit {
 
   ngOnDestroy() {
     this._subs.forEach(sub => sub.unsubscribe());
+  }
+
+  // Custom change detection to detect layer changes on map
+  // due to inserts, deletions etc.
+  ngDoCheck() {
+    if (this.map && this.map.dataLayers !== this.layers) {
+      this.layers = this.map.dataLayers;
+      this.cd.markForCheck();
+    }
   }
 
   toggleLayerVisibility(layer: IMapLayer) {
@@ -122,5 +135,10 @@ export class EditPanelComponent implements OnInit {
     const basemap = this.basemaps.find(b => b.id === this.map.basemapId);
 
     this.map.moveDataLayer(fromIndex, toIndex, basemap);
+  }
+
+  // Track function for ngFor - optimises insertions and deletions from layers array
+  trackLayerById(index, layer: IMapLayer) {
+    return layer.layerId;
   }
 }

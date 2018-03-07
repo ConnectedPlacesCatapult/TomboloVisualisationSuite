@@ -34,8 +34,10 @@ export class StyleGenerator {
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};
 
-    // Create and insert map layers
-    this.mapDefinition.layers.forEach(layer => {
+    // Create and insert map layers - done in reverse order
+    // first layer in array is top-most on map
+    const reversedLayers = [...this.mapDefinition.layers].reverse();
+    reversedLayers.forEach(layer => {
       const layerStyle = this.generateMapLayer(layer);
       const insertionPoint = insertionPoints[layer.layerType];
       this.insertMapLayer(insertionPoint, style, layerStyle);
@@ -47,7 +49,7 @@ export class StyleGenerator {
       throw new Error(`No label layer style for basemap ${basemap.name}`);
     }
     else {
-      this.mapDefinition.layers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
+      reversedLayers.filter(layer => layer.labelAttribute !== null).forEach(layer => {
         const labelLayerStyle = this.generateLabelLayer(layer, labelAttributeStyle);
         const insertionPoint = insertionPoints['label'];
         this.insertMapLayer(insertionPoint, style, labelLayerStyle);

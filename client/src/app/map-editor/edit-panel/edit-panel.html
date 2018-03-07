@@ -9,7 +9,7 @@
 
     <mat-accordion multi="true" displayMode="flat" [dragula]="'dragdrop'" [dragulaOptions]="dragulaOptions">
       <!-- Map layers -->
-      <mat-expansion-panel [id]="layer.layerId" *ngFor="let layer of map.dataLayers.slice().reverse()" expanded="true">
+      <mat-expansion-panel [id]="layer.layerId" *ngFor="let layer of layers; trackBy: trackLayerById" expanded="true">
         <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
           <mat-icon svgIcon="grab-handle" class="grab-handle"></mat-icon>
           <mat-icon [svgIcon]="typeIconForLayer(layer)"></mat-icon>

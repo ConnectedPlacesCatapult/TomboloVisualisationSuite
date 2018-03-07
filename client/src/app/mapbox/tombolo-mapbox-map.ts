@@ -357,6 +357,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   setBasemap(basemap: IBasemap): void {
+    debug(`Setting basemap ${basemap.id}`);
+
     this._mapDefinition.basemapId = basemap.id;
     this._regenerateMap$.next(basemap);
 
@@ -364,6 +366,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   removeDataLayer(layerId: string): void {
+    debug(`Removing data layer ${layerId}`);
+
     const layer = this.getDataLayer(layerId);
     if (!layer) throw new Error(`Data layer ${layerId} not found`);
 
@@ -389,8 +393,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   addDataLayer(dataset: ITomboloDataset, basemap: IBasemap, palette: IPalette): void {
-
-    debug('Old style:', this.getStyle());
+    debug(`Addint data layer for dataset ${dataset.id}`);
 
     // Insert dataset in map definition if it's not already referenced
     if (!this.datasets.find(ds => ds.id === dataset.id)) {
@@ -403,7 +406,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
     // Insert the data layer
     let layersCopy = [...this._mapDefinition.layers];
-    layersCopy.push(newDataLayer);
+    layersCopy.unshift(newDataLayer);
     layersCopy.forEach((layer, index) => layer.order = index);
     this._mapDefinition.layers = layersCopy;
 
@@ -414,12 +417,14 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   moveDataLayer(fromIndex: number, toIndex: number, basemap: IBasemap) {
-    debug(`Moving from index ${fromIndex}`);
+    debug(`Moving data layer from index ${fromIndex} to ${toIndex}`);
 
-    const deletedLayers = this.dataLayers.splice(fromIndex, 1);
+    const layersCopy = [...this._mapDefinition.layers];
+    const deletedLayer = layersCopy.splice(fromIndex, 1)[0];
 
-    debug(`Inserting at index ${toIndex}`);
-    this.dataLayers.splice(toIndex, 0, deletedLayers[0]);
+    layersCopy.splice(toIndex, 0, deletedLayer);
+
+    this._mapDefinition.layers = layersCopy;
 
     // Regenerate the map
     this._regenerateMap$.next(basemap);
@@ -448,39 +453,49 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   private debouncedRegeneratePaintStyle(layer: IMapLayer): void {
 
     try {
+      debug('Regenerating paint style');
       const paintStyle = this._styleGenerater.paintStyleForLayer(layer);
       Object.keys(paintStyle).forEach(key => {
         this.setPaintProperty(layer.layerId, key, paintStyle[key]);
       });
     }
     catch (e) {
-      console.error('Style generation error', e);
+      console.error('Style generation error - regenerate paint style', e);
     }
   }
 
   private debouncedRegenerateLabelLayer(layer: IMapLayer): void {
 
-    // Remove old label layer
-    const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
-    const exisitingLabelLayer = this.getLayer(labelLayerId);
-    if (exisitingLabelLayer) {
-      this.removeLayer(labelLayerId);
+    try {
+      debug('Regenerating label layer');
+      // Remove old label layer
+      const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
+      const exisitingLabelLayer = this.getLayer(labelLayerId);
+      if (exisitingLabelLayer) {
+        this.removeLayer(labelLayerId);
+      }
+
+      if (layer.labelAttribute) {
+        // Generate updated layer
+        const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
+
+        // Insert new label layer
+        this.addLayer(labelLayer as MapboxLayer);
+      }
     }
-
-    if (layer.labelAttribute) {
-      // Generate updated layer
-      const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
-
-      debug(labelLayer);
-
-      // Insert new label layer
-      this.addLayer(labelLayer as MapboxLayer);
+    catch (e) {
+      console.error('Style generation error - label layer', e);
     }
   }
 
   private debouncedRegenerateMap(basemap: IBasemap): void {
-    const style = this._styleGenerater.generateMapStyle(basemap);
-    this.setStyle(style as MapboxStyle);
+    try {
+      debug('Regenerating map');
+      const style = this._styleGenerater.generateMapStyle(basemap);
+      this.setStyle(style as MapboxStyle);
+    }
+    catch (e) {
+      console.error('Style generation error - regenerate map', e);
+    }
   }
-
 }

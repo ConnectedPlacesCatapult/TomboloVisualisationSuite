@@ -19,25 +19,6 @@ const db = Container.get(DB);
 const baseUrl = config.get('server.baseUrl');
 
 /**
- * Load a dataset by ID
- */
-router.get('/:datasetId', async (req, res, next) => {
-  try {
-    const dataset = await Dataset.scope('withAttributes').findById<Dataset>(req.params.datasetId);
-
-    if (!dataset) {
-      return next({status: 404, message: 'Dataset not found'});
-    }
-
-    res.json(dataset);
-  }
-  catch (e) {
-    logger.error(e);
-    next(e);
-  }
-});
-
-/**
  * Load all dataset groups and contained datasets
  */
 router.get('/groups', async (req, res, next) => {
@@ -65,7 +46,6 @@ router.get('/groups/:groupId', async (req, res, next) => {
   }
 });
 
-
 /**
  * Query datasets by userId or full-text search
  */
@@ -80,6 +60,25 @@ router.get('/', async (req, res, next) => {
     else {
       next({status: 400, message: 'Must specify userId or query parameter'});
     }
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
+/**
+ * Load a dataset by ID
+ */
+router.get('/:datasetId', async (req, res, next) => {
+  try {
+    const dataset = await Dataset.scope('withAttributes').findById<Dataset>(req.params.datasetId);
+
+    if (!dataset) {
+      return next({status: 404, message: 'Dataset not found'});
+    }
+
+    res.json(dataset);
   }
   catch (e) {
     logger.error(e);
