@@ -49,12 +49,12 @@ export class MapMetadataEditorComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes) {
     // Transfer values to form
-    if (changes.map && changes.map.currentValue) {
-      const val: TomboloMapboxMap = changes.map.currentValue;
+    if (changes.map && this.map) {
+      const map = this.map;
       this.form.setValue({
-        name: val.name,
-        description: val.description,
-        isPrivate: val.isPrivate
+        name: map.name,
+        description: map.description,
+        isPrivate: map.isPrivate
       });
     }
   }

@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, OnInit, DoCheck, ChangeDetectorRef} from '@angular/core';
 import * as Debug from 'debug';
 import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
 import {MapService} from '../../services/map-service/map.service';
@@ -9,26 +9,40 @@ import {IPalette} from '../../../../../src/shared/IPalette';
 import {IBasemap} from '../../../../../src/shared/IBasemap';
 import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 import {DialogsService} from '../../dialogs/dialogs.service';
+import {DragulaService} from 'ng2-dragula';
+import {NotificationService} from '../../dialogs/notification.service';
 
 const debug = Debug('tombolo:map-edit-panel');
 
 @Component({
   selector: 'map-info',
   templateUrl: './edit-panel.html',
-  styleUrls: ['./edit-panel.scss']
+  styleUrls: ['./edit-panel.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditPanelComponent implements OnInit {
+export class EditPanelComponent implements OnInit, DoCheck {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,
-              private dialogsService: DialogsService) {}
+              private dialogsService: DialogsService,
+              private dragulaService: DragulaService,
+              private notificationService: NotificationService,
+              private cd: ChangeDetectorRef) {}
 
   _subs: Subscription[] = [];
   map: TomboloMapboxMap;
+  layers: IMapLayer[];
   basemaps: IBasemap[];
   palettes: IPalette[];
+
+  dragulaOptions = {
+    moves: (el, container, handle) => {
+
+      return handle.closest('.mat-icon.grab-handle') !== null;
+    }
+  };
 
   ngOnInit() {
 
@@ -37,6 +51,7 @@ export class EditPanelComponent implements OnInit {
       debug('initial settting of map', map.mapLoaded);
       if (map.mapLoaded) {
         this.map = map;
+        this.cd.markForCheck();
       }
     });
 
@@ -60,10 +75,23 @@ export class EditPanelComponent implements OnInit {
       debug('Edit panel got map', map.id);
       this.map = map;
     }));
+
+    this._subs.push(this.dragulaService.drop.subscribe((value) => {
+      this.onDropMapLayer(value);
+    }));
   }
 
   ngOnDestroy() {
     this._subs.forEach(sub => sub.unsubscribe());
+  }
+
+  // Custom change detection to detect layer changes on map
+  // due to inserts, deletions etc.
+  ngDoCheck() {
+    if (this.map && this.map.dataLayers !== this.layers) {
+      this.layers = this.map.dataLayers;
+      this.cd.markForCheck();
+    }
   }
 
   toggleLayerVisibility(layer: IMapLayer) {
@@ -94,5 +122,25 @@ export class EditPanelComponent implements OnInit {
       default:
         return 'point';
     }
+  }
+
+  onDropMapLayer(dropPayload) {
+    const droppedId = dropPayload[1].id;
+    const beforeId = dropPayload[4] && dropPayload[4].id;
+
+    const fromIndex = this.map.dataLayers.findIndex(l => l.layerId === droppedId);
+    const toIndex = (beforeId)? this.map.dataLayers.findIndex(l => l.layerId === beforeId) : this.map.dataLayers.length - 1;
+    const basemap = this.basemaps.find(b => b.id === this.map.basemapId);
+
+    const moveAllowed = this.map.moveDataLayer(fromIndex, toIndex, basemap);
+    if (!moveAllowed) {
+      this.dragulaService.find('dragdrop').drake.cancel(true);
+      this.notificationService.info('Polygon layers must be below Line or Point layers.');
+    }
+  }
+
+  // Track function for ngFor - optimises insertions and deletions from layers array
+  trackLayerById(index, layer: IMapLayer) {
+    return layer.layerId;
   }
 }

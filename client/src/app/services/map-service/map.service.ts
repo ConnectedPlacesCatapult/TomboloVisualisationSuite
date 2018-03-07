@@ -108,6 +108,15 @@ export class MapService {
   }
 
   /**
+   * Load a dataset
+   *
+   * @returns {Promise<IDataset[]>}
+   */
+  loadDataset(datasetId: string): Observable<ITomboloDataset> {
+    return this.http.get<ITomboloDataset>(`${environment.apiEndpoint}/datasets/${datasetId}`);
+  }
+
+  /**
    * Load (and cache) basemaps
    * @returns {Observable<IBasemap[]>}
    */

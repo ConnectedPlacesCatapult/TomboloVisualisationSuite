@@ -2,7 +2,7 @@
  * Top-level app component - just an empty router-outlet to host components
  */
 
-import {Component, ComponentFactoryResolver, Injector, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ComponentFactoryResolver, Injector, OnInit, ViewContainerRef} from '@angular/core';
 import {Location} from '@angular/common';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
@@ -38,7 +38,7 @@ const debug = Debug('tombolo:app');
     ])
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
 
   leftBarOpen = true;
   rightBarOpen = false;
@@ -56,7 +56,9 @@ export class AppComponent implements OnInit {
               private resolver: ComponentFactoryResolver,
               private mapService: MapService,
               private injector: Injector,
-              private customGoogleTagManager: CustomGoogleTagManager) {}
+              private customGoogleTagManager: CustomGoogleTagManager,
+              // Required for For ngx-colorpicker
+              public vcRef: ViewContainerRef) {}
 
   ngOnInit() {
     debug(`App loaded - environment = ${environment.name} `);

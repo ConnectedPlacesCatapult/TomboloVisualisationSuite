@@ -62,6 +62,7 @@ import {ColorPaletteComponent} from './map-editor/edit-panel/color-palette/color
 import {ColorPaletteSelectComponent} from './map-editor/edit-panel/color-palette-select/color-palette-select.component';
 import {ColorPickerModule} from 'ngx-color-picker';
 import {ColorWellComponent} from './map-editor/edit-panel/color-well/color-well.component';
+import {DragulaModule} from 'ng2-dragula';
 
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -124,6 +125,7 @@ export function AppConfigFactory(configService: ConfigService) {
     MapboxModule,
     NgUploaderModule,
     ColorPickerModule,
+    DragulaModule,
     Angulartics2Module.forRoot([CustomGoogleTagManager]),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({

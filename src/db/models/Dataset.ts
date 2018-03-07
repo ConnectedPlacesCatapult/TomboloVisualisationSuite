@@ -1,4 +1,7 @@
-import {BelongsTo, Column, DataType, DefaultScope, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
+import {
+  BelongsTo, Column, DataType, DefaultScope, ForeignKey, HasMany, Model, Scopes,
+  Table
+} from 'sequelize-typescript';
 import {User} from './User';
 import {DataAttribute} from './DataAttribute';
 import {DatasetGroup} from './DatasetGroup';
@@ -15,6 +18,12 @@ const CATEGORY_MAX_COUNT = 7;
   tableName: 'datasets',
   timestamps: true,
   version: true
+})
+@Scopes({
+  withAttributes: {
+    order: [['dataAttributes', 'order']],
+    include: [() => DataAttribute]
+  }
 })
 export class Dataset extends Model<Dataset> implements ITomboloDataset {
 
