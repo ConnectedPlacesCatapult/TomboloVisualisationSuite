@@ -30,7 +30,7 @@
   <!-- Share Button -->
   <button mat-icon-button disableRipple
           (click)="postBookmark()"
-          [disabled]="!mapId || mode == 'edit'">
+          [disabled]="!shareButtonEnabled()">
     <mat-icon svgIcon="share"></mat-icon>Share
   </button>
 

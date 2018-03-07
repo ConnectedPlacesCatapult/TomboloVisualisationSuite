@@ -5,8 +5,7 @@ import {IMapDefinition} from '../shared/IMapDefinition';
 import {ITomboloDataset} from '../shared/ITomboloDataset';
 import {IMapLayer} from '../shared/IMapLayer';
 import {DATA_LAYER_PREFIX, StyleGenerator} from '../shared/style-generator/style-generator';
-
-const { URL } = require('url');
+import {IStyle} from '../shared/IStyle';
 
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
@@ -31,7 +30,7 @@ export class StyleGeneratorService {
    * @param {string} baseUrl
    * @returns {Object}
    */
-  generateMapStyle(map: TomboloMap, baseUrl: string): object {
+  generateMapStyle(map: TomboloMap, baseUrl: string): IStyle {
 
     const mapDefinition = this.generateMapDefinition(map, baseUrl);
     const styleGenerator = new StyleGenerator(mapDefinition);
@@ -57,7 +56,8 @@ export class StyleGeneratorService {
       recipe: map.recipe,
       basemapId: map.basemapId,
       basemapDetailLevel: map.basemapDetailLevel,
-      tileBaseUrl: baseUrl
+      tileBaseUrl: baseUrl,
+      ownerId: map.ownerId
     };
 
     return mapDefinition;

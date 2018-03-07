@@ -15,20 +15,22 @@ export class DialogsService {
 
   constructor(private dialog: MatDialog) { }
 
-  public confirm(title: string, message: string): Observable<boolean> {
+  public confirm(title: string, message: string, okButtonText = 'OK'): Observable<boolean> {
 
-    let dialogRef = this.dialog.open(ConfirmDialog);
-    dialogRef.componentInstance.title = title;
-    dialogRef.componentInstance.message = message;
+    let dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {title, message, okButtonText}
+    });
 
     return dialogRef.afterClosed();
   }
 
-  public information(title: string, message: string): Observable<boolean> {
+  public information(title: string, message: string, okButtonText = 'OK'): Observable<boolean> {
 
-    let dialogRef = this.dialog.open(InformationDialog);
-    dialogRef.componentInstance.title = title;
-    dialogRef.componentInstance.message = message;
+    let dialogRef = this.dialog.open(InformationDialog, {
+      width: '400px',
+      data: {title, message, okButtonText}
+    });
 
     return dialogRef.afterClosed();
   }

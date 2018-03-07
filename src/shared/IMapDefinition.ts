@@ -16,4 +16,5 @@ export interface IMapDefinition {
   basemapId: string;
   basemapDetailLevel: number;
   tileBaseUrl: string;
+  ownerId: string;
 }

@@ -18,6 +18,7 @@ import {TermsAndConditionsComponent} from './rightbar-panels/terms-and-condition
 import {AppInfoComponent} from './rightbar-panels/app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
 import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
+import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,11 @@ const routes: Routes = [
   {
     path: 'appinfo',
     component: AppInfoComponent,
+    outlet: 'rightBar'
+  },
+  {
+    path: 'editinfo',
+    component: EditInfoComponent,
     outlet: 'rightBar'
   },
   {

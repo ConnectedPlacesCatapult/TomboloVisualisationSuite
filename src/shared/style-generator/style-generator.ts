@@ -20,9 +20,9 @@ export class StyleGenerator {
 
   constructor(private mapDefinition: IMapDefinition) {}
 
-  generateMapStyle(basemap: IBasemap) {
+  generateMapStyle(basemap: IBasemap): IStyle {
 
-    let style = clone(basemap.style);
+    let style: IStyle = clone(basemap.style);
 
     style.metadata = style.metadata || {} as IStyleMetadata;
     style.metadata.mapDefinition = this.mapDefinition;
