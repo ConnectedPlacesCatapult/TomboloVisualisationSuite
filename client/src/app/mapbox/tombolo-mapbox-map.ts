@@ -14,6 +14,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/auditTime';
 import {IBasemap} from '../../../../src/shared/IBasemap';
+import {ArgumentOutOfRangeError} from 'rxjs/Rx';
 
 const debug = Debug('tombolo:mapboxgl');
 
@@ -357,6 +358,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   setBasemap(basemap: IBasemap): void {
+    debug(`Setting basemap ${basemap.id}`);
+
     this._mapDefinition.basemapId = basemap.id;
     this._regenerateMap$.next(basemap);
 
@@ -364,6 +367,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   removeDataLayer(layerId: string): void {
+    debug(`Removing data layer ${layerId}`);
+
     const layer = this.getDataLayer(layerId);
     if (!layer) throw new Error(`Data layer ${layerId} not found`);
 
@@ -388,19 +393,108 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
-  // Insert a new data layer
-  // This requires a clean basemap to regenerate the complete map
-  insertDataLayer(basemap: IBasemap, layer: IMapLayer, index: number): void {
+  addDataLayer(dataset: ITomboloDataset, basemap: IBasemap, palette: IPalette): void {
+    debug(`Addint data layer for dataset ${dataset.id}`);
 
-    // Insertion without mutation
-    const layersCopy = [...this._mapDefinition.layers];
-    layersCopy.splice(index, 0, layer);
+    // Insert dataset in map definition if it's not already referenced
+    if (!this.datasets.find(ds => ds.id === dataset.id)) {
+      debug('Adding dataset to map definition');
+      this.datasets.push(dataset);
+    }
+
+    // Generate a default data layer for the dataset
+    const newDataLayer = this._styleGenerater.generateDefaultDataLayer(dataset, palette);
+
+    // Insert the data layer
+    let layersCopy = [...this._mapDefinition.layers];
+
+    if (newDataLayer.layerType === 'fill') {
+      // Do not put a fill layer above a line or circle layer
+      let insertionPoint;
+
+      for (insertionPoint = this.dataLayers.length - 1; insertionPoint >= 0; insertionPoint--) {
+        const lt = this.dataLayers[insertionPoint].layerType;
+        if (lt === 'circle' || lt === 'line') break;
+      }
+
+      layersCopy.splice(insertionPoint + 1, 0, newDataLayer);
+    }
+    else {
+      // Simple insert at top of stack for line and circle layers
+      layersCopy.unshift(newDataLayer);
+    }
+
+    layersCopy.forEach((layer, index) => layer.order = index);
     this._mapDefinition.layers = layersCopy;
 
     // Regenerate the map
     this._regenerateMap$.next(basemap);
 
     this.setModified();
+  }
+
+  /**
+   * Move data layer in stack - lower indices are rendered higher in the stacking order
+   * Zero-index is at the top!!
+   *
+   * This method returns true if the move was allowed, false if it wasn't - fill layers
+   * cannot be above circle/point layers.
+   *
+   * @param {number} fromIndex
+   * @param {number} toIndex
+   * @param {IBasemap} basemap
+   * @returns {boolean}
+   */
+  moveDataLayer(fromIndex: number, toIndex: number, basemap: IBasemap): boolean {
+
+    debug(`Moving data layer from index ${fromIndex} to ${toIndex}`);
+
+    const numLayers = this.dataLayers.length;
+    if (fromIndex < 0 || fromIndex > numLayers - 1 || toIndex < 0 || toIndex > numLayers - 1) {
+      throw new ArgumentOutOfRangeError();
+    }
+
+    // Layer array should be immutable - copy then modify
+    const layersCopy = [...this._mapDefinition.layers];
+    const deletedLayer = layersCopy.splice(fromIndex, 1)[0];
+    layersCopy.splice(toIndex, 0, deletedLayer);
+    layersCopy.forEach((layer, index) => layer.order = index);
+
+    // Check there are no line/circle layers below fill layers
+    let badMove = false;
+    for (let i = layersCopy.length - 1, foundLineCircle = false, foundFill = false; i >= 0; i--) {
+      const layerType = layersCopy[i].layerType;
+
+      if (layerType === 'circle' || layerType === 'line') {
+        foundLineCircle = true;
+      }
+
+      if (layerType === 'circle' || layerType === 'line') {
+        foundFill = true;
+      }
+
+      if (foundLineCircle && layerType === 'fill') {
+        badMove = true;
+        break;
+      }
+
+      if (foundFill && layerType === 'fill') {
+        badMove = true;
+        break;
+      }
+    }
+
+    if (badMove) return false;
+
+    // Move is OK - set layers to modified copy
+    this._mapDefinition.layers = layersCopy;
+
+    // Regenerate the map
+    this._regenerateMap$.next(basemap);
+
+    this.setModified();
+
+    return true;
   }
 
   private setModified(): void {
@@ -424,39 +518,49 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   private debouncedRegeneratePaintStyle(layer: IMapLayer): void {
 
     try {
+      debug('Regenerating paint style');
       const paintStyle = this._styleGenerater.paintStyleForLayer(layer);
       Object.keys(paintStyle).forEach(key => {
         this.setPaintProperty(layer.layerId, key, paintStyle[key]);
       });
     }
     catch (e) {
-      console.error('Style generation error', e);
+      console.error('Style generation error - regenerate paint style', e);
     }
   }
 
   private debouncedRegenerateLabelLayer(layer: IMapLayer): void {
 
-    // Remove old label layer
-    const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
-    const exisitingLabelLayer = this.getLayer(labelLayerId);
-    if (exisitingLabelLayer) {
-      this.removeLayer(labelLayerId);
+    try {
+      debug('Regenerating label layer');
+      // Remove old label layer
+      const labelLayerId = LABEL_LAYER_PREFIX + layer.originalLayerId;
+      const exisitingLabelLayer = this.getLayer(labelLayerId);
+      if (exisitingLabelLayer) {
+        this.removeLayer(labelLayerId);
+      }
+
+      if (layer.labelAttribute) {
+        // Generate updated layer
+        const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
+
+        // Insert new label layer
+        this.addLayer(labelLayer as MapboxLayer);
+      }
     }
-
-    if (layer.labelAttribute) {
-      // Generate updated layer
-      const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
-
-      debug(labelLayer);
-
-      // Insert new label layer
-      this.addLayer(labelLayer as MapboxLayer);
+    catch (e) {
+      console.error('Style generation error - label layer', e);
     }
   }
 
   private debouncedRegenerateMap(basemap: IBasemap): void {
-    const style = this._styleGenerater.generateMapStyle(basemap);
-    this.setStyle(style as MapboxStyle);
+    try {
+      debug('Regenerating map');
+      const style = this._styleGenerater.generateMapStyle(basemap);
+      this.setStyle(style as MapboxStyle);
+    }
+    catch (e) {
+      console.error('Style generation error - regenerate map', e);
+    }
   }
-
 }

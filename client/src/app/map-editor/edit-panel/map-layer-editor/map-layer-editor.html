@@ -4,7 +4,7 @@
     <label>Colour: </label>
     <mat-radio-group formControlName="colorRadio">
       <mat-radio-button value="fixed" class="full-width flex-label">Fixed:
-        <color-well formControlName="fixedColor"></color-well>
+        <color-well formControlName="fixedColor" (click)="$event.stopPropagation()"></color-well>
       </mat-radio-button>
 
       <mat-radio-button value="attribute" class="full-width radio-control-container">

@@ -126,6 +126,15 @@ app.use((req, res, next) => next({
 // development error handler - will print stacktrace
 if (app.get('env') === 'development') {
   app.use((err, req, res, next) => {
+
+    if (res.headersSent) {
+      // Don't attempt to respond with error if headers already sent
+      // Happens if a slow db query returns an error after a connection timeout
+      // has already been sent
+      logger.error('Error thrown after headers sent', err);
+      return;
+    }
+
     res.status(err.status || 500);
     if (isApi(req)) {
       res.json({success: false, message: err.message, error: err});
@@ -137,6 +146,14 @@ if (app.get('env') === 'development') {
 
 // production error handler - no stack-traces leaked to user
 app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    // Don't attempt to respond with error if headers already sent
+    // Happens if a slow db query returns an error after a connection timeout
+    // has already been sent
+    logger.error('Error thrown after headers sent', err);
+    return;
+  }
+
   res.status(err.status || 500);
   if (isApi(req)) {
     res.json({success: false,  message: err.message, error: err});

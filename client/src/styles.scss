@@ -3,6 +3,7 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~font-awesome/scss/font-awesome';
 @import '~@angular/material/theming';
 @import '~mapbox-gl/dist/mapbox-gl.css';
+@import '~dragula/dist/dragula.css';
 
 @import 'app/tombolo-theme/tombolo-theme';
 @import 'app/dialogs/dialog-theme.scss';
@@ -85,4 +86,18 @@ body {
 
 .mat-horizontal-stepper-header{
   pointer-events: none !important;
+}
+
+.gu-mirror {
+
+
+
+  .grab-handle {
+    cursor: grab !important;
+  }
+
+  height: 40px !important;
+  .mat-expansion-panel-content, .button-box, .mat-expansion-indicator {
+    display: none;
+  }
 }
