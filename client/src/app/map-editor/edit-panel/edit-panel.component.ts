@@ -46,21 +46,26 @@ export class EditPanelComponent implements OnInit, DoCheck {
 
   ngOnInit() {
 
+    debug('panel nginit');
+
     // Initial setting of map
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       debug('initial settting of map', map.mapLoaded);
       if (map.mapLoaded) {
         this.map = map;
+        this.layers = map.dataLayers;
         this.cd.markForCheck();
       }
     });
 
     this.mapService.loadBasemaps().subscribe(basemaps => {
+      debug('basemaps loaded');
       this.basemaps = basemaps;
       this.cd.markForCheck();
     });
 
     this.mapService.loadPalettes().subscribe(palettes => {
+      debug('palettes loaded');
       this.palettes = palettes;
       this.cd.markForCheck();
     });
@@ -70,6 +75,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
       // Clear map so that child components don't try to access map
       // while it is loading
       this.map = null;
+      this.layers = null;
       this.cd.markForCheck();
     }));
 
@@ -77,6 +83,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       debug('Edit panel got map', map.id);
       this.map = map;
+      this.layers = this.map.dataLayers;
       this.cd.markForCheck();
     }));
 
