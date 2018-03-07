@@ -105,7 +105,19 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     if (output.type === 'allAddedToQueue') {
       debug('All added', output);
       this.dragOver = false;
-      this.showUploadDialog();
+
+      // Prompt for login
+      if (!this.authService.getUserSync()) {
+        this.dialogsService
+          .confirm('Login', 'You must be logged in to upload data.', 'Go to login')
+          .filter(ok => ok)
+          .subscribe(() => {
+            this.router.navigate([{outlets: {loginBox: 'login'}}]);
+          });
+      }
+      else {
+        this.showUploadDialog();
+      }
     }
     else if (output.type === 'dragOver') {
       this.dragOver = true;
@@ -113,6 +125,25 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     else if (output.type === 'dragOut') {
       this.dragOver = false;
     }
+  }
+
+  /**
+   * Check if user is logged before uploading data
+   * @returns {boolean}
+   */
+  checkUpload(): boolean {
+    if (!this.authService.getUserSync()) {
+      this.dialogsService
+        .confirm('Login', 'You must be logged in to upload data.', 'Go to login')
+        .filter(ok => ok)
+        .subscribe(() => {
+          this.router.navigate([{outlets: {loginBox: 'login'}}]);
+        });
+
+      return false;
+    }
+
+    return true;
   }
 
   showUploadDialog(startUpload: boolean = true) {
@@ -135,6 +166,10 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     }
 
     dialogRef.afterClosed().filter(d => !!d).subscribe((context: UploadDialogContext) => {
+
+      
+      this.uploadInput.next({type: 'cancelAll'});
+
       if (context.openInMap) {
         this.mapService.createMapForUpload(context.file.id).subscribe(map => {
           this.router.navigate(['/',{outlets:{primary:['view', map.id], rightBar:['mapinfo']}}]);
