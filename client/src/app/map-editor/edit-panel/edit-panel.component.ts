@@ -10,6 +10,7 @@ import {IBasemap} from '../../../../../src/shared/IBasemap';
 import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 import {DialogsService} from '../../dialogs/dialogs.service';
 import {DragulaService} from 'ng2-dragula';
+import {NotificationService} from '../../dialogs/notification.service';
 
 const debug = Debug('tombolo:map-edit-panel');
 
@@ -27,6 +28,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
               private mapRegistry: MapRegistry,
               private dialogsService: DialogsService,
               private dragulaService: DragulaService,
+              private notificationService: NotificationService,
               private cd: ChangeDetectorRef) {}
 
   _subs: Subscription[] = [];
@@ -127,14 +129,14 @@ export class EditPanelComponent implements OnInit, DoCheck {
     const beforeId = dropPayload[4] && dropPayload[4].id;
 
     const fromIndex = this.map.dataLayers.findIndex(l => l.layerId === droppedId);
-    const toIndex = (beforeId)?  this.map.dataLayers.findIndex(l => l.layerId === beforeId) : 0;
-
-    debug(fromIndex, toIndex);
-
-
+    const toIndex = (beforeId)? this.map.dataLayers.findIndex(l => l.layerId === beforeId) : this.map.dataLayers.length - 1;
     const basemap = this.basemaps.find(b => b.id === this.map.basemapId);
 
-    this.map.moveDataLayer(fromIndex, toIndex, basemap);
+    const moveAllowed = this.map.moveDataLayer(fromIndex, toIndex, basemap);
+    if (!moveAllowed) {
+      this.dragulaService.find('dragdrop').drake.cancel(true);
+      this.notificationService.info('Polygon layers must be below Line or Point layers.');
+    }
   }
 
   // Track function for ngFor - optimises insertions and deletions from layers array

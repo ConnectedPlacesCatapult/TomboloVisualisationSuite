@@ -14,6 +14,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/auditTime';
 import {IBasemap} from '../../../../src/shared/IBasemap';
+import {ArgumentOutOfRangeError} from 'rxjs/Rx';
 
 const debug = Debug('tombolo:mapboxgl');
 
@@ -406,7 +407,23 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
     // Insert the data layer
     let layersCopy = [...this._mapDefinition.layers];
-    layersCopy.unshift(newDataLayer);
+
+    if (newDataLayer.layerType === 'fill') {
+      // Do not put a fill layer above a line or circle layer
+      let insertionPoint;
+
+      for (insertionPoint = this.dataLayers.length - 1; insertionPoint >= 0; insertionPoint--) {
+        const lt = this.dataLayers[insertionPoint].layerType;
+        if (lt === 'circle' || lt === 'line') break;
+      }
+
+      layersCopy.splice(insertionPoint + 1, 0, newDataLayer);
+    }
+    else {
+      // Simple insert at top of stack for line and circle layers
+      layersCopy.unshift(newDataLayer);
+    }
+
     layersCopy.forEach((layer, index) => layer.order = index);
     this._mapDefinition.layers = layersCopy;
 
@@ -416,20 +433,68 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
-  moveDataLayer(fromIndex: number, toIndex: number, basemap: IBasemap) {
+  /**
+   * Move data layer in stack - lower indices are rendered higher in the stacking order
+   * Zero-index is at the top!!
+   *
+   * This method returns true if the move was allowed, false if it wasn't - fill layers
+   * cannot be above circle/point layers.
+   *
+   * @param {number} fromIndex
+   * @param {number} toIndex
+   * @param {IBasemap} basemap
+   * @returns {boolean}
+   */
+  moveDataLayer(fromIndex: number, toIndex: number, basemap: IBasemap): boolean {
+
     debug(`Moving data layer from index ${fromIndex} to ${toIndex}`);
 
+    const numLayers = this.dataLayers.length;
+    if (fromIndex < 0 || fromIndex > numLayers - 1 || toIndex < 0 || toIndex > numLayers - 1) {
+      throw new ArgumentOutOfRangeError();
+    }
+
+    // Layer array should be immutable - copy then modify
     const layersCopy = [...this._mapDefinition.layers];
     const deletedLayer = layersCopy.splice(fromIndex, 1)[0];
-
     layersCopy.splice(toIndex, 0, deletedLayer);
+    layersCopy.forEach((layer, index) => layer.order = index);
 
+    // Check there are no line/circle layers below fill layers
+    let badMove = false;
+    for (let i = layersCopy.length - 1, foundLineCircle = false, foundFill = false; i >= 0; i--) {
+      const layerType = layersCopy[i].layerType;
+
+      if (layerType === 'circle' || layerType === 'line') {
+        foundLineCircle = true;
+      }
+
+      if (layerType === 'circle' || layerType === 'line') {
+        foundFill = true;
+      }
+
+      if (foundLineCircle && layerType === 'fill') {
+        badMove = true;
+        break;
+      }
+
+      if (foundFill && layerType === 'fill') {
+        badMove = true;
+        break;
+      }
+    }
+
+    if (badMove) return false;
+
+    // Move is OK - set layers to modified copy
     this._mapDefinition.layers = layersCopy;
 
     // Regenerate the map
     this._regenerateMap$.next(basemap);
 
     this.setModified();
+
+    return true;
   }
 
   private setModified(): void {
