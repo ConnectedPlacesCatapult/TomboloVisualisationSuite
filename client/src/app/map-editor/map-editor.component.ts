@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Inject, OnDestroy, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MapService} from '../services/map-service/map.service';
@@ -21,6 +21,7 @@ import {NotificationService} from '../dialogs/notification.service';
 import 'rxjs/add/observable/forkJoin';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
+import {APP_CONFIG, AppConfig} from '../config.service';
 
 
 const debug = Debug('tombolo:map-editor');
@@ -53,11 +54,25 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               private authService: AuthService,
               private dialogsService: DialogsService,
               private matDialog: MatDialog,
-              private notificationService: NotificationService) {}
+              private notificationService: NotificationService,
+              @Inject(APP_CONFIG) private config: AppConfig) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
-      this.loadMap(params.mapID);
+
+      const mapId = params.mapID || null;
+
+      if (mapId === null) {
+        // Redirect to default map
+        this.router.navigate(['/', {outlets: {
+          primary: ['edit', this.config.defaultMap],
+          loginBar: null,
+          rightBar: ['editinfo']}}]);
+        return
+      }
+      else {
+        this.loadMap(mapId);
+      }
     });
 
     this._subs.push(this.uploadOutput.subscribe(event => {
@@ -67,6 +82,14 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     this._subs.push(this.authService.user$.subscribe(user => {
       this.loadUserMaps(user);
       this.loadUserDatasets(user);
+    }));
+
+    this._subs.push(this.mapService.mapsUpdated$().subscribe(() => {
+      this.loadUserMaps(this.authService.getUserSync());
+    }));
+
+    this._subs.push(this.mapService.datasetsUpdated$().subscribe(() => {
+      this.loadUserDatasets(this.authService.getUserSync());
     }));
   }
 
@@ -255,7 +278,8 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       })
       .subscribe(() => {
         this.notificationService.info('Map deleted!');
-        this.loadUserMaps(this.authService.getUserSync());
+        this.mapService.notifyMapsUpdated();
+        this.router.navigate(['/edit']);
       });
   }
 
@@ -286,7 +310,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       })
       .subscribe(() => {
         this.notificationService.info('Dataset deleted!');
-        this.loadUserDatasets(this.authService.getUserSync());
+        this.mapService.notifyDatasetsUpdated();
       });
   }
 
