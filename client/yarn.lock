@@ -1131,6 +1131,10 @@ canvas-pixels@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/canvas-pixels/-/canvas-pixels-0.0.0.tgz#cba3c242c7d83c3bb9fb01e30c98e52c4ed7e828"
 
+canvas-toBlob@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/canvas-toBlob/-/canvas-toBlob-1.0.0.tgz#9bf32b286bb4e125218b208eecc8321fd033e6c3"
+
 caseless@~0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.11.0.tgz#715b96ea9841593cc33067923f5ec60ebda4f7d7"

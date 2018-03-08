@@ -1,4 +1,17 @@
 .spinner {
   display: flex;
   justify-content: space-around;
+  margin-top: 15px;
 }
+
+:host {
+  .full-width {
+    width: 100%;
+  }
+
+  .buttons {
+    margin-top: 15px;
+  }
+
+}
+

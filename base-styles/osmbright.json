@@ -68,12 +68,12 @@
       "paint": {
         "text-color": "rgb(117, 129, 145)",
         "text-halo-color": "rgb(242,243,240)",
-        "text-halo-width": 1,
-        "text-halo-blur": 1,
+        "text-halo-width": 0.7,
+        "text-halo-blur": 0.5,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 10,
+        "text-size": 13,
         "icon-image": {
           "base": 1,
           "stops": [
