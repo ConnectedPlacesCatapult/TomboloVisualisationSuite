@@ -204,6 +204,7 @@ export class MapControlsComponent implements OnInit {
       .do(() => {
         map.setModified(false);
         this.notificationService.info('Map saved');
+        this.mapService.notifyMapsUpdated();
         this._saving = false;
       })
       .catch(e => {

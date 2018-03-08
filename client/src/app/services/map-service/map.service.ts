@@ -40,6 +40,8 @@ export class MapService {
 
   private _mapLoaded$ = new Subject<TomboloMapboxMap>();
   private _mapLoading$ = new Subject<void>();
+  private _mapsUpdated$ = new Subject<void>();
+  private _datasetsUpdated$ = new Subject<void>();
   private _basemaps$ : Observable<IBasemap[]>;
   private _palettes$ : Observable<IPalette[]>;
 
@@ -49,6 +51,26 @@ export class MapService {
 
   mapLoading$(): Observable<void> {
     return this._mapLoading$.asObservable();
+  }
+
+  // Used to notify clients that maps might have been updated
+  // And navigation bars should be reloaded
+  mapsUpdated$(): Observable<void> {
+    return this._mapsUpdated$.asObservable();
+  }
+
+  notifyMapsUpdated(): void {
+    this._mapsUpdated$.next();
+  }
+
+  // Used to notify clients that datasets might have been updated
+  // And navigation bars should be reloaded
+  datasetsUpdated$(): Observable<void> {
+    return this._datasetsUpdated$.asObservable();
+  }
+
+  notifyDatasetsUpdated(): void {
+    this._datasetsUpdated$.next();
   }
 
   /**
