@@ -6,6 +6,7 @@ import {ITomboloDataset} from '../shared/ITomboloDataset';
 import {IMapLayer} from '../shared/IMapLayer';
 import {DATA_LAYER_PREFIX, StyleGenerator} from '../shared/style-generator/style-generator';
 import {IStyle} from '../shared/IStyle';
+import {IMapFilter} from '../shared/IMapFilter';
 
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
@@ -57,7 +58,8 @@ export class StyleGeneratorService {
       basemapId: map.basemapId,
       basemapDetailLevel: map.basemapDetailLevel,
       tileBaseUrl: baseUrl,
-      ownerId: map.ownerId
+      ownerId: map.ownerId,
+      filters: this.filtersForMap(map)
     };
 
     return mapDefinition;
@@ -100,6 +102,16 @@ export class StyleGeneratorService {
     }, {});
 
     return Object.keys(reducedDatasets).map(key => reducedDatasets[key]);
+  }
+
+  private filtersForMap(map: TomboloMap): IMapFilter[] {
+    const combinedFilters = map.layers.map(layer => {
+      if (!layer.filters) return [];
+      return layer.filters.map(f => ({...f, datalayerId: DATA_LAYER_PREFIX + layer.layerId}));
+    });
+
+    // Flatten combined filters into a single array and return
+    return [].concat.apply([], combinedFilters);
   }
 
   /**

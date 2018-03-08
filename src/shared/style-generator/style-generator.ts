@@ -116,7 +116,8 @@ export class StyleGenerator {
       minzoom: dataset.minZoom,
       maxzoom: dataset.maxZoom,
       layout: this.layoutStyleForLayer(layer),
-      paint: this.paintStyleForLayer(layer)
+      paint: this.paintStyleForLayer(layer),
+      filter: this.filtersForLayer(layer)
     };
   }
 
@@ -200,7 +201,7 @@ export class StyleGenerator {
       fixedSize: 10,
       sizeMode: 'fixed',
       labelAttribute: null,
-      order: null,
+      order: null
     };
 
     return mapLayer;
@@ -318,6 +319,17 @@ export class StyleGenerator {
       ['number', ['get', layer.sizeAttribute], layer.fixedSize],
       ...stops
     ];
+  }
+
+  private filtersForLayer(layer: IMapLayer): any {
+
+    if (this.mapDefinition.filters === null || this.mapDefinition.filters.length === 0) return ['all'];
+
+    // Concat enabled features
+    const filters =  this.mapDefinition.filters.filter(f => f.enabled && f.datalayerId === layer.layerId)
+      .map(f => [f.operator, f.attribute, f.value]);
+
+    return ['all', ...filters];
   }
 
   private layerTypeForGeometryType(geometryType: string): 'circle' | 'line' | 'fill' {

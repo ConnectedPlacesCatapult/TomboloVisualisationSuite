@@ -19,6 +19,7 @@ import {AppInfoComponent} from './rightbar-panels/app-info/app-info.component';
 import {MyAccountDialogComponent} from './auth/my-account-dialog/my-account.component';
 import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
+import {MapFiltersPanelComponent} from './map-filters/map-filters-panel.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,12 @@ const routes: Routes = [
   {
     path: 'editpanel',
     component: EditPanelComponent,
+    outlet: 'rightBar'
+  },
+  // TODO Temorary route!!!
+  {
+    path: 'filterspanel',
+    component: MapFiltersPanelComponent,
     outlet: 'rightBar'
   },
   {

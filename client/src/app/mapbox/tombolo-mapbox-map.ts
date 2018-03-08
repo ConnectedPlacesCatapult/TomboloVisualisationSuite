@@ -19,6 +19,7 @@ import 'rxjs/add/operator/auditTime';
 import {IBasemap} from '../../../../src/shared/IBasemap';
 import {ArgumentOutOfRangeError} from 'rxjs/Rx';
 import * as uuid from 'uuid/v4';
+import {IMapFilter} from '../../../../src/shared/IMapFilter';
 
 const debug = Debug('tombolo:mapboxgl');
 
@@ -192,6 +193,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return (this._mapDefinition) ? this._mapDefinition.recipe : null;
   }
 
+  get filters(): IMapFilter[] {
+    return (this._mapDefinition) ? this._mapDefinition.filters : null;
+  }
+
   // Return zoom level below which data layers are not displayed
   get dataMinZoom(): number {
 
@@ -216,6 +221,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   }
 
   getDataAttributesForLayer(layerId: string): ITomboloDatasetAttribute[] {
+
     return this.getDatasetForLayer(layerId).dataAttributes;
   }
 

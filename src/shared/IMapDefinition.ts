@@ -1,5 +1,6 @@
 import {ITomboloDataset} from './ITomboloDataset';
 import {IMapLayer} from './IMapLayer';
+import {IMapFilter} from './IMapFilter';
 
 // Map definition used for style generation
 
@@ -17,4 +18,5 @@ export interface IMapDefinition {
   basemapDetailLevel: number;
   tileBaseUrl: string;
   ownerId: string;
+  filters: IMapFilter[];
 }
