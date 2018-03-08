@@ -47,7 +47,7 @@ export class MapExportComponent implements OnInit {
     });
 
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.exportForm.patchValue({'name': this.formatFileName(map.getStyle().name)});
+      this.exportForm.patchValue({'name': this.formatFileName(map.name)});
     });
 
     this.exportForm.get('preset').valueChanges.subscribe(val => this.onPresetChange(val));
