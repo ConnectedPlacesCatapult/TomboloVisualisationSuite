@@ -164,7 +164,7 @@ export class StyleGenerator {
       'source-layer': DATA_LAYER_ID,
       layout: layout,
       paint: paint,
-      filter: ['has', layer.labelAttribute]
+      filter: [...this.filtersForLayerId(layer.layerId), ['has', layer.labelAttribute]]
     };
   }
 

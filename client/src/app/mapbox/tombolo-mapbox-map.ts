@@ -659,6 +659,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
         // Generate updated layer
         const labelLayer = this._styleGenerator.generateLabelLayer(layer, this._metadata.labelLayerStyle);
 
+        debug(labelLayer);
+
         // Insert new label layer
         this.addLayer(labelLayer as MapboxLayer);
       }
@@ -670,7 +672,11 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
   private debouncedRegenerateFilters(): void {
     this.dataLayers.forEach(layer => {
-      this.setFilter(layer.layerId, this._styleGenerator.filtersForLayerId(layer.layerId));
+      const filters = this._styleGenerator.filtersForLayerId(layer.layerId);
+      this.setFilter(layer.layerId, filters);
+      if (layer.labelAttribute) {
+        this.setFilter(LABEL_LAYER_PREFIX + layer.originalLayerId, [...filters, ['has', layer.labelAttribute]]);
+      }
     });
   }
 
