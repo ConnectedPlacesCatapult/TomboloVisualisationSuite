@@ -80,10 +80,19 @@ export class ExportMap {
             mapCtx.drawImage(colourScaleCanvas, 0, 0);
           }
 
-
           if (format === 'png') {
-            canvas.toBlob(blob => saveAs(blob, fileName));
+
+            if (HTMLCanvasElement.prototype.toBlob) {
+              canvas.toBlob(blob => {
+                saveAs(blob, fileName)
+              });
+            } else {
+              fetch(canvas.toDataURL())
+                .then(res => res.blob())
+                .then(blob => saveAs(blob, fileName))
+            }
             resolve(fileName);
+
           } else if (format === 'pdf') {
             this.buildPdf(canvas, fileName, width, height);
             resolve(fileName);
@@ -93,7 +102,7 @@ export class ExportMap {
           }
 
           this.revertChanges();
-        }, 300);
+        }, 500);
       });
     });
 

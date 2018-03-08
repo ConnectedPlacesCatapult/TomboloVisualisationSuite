@@ -36,7 +36,6 @@ export class MapExportComponent implements OnInit {
   };
 
   ngOnInit() {
-
     this.exportForm = new FormGroup({
       name: new FormControl('', Validators.required),
       width: new FormControl(this.presets['a4_150dpi'].width, Validators.required),
