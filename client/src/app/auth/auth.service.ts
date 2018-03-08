@@ -48,7 +48,7 @@ export class AuthService {
     return this.http.post<User>(`${environment.apiEndpoint}/auth/login`, body.toString(), options)
       .map(u => {
         debug(`Logged in user`, u);
-        this._user = u;
+        this._user = new User(u);
         this._user$.next(u);
         return u;
       })
