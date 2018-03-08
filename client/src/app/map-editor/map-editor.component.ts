@@ -130,7 +130,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           outlets: {
             primary: ['view', map.id],
             loginBar: null,
-            rightBar: ['mapinfo']
+            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : 'mapinfo']
           }
         }]
       }
@@ -221,7 +221,8 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
       if (context.openInMap) {
         this.mapService.createMapForUpload(context.file.id).subscribe(map => {
-          this.router.navigate(['/',{outlets:{primary:['view', map.id], rightBar:['mapinfo']}}]);
+          this.mapService.notifyMapsUpdated();
+          this.router.navigate(['/', {outlets:{primary:['edit', map.id], rightBar:['editpanel']}}]);
         });
       }
     });
