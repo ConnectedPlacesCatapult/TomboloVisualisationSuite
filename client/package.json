@@ -29,6 +29,7 @@
     "@types/mapbox-gl": "^0.44.0",
     "angular-2-local-storage": "^1.0.1",
     "angulartics2": "^5.1.1",
+    "canvas-toBlob": "^1.0.0",
     "codemirror": "^5.35.0",
     "core-js": "^2.4.1",
     "debug": "^3.0.1",

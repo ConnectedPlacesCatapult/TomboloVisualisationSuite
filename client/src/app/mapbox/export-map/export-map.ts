@@ -82,15 +82,10 @@ export class ExportMap {
 
           if (format === 'png') {
 
-            if (HTMLCanvasElement.prototype.toBlob) {
-              canvas.toBlob(blob => {
-                saveAs(blob, fileName)
-              });
-            } else {
-              fetch(canvas.toDataURL())
-                .then(res => res.blob())
-                .then(blob => saveAs(blob, fileName))
-            }
+            canvas.toBlob(blob => {
+              saveAs(blob, fileName)
+            });
+
             resolve(fileName);
 
           } else if (format === 'pdf') {
