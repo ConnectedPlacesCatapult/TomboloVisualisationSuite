@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -14,6 +14,7 @@ import {GeosearchItem} from './geosearch/geosearch.service';
 import LngLatBoundsLike = mapboxgl.LngLatBoundsLike;
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../auth/auth.service';
+import {APP_CONFIG, AppConfig} from '../config.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -36,7 +37,8 @@ export class MapViewerComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private mapService: MapService,
               private router: Router,
-              private authService: AuthService) {}
+              private authService: AuthService,
+              @Inject(APP_CONFIG) private config: AppConfig) {}
 
   ngOnInit() {
 
@@ -46,7 +48,19 @@ export class MapViewerComponent implements OnInit {
     }));
 
     this.activatedRoute.params.subscribe(params => {
-      this.loadMap(params.mapID);
+
+      const mapId = params.mapID || null;
+
+      if (mapId === null) {
+        // Redirect to default map
+        this.router.navigate(['/', {outlets: {
+          primary: ['view', this.config.defaultMap],
+          loginBar: null,
+          rightBar: ['appinfo']}}]);
+        return
+      }
+
+      this.loadMap(mapId);
     });
   }
 

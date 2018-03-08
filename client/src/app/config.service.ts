@@ -9,7 +9,6 @@ import {HttpClient} from "@angular/common/http";
 // Injector token for config (string). Provided by app module
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 
-
 export class AppConfig {
   tileUrl: string;
   authEndpoint: string;
@@ -18,6 +17,7 @@ export class AppConfig {
   socialMediaTags: string;
   googleAnalyticsUserId: string;
   nominatimUrl: string;
+  defaultMap: string;
 }
 
 @Injectable()
