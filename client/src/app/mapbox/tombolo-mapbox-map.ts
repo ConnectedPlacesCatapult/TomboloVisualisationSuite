@@ -547,6 +547,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
    */
   copyMap(userId: string) {
     this._mapDefinition.id = uuid();
+    this._mapDefinition.name = this._mapDefinition.name + ' Copy';
     this._mapDefinition.ownerId = userId;
 
     const layersCopy = [...this.dataLayers];

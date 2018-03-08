@@ -12,7 +12,7 @@
     (mapClick)="onMapClick($event)"
     (mouseMove)="onMapMouseMoved($event)"
     (mapMoveEnd)="onMapMoveEnd($event)"
-    style="https://maps.emu-analytics.net:4430/styles/fjord.json"
+    [style]= "{version: 8, sources:{}, layers:[]}"
     [showHover]="showHover">
   </tombolo-mapbox>
 

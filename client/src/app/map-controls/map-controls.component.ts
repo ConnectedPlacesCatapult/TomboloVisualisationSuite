@@ -147,13 +147,22 @@ export class MapControlsComponent implements OnInit {
         map.defaultCenter = [map.getCenter().lng, map.getCenter().lat];
         map.defaultZoom = map.getZoom();
 
-        if (user.hasRole('editor') || user.id === map.ownerId) {
+        if (user.id !== map.ownerId && user.hasRole('editor')) {
+          // Warn editor before saving a map that they don't own
+          this.dialogsService
+            .confirm('Saving a Curated Map', `
+                    You are about to save a map that you don't own.<p>
+                    Are you sure you want to continue?`, 'Save')
+            .filter(ok => ok)
+            .mergeMap(() => this.internalSaveMap(map))
+            .subscribe();
+        }
+        else if (user.id === map.ownerId) {
+          // Save own map
           this.internalSaveMap(map).subscribe();
         }
         else {
-          // Map needs to be copied
-          // Editors can save any map. For normal users, a copy is made if the user doesn't
-          // own the map.
+          // User does not own the map - it needs to be copied before saving
           this.dialogsService
             .confirm('Save as Copy', `
                     You are editing a shared map.<p>
