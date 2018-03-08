@@ -1,7 +1,7 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Style} from 'mapbox-gl';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
@@ -22,7 +22,8 @@ export class MapExportComponent implements OnInit {
 
   constructor(private mapRegistry: MapRegistry,
               private location: Location,
-              private notificationService: NotificationService) {}
+              private notificationService: NotificationService,
+              private router: Router) {}
 
   exportLoading = false;
   mapName: string;
@@ -79,7 +80,9 @@ export class MapExportComponent implements OnInit {
   }
 
   routeBack(): void {
-    this.location.back();
+    if(!this.location.back()) {
+      setTimeout(() => this.router.navigate([{ outlets: { rightBar: 'appinfo' }}]), 200);
+    }
   }
 
   onPresetChange(preset) {
