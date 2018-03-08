@@ -43,12 +43,12 @@
       "paint": {
         "text-color": "hsl(195, 25%, 76%)",
         "text-halo-color": "hsla(228, 60%, 21%, 0.7)",
-        "text-halo-width": 1,
-        "text-halo-blur": 1,
+        "text-halo-width": 0.7,
+        "text-halo-blur": 0.5,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 10,
+        "text-size": 13,
         "text-transform": "uppercase",
         "text-font": [
           "Metropolis Regular"
