@@ -23,6 +23,8 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
+  @HostBinding('class.map-filters') mapFiltersClass = true;
+
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,
               private dialogsService: DialogsService,
@@ -59,10 +61,6 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
       debug('Edit panel got map', map.id);
       this.map = map;
       this.filters = map.filters;
-
-
-      debug(this.filters);
-
       this.cd.markForCheck();
     }));
 
@@ -85,8 +83,26 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
     return filter.enabled ? 'eye' : 'eye-off';
   }
 
-  toggleFilterEnabled(filter: IMapFilter) {
-   // this.map.setFilterEnabled(filter, !filter.enabled);
+  toggleFilterEnabled(index: number, filter: IMapFilter) {
+    filter.enabled = !filter.enabled;
+    this.map.updateFilter(index, filter);
+  }
+
+  addFilter()  {
+
+    const defaultLayerId = this.map.dataLayers.length ? this.map.dataLayers[0].layerId : null;
+    const defaultAttribute = defaultLayerId ?
+      this.map.getDataAttributesForLayer(defaultLayerId).find(attr => attr.type === 'number') : null;
+
+    const filter: IMapFilter = {
+      datalayerId: defaultLayerId,
+      attribute: defaultAttribute ? defaultAttribute.field : null,
+      operator: '',
+      value: null,
+      enabled: true
+    }
+
+    this.map.addFilter(filter);
   }
 
   deleteFilter(filter: IMapFilter) {
@@ -94,11 +110,11 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
       .confirm('Delete Filter', `Are you sure you want to delete the filter?`)
       .filter(result => result)
       .subscribe(() => {
-       // this.map.removeFilter(filter);
+        this.map.removeFilter(filter);
       });
   }
 
   onFilterChange(index: number, newFilter: IMapFilter) {
-    debug(`Filter changed at index ${index}`, newFilter);
+    this.map.updateFilter(index, newFilter);
   }
 }

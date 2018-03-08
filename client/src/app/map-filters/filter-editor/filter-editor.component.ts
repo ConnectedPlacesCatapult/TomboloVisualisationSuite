@@ -51,22 +51,47 @@ export class FilterEditorComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // Save form changes to map as user changes controls
-
+  debug('nginit');
     this._subs.push(this.form.get('dataLayerId').valueChanges.subscribe(val => {
+      this.filter.datalayerId = val;
       this.emitFilterChanged();
     }));
 
     this._subs.push(this.form.get('dataAttribute').valueChanges.subscribe(val => {
-      this.selectedAttribute = this.map.getDataAttributeForLayer(this.form.get('dataLayerId').value, val);
-      this.mode = this.selectedAttribute.type as 'number' | 'string';
+
+      this.filter.attribute = val;
+
+      // Cache selected data attribute
+      const dataLayerId = this.form.get('dataLayerId').value;
+      if (dataLayerId && val) {
+        this.selectedAttribute = this.map.getDataAttributeForLayer(this.form.get('dataLayerId').value, val);
+
+        // Ensure slide value is within range of new attribute
+        if (this.selectedAttribute.type === 'number') {
+          const currentValue = this.form.get('value').value;
+          if (currentValue > this.selectedAttribute.maxValue) {
+            this.form.patchValue({value: this.selectedAttribute.maxValue});
+          }
+          else if (currentValue < this.selectedAttribute.minValue) {
+            this.form.patchValue({value: this.selectedAttribute.minValue});
+          }
+        }
+      }
+      else {
+        this.selectedAttribute = null;
+      }
+
+      this.mode = this.selectedAttribute ? (this.selectedAttribute.type as 'number' | 'string') : 'number';
       this.emitFilterChanged();
     }));
 
     this._subs.push(this.form.get('operator').valueChanges.subscribe(val => {
+      this.filter.operator = val;
       this.emitFilterChanged();
     }));
 
     this._subs.push(this.form.get('value').valueChanges.subscribe(val => {
+      this.filter.value = val;
       this.emitFilterChanged();
     }));
   }
@@ -80,7 +105,16 @@ export class FilterEditorComponent implements OnInit, OnChanges {
     // Transfer values to form
     if ((changes.map || changes.filter) && this.map) {
 
+      debug('ngChanges');
+
       const filter = this.filter;
+
+      if (filter.datalayerId && filter.attribute) {
+        this.selectedAttribute = this.map.getDataAttributeForLayer(filter.datalayerId, filter.attribute);
+      }
+      else {
+        this.selectedAttribute = null;
+      }
 
       this.form.setValue({
         dataLayerId: filter.datalayerId,
@@ -99,16 +133,7 @@ export class FilterEditorComponent implements OnInit, OnChanges {
   }
 
   private emitFilterChanged() {
-
-    const filter: IMapFilter = {
-      ...this.filter,
-      datalayerId: this.form.get('dataLayerId').value,
-      attribute: this.form.get('dataAttribute').value,
-      operator: this.form.get('operator').value,
-      value: this.form.get('value').value
-    }
-
-    this.filterChange.emit(filter);
+    this.filterChange.emit(this.filter);
   }
 
 }

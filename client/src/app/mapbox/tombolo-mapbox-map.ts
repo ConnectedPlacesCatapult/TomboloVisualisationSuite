@@ -17,13 +17,13 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/auditTime';
 import {IBasemap} from '../../../../src/shared/IBasemap';
-import {ArgumentOutOfRangeError} from 'rxjs/Rx';
 import * as uuid from 'uuid/v4';
 import {IMapFilter} from '../../../../src/shared/IMapFilter';
 
 const debug = Debug('tombolo:mapboxgl');
 
 const PAINT_LAYER_REGENERATION_DEBOUNCE = 300;
+const FILTER_REGENERATION_DEBOUNCE = 100;
 const LABEL_LAYER_REGENERATION_DEBOUNCE = 500;
 const MAP_REGENERATION_DEBOUNCE = 500;
 
@@ -34,10 +34,11 @@ export class TomboloMapboxMap extends EmuMapboxMap {
   private _modified: boolean = false;
   private _modified$ = new Subject<boolean>();
   private _mapLoaded = false;
-  private _styleGenerater: StyleGenerator;
+  private _styleGenerator: StyleGenerator;
 
   private _regeneratePainStyle$ = new Subject<IMapLayer>();
   private _regenerateLabelLayer$ = new Subject<IMapLayer>();
+  private _regenerateFilters$ = new Subject<void>();
   private _regenerateMap$ = new Subject<IBasemap>();
 
   constructor(options?: MapboxOptions) {
@@ -51,6 +52,11 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     // Hook up debounced label layer regeneration
     this._regenerateLabelLayer$.auditTime(LABEL_LAYER_REGENERATION_DEBOUNCE).subscribe(layer => {
       this.debouncedRegenerateLabelLayer(layer);
+    });
+
+    // Hook up debounced filter regeneration
+    this._regenerateFilters$.auditTime(FILTER_REGENERATION_DEBOUNCE).subscribe(layer => {
+      this.debouncedRegenerateFilters();
     });
 
     // Hook up debounced basemap regeneration
@@ -72,7 +78,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._metadata = null;
     this._mapDefinition = null;
     this._mapLoaded = false;
-    this._styleGenerater = null;
+    this._styleGenerator = null;
 
     debug('beginning map load');
   }
@@ -84,7 +90,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._mapLoaded = true;
 
     // TODO baseURL
-    this._styleGenerater = new StyleGenerator(this._mapDefinition);
+    this._styleGenerator = new StyleGenerator(this._mapDefinition);
 
     debug('map load finalized');
   }
@@ -412,6 +418,50 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
+  addFilter(filter: IMapFilter): void {
+
+    let filtersCopy = [...this._mapDefinition.filters];
+    filtersCopy.unshift(filter);
+    this._mapDefinition.filters = filtersCopy;
+
+    this.setFilter(filter.datalayerId, this._styleGenerator.filtersForLayerId(filter.datalayerId));
+
+    this.setModified();
+  }
+
+  updateFilter(index: number, filter: IMapFilter): void {
+
+    if (index < 0 || index >= this._mapDefinition.filters.length) {
+      throw new RangeError('Filter index out of range');
+    }
+
+    // Immutable modification of filter at index
+    let filtersCopy = [...this._mapDefinition.filters];
+    filtersCopy.splice(index, 1, filter);
+    this._mapDefinition.filters = filtersCopy;
+
+    this._regenerateFilters$.next();
+
+    this.setModified();
+  }
+
+  removeFilter(filter: IMapFilter): void {
+
+    // Immutable modification of filter enabled flag
+    const index = this._mapDefinition.filters.indexOf(filter);
+    if (index == -1) {
+      throw new Error('Filter not found');
+    }
+
+    let filtersCopy = [...this._mapDefinition.filters];
+    filtersCopy.splice(index, 1);
+    this._mapDefinition.filters = filtersCopy;
+
+    this.setFilter(filter.datalayerId, this._styleGenerator.filtersForLayerId(filter.datalayerId));
+
+    this.setModified();
+  }
+
   removeDataLayer(layerId: string): void {
     debug(`Removing data layer ${layerId}`);
 
@@ -449,7 +499,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     }
 
     // Generate a default data layer for the dataset
-    const newDataLayer = this._styleGenerater.generateDefaultDataLayer(dataset, palette);
+    const newDataLayer = this._styleGenerator.generateDefaultDataLayer(dataset, palette);
 
     // Insert the data layer
     let layersCopy = [...this._mapDefinition.layers];
@@ -497,7 +547,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
     const numLayers = this.dataLayers.length;
     if (fromIndex < 0 || fromIndex > numLayers - 1 || toIndex < 0 || toIndex > numLayers - 1) {
-      throw new ArgumentOutOfRangeError();
+      throw new RangeError('Data layer index out of range');
     }
 
     // Layer array should be immutable - copy then modify
@@ -571,6 +621,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._regenerateLabelLayer$.next(layer);
   }
 
+  private regenerateFilters(): void {
+    this._regenerateFilters$.next();
+  }
+
   /**
    * Regenerate layer paint style and apply paint properties to map
    *
@@ -580,7 +634,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
     try {
       debug('Regenerating paint style');
-      const paintStyle = this._styleGenerater.paintStyleForLayer(layer);
+      const paintStyle = this._styleGenerator.paintStyleForLayer(layer);
       Object.keys(paintStyle).forEach(key => {
         this.setPaintProperty(layer.layerId, key, paintStyle[key]);
       });
@@ -603,7 +657,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
       if (layer.labelAttribute) {
         // Generate updated layer
-        const labelLayer = this._styleGenerater.generateLabelLayer(layer, this._metadata.labelLayerStyle);
+        const labelLayer = this._styleGenerator.generateLabelLayer(layer, this._metadata.labelLayerStyle);
 
         // Insert new label layer
         this.addLayer(labelLayer as MapboxLayer);
@@ -614,10 +668,16 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     }
   }
 
+  private debouncedRegenerateFilters(): void {
+    this.dataLayers.forEach(layer => {
+      this.setFilter(layer.layerId, this._styleGenerator.filtersForLayerId(layer.layerId));
+    });
+  }
+
   private debouncedRegenerateMap(basemap: IBasemap): void {
     try {
       debug('Regenerating map');
-      const style = this._styleGenerater.generateMapStyle(basemap);
+      const style = this._styleGenerator.generateMapStyle(basemap);
       this.setStyle(style as MapboxStyle);
     }
     catch (e) {

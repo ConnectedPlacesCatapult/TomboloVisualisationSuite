@@ -10,6 +10,15 @@
   <!-- Data attribute select -->
   <mat-form-field class="full-width" floatLabel="never">
     <mat-select formControlName="dataAttribute" placeholder="Data Attribute">
+      <mat-select-trigger class="trigger-with-info">
+        <span class="attribute-info">
+          {{selectedAttribute?.name}}
+          <span *ngIf="selectedAttribute?.unit">({{selectedAttribute?.unit}})</span>
+        </span>
+        <span *ngIf="selectedAttribute?.description">
+          <mat-icon svgIcon="info" [matTooltip]="selectedAttribute?.description" matTooltipPosition="below"></mat-icon>
+        </span>
+      </mat-select-trigger>
       <mat-option *ngFor="let attribute of attributesForSelectedLayer()"
                   [value]="attribute.field">{{attribute.name}}</mat-option>
     </mat-select>
@@ -39,8 +48,7 @@
   <number-slider-control *ngIf="mode == 'number'"
                          class="full-width" formControlName="value"
                          [min]="selectedAttribute?.minValue"
-                         [max]="selectedAttribute?.maxValue"
-                         [unit]="selectedAttribute?.unit"></number-slider-control>
+                         [max]="selectedAttribute?.maxValue"></number-slider-control>
 
 
 </form>

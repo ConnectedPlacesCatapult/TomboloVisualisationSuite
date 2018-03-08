@@ -698,5 +698,45 @@
     }
   }
 
+  /* Map Filters */
+  .map-filters {
+
+    // Filters heading with add button
+    h2 {
+      @include mat-typography-level-to-styles($typography, title);
+
+      display: flex;
+      margin: 4px 0;
+      padding: 0 $g - 8px 0 $g;
+
+      .title {
+        flex: 1 1;
+      }
+
+      .mat-icon-button {
+        @include mat-typography-level-to-styles($typography, caption);
+        color: mat-color($primary);
+        width: auto;
+        border-radius: 0;
+
+        .mat-button-wrapper {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .mat-icon {
+            padding-right: 0.1em;
+            width: 30px;
+            height: 30px;
+          }
+        }
+
+        &:hover {
+          color: mat-color($accent);
+        }
+      }
+    }
+
+  }
 
 }

@@ -26,4 +26,23 @@ $control-spacing: $g;
       content: 'max';
     }
   }
+
+  .trigger-with-info {
+    display: inline-flex;
+    width: 100%;
+
+    .mat-icon {
+      width: 18px;
+      height: 18px;
+      color: rgba(0,0,0,0.2);
+      margin-right: 4px;
+    }
+
+    .attribute-info {
+      flex: 1 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 }

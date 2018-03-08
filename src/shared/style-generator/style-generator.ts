@@ -117,7 +117,7 @@ export class StyleGenerator {
       maxzoom: dataset.maxZoom,
       layout: this.layoutStyleForLayer(layer),
       paint: this.paintStyleForLayer(layer),
-      filter: this.filtersForLayer(layer)
+      filter: this.filtersForLayerId(layer.layerId)
     };
   }
 
@@ -205,6 +205,29 @@ export class StyleGenerator {
     };
 
     return mapLayer;
+  }
+
+  /**
+   * Generate filter property for specified layer
+   *
+   * @param {IMapLayer} layer
+   * @returns {any} Mapbox filter property
+   */
+  filtersForLayerId(layerId: string): any {
+
+    if (this.mapDefinition.filters === null || this.mapDefinition.filters.length === 0) return ['all'];
+
+    // Concat enabled features
+    const filters = this.mapDefinition.filters.filter(f =>
+      f.enabled &&
+      f.datalayerId === layerId &&
+      f.attribute &&
+      f.operator &&
+      f.value !== null
+    )
+      .map(f => [f.operator, f.attribute, f.value]);
+
+    return ['all', ...filters];
   }
 
   private generateSources(mapDefinition: IMapDefinition): object {
@@ -319,17 +342,6 @@ export class StyleGenerator {
       ['number', ['get', layer.sizeAttribute], layer.fixedSize],
       ...stops
     ];
-  }
-
-  private filtersForLayer(layer: IMapLayer): any {
-
-    if (this.mapDefinition.filters === null || this.mapDefinition.filters.length === 0) return ['all'];
-
-    // Concat enabled features
-    const filters =  this.mapDefinition.filters.filter(f => f.enabled && f.datalayerId === layer.layerId)
-      .map(f => [f.operator, f.attribute, f.value]);
-
-    return ['all', ...filters];
   }
 
   private layerTypeForGeometryType(geometryType: string): 'circle' | 'line' | 'fill' {
