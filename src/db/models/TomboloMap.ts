@@ -89,6 +89,11 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
   })
   basemapDetailLevel: number;
 
+  @Column({
+    type: DataType.JSON
+  })
+  ui: object;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,

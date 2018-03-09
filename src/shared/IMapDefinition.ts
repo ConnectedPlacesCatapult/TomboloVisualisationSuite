@@ -19,4 +19,5 @@ export interface IMapDefinition {
   tileBaseUrl: string;
   ownerId: string;
   filters: IMapFilter[];
+  ui: object;
 }

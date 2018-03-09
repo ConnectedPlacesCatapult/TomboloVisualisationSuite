@@ -159,6 +159,7 @@ function clientSafeMap(map: TomboloMap): object {
     icon: map.icon,
     groupId: map.mapGroupId,
     ownerId: map.ownerId,
+    ui: map.ui,
     styleUrl: `${baseUrl}/maps/${map.id}/style.json`
   };
 }

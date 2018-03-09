@@ -66,6 +66,7 @@ import {DragulaModule} from 'ng2-dragula';
 import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
 import {MapFiltersPanelComponent} from './map-filters/map-filters-panel.component';
 import {FilterEditorComponent} from './map-filters/filter-editor/filter-editor.component';
+import {AccesstoRightBarComponent} from './rightbar-panels/accessto/accessto-rightbar.component';
 
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -116,7 +117,8 @@ export function AppConfigFactory(configService: ConfigService) {
     ColorWellComponent,
     EditInfoComponent,
     MapFiltersPanelComponent,
-    FilterEditorComponent
+    FilterEditorComponent,
+    AccesstoRightBarComponent
   ],
   imports: [
     BrowserModule,

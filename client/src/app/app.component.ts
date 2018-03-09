@@ -143,8 +143,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     // Fly to default location if not set in URL
     const url = new URL(window.location.href);
 
-    debug('url params', url.searchParams);
-
     const zoom = url.searchParams.get('zoom') ? +url.searchParams.get('zoom') : map.defaultZoom || map.getZoom();
     const lng = url.searchParams.get('lng') ? +url.searchParams.get('lng') : map.defaultCenter[0] || map.getCenter().lng;
     const lat = url.searchParams.get('lat') ? +url.searchParams.get('lat') : map.defaultCenter[1] || map.getCenter().lat;
@@ -201,6 +199,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       if (!dataFeature) {
         return;
       }
+
+      debug(`feature clicked on layer ${dataFeature['layer']['id']}`, dataFeature.properties);
 
       const attributes = this.getAttributesWithValues(map, dataFeature);
       this.tooltipRenderService.setTooltip(attributes, event.lngLat);

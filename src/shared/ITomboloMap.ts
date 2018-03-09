@@ -16,4 +16,5 @@ export interface ITomboloMap {
   isPrivate: boolean;
   order: number;
   basemap: any;
+  ui: object;
 }
