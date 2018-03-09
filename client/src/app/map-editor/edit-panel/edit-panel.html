@@ -1,43 +1,49 @@
-<h3 class="sidebar-header">
-  Map Editor
-</h3>
+<div class="sidebar-content with-tabs">
 
-<div class="sidebar-content">
-  <ng-container *ngIf="map && palettes && basemaps">
+  <mat-tab-group>
+    <mat-tab label="Map Editor">
+      <ng-container *ngIf="map && palettes && basemaps">
 
-    <map-metadata-editor [map]="map"></map-metadata-editor>
+        <map-metadata-editor [map]="map"></map-metadata-editor>
 
-    <mat-accordion multi="true" displayMode="flat" [dragula]="'dragdrop'" [dragulaOptions]="dragulaOptions">
-      <!-- Map layers -->
-      <mat-expansion-panel [id]="layer.layerId" *ngFor="let layer of layers; trackBy: trackLayerById" expanded="true">
-        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
-          <mat-icon svgIcon="grab-handle" class="grab-handle"></mat-icon>
-          <mat-icon [svgIcon]="typeIconForLayer(layer)"></mat-icon>
-          <span class="expansion-header-title">{{layer.name}}</span>
-          <div class="button-box">
-            <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layer); $event.stopPropagation()"><mat-icon [svgIcon]="eyeIconForLayer(layer)"></mat-icon></button>
-            <button mat-icon-button class="compressed" (click)="deleteLayer(layer); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
-          </div>
-        </mat-expansion-panel-header>
-        <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes" ></map-layer-editor>
-      </mat-expansion-panel>
-    </mat-accordion>
+        <mat-accordion multi="true" displayMode="flat" [dragula]="'dragdrop'" [dragulaOptions]="dragulaOptions">
+          <!-- Map layers -->
+          <mat-expansion-panel [id]="layer.layerId" *ngFor="let layer of layers; trackBy: trackLayerById" expanded="true">
+            <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+              <mat-icon svgIcon="grab-handle" class="grab-handle"></mat-icon>
+              <mat-icon [svgIcon]="typeIconForLayer(layer)"></mat-icon>
+              <span class="expansion-header-title">{{layer.name}}</span>
+              <div class="button-box">
+                <button mat-icon-button class="compressed" (click)="toggleLayerVisibility(layer); $event.stopPropagation()"><mat-icon [svgIcon]="eyeIconForLayer(layer)"></mat-icon></button>
+                <button mat-icon-button class="compressed" (click)="deleteLayer(layer); $event.stopPropagation()"><mat-icon svgIcon="trash"></mat-icon></button>
+              </div>
+            </mat-expansion-panel-header>
+            <map-layer-editor [map]="map" [layer]="layer" [palettes]="palettes" ></map-layer-editor>
+          </mat-expansion-panel>
+        </mat-accordion>
 
-      <!-- Basemap -->
-    <mat-accordion multi="true" displayMode="flat">
-      <mat-expansion-panel id="basemap-panel" expanded="true">
-        <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
-          <mat-icon svgIcon="map"></mat-icon>
-          <span class="expansion-header-title">Basemap</span>
-        </mat-expansion-panel-header>
-        <map-basemap-editor [map]="map" [basemaps]="basemaps"></map-basemap-editor>
-      </mat-expansion-panel>
+        <!-- Basemap -->
+        <mat-accordion multi="true" displayMode="flat">
+          <mat-expansion-panel id="basemap-panel" expanded="true">
+            <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
+              <mat-icon svgIcon="map"></mat-icon>
+              <span class="expansion-header-title">Basemap</span>
+            </mat-expansion-panel-header>
+            <map-basemap-editor [map]="map" [basemaps]="basemaps"></map-basemap-editor>
+          </mat-expansion-panel>
 
-    </mat-accordion>
+        </mat-accordion>
 
-  </ng-container>
+      </ng-container>
+    </mat-tab>
+    <mat-tab label="Map Filters">
+      <map-filters></map-filters>
+    </mat-tab>
+  </mat-tab-group>
+
 </div>
 
 <div class="sidebar-footer">
 
 </div>
+

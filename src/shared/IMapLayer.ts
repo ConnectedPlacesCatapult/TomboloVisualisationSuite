@@ -1,4 +1,5 @@
 import {IPalette} from './IPalette';
+import {IMapFilter} from './IMapFilter';
 
 export interface IMapLayer {
   mapId?: string;
