@@ -225,7 +225,12 @@ export class StyleGenerator {
       f.operator &&
       f.value !== null
     )
-      .map(f => [f.operator, f.attribute, f.value]);
+      .map(f => {
+
+        const value = (f.operator === 'in' || f.operator === '!in') ? f.value.split(',').map(s => s.trim()) : [f.value];
+
+        return [f.operator, f.attribute, ...value];
+      });
 
     return ['all', ...filters];
   }
