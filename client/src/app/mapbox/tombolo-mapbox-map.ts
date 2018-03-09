@@ -604,15 +604,28 @@ export class TomboloMapboxMap extends EmuMapboxMap {
    * @param {string} userId
    */
   copyMap(userId: string) {
+
+    debug('Before copy', this._mapDefinition);
+
     this._mapDefinition.id = uuid();
     this._mapDefinition.name = this._mapDefinition.name + ' Copy';
     this._mapDefinition.ownerId = userId;
 
-    const layersCopy = [...this.dataLayers];
-    layersCopy.forEach(layer => {
-      layer.originalLayerId = uuid();
-      layer.layerId = DATA_LAYER_PREFIX + layer.originalLayerId;
+    // Give each map layer a new identity
+    this.dataLayers.forEach((layer, index) => {
+      const newOriginalLayerId = uuid();
+      const newLayerId = DATA_LAYER_PREFIX + newOriginalLayerId;
+
+      // Update filters for the copied layer
+      this._mapDefinition.filters
+        .filter(f => f.datalayerId === layer.layerId)
+        .forEach(f => f.datalayerId = newLayerId);
+
+      layer.originalLayerId = newOriginalLayerId;
+      layer.layerId = newLayerId;
     });
+
+    debug('After copy', this._mapDefinition);
   }
 
   private regenerateLayerPaintStyle(layer: IMapLayer): void {
@@ -660,8 +673,6 @@ export class TomboloMapboxMap extends EmuMapboxMap {
       if (layer.labelAttribute) {
         // Generate updated layer
         const labelLayer = this._styleGenerator.generateLabelLayer(layer, this._metadata.labelLayerStyle);
-
-        debug(labelLayer);
 
         // Insert new label layer
         this.addLayer(labelLayer as MapboxLayer);
