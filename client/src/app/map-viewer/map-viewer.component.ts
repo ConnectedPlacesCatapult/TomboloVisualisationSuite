@@ -15,8 +15,9 @@ import LngLatBoundsLike = mapboxgl.LngLatBoundsLike;
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../auth/auth.service';
 import {APP_CONFIG, AppConfig} from '../config.service';
+import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
 
-const debug = Debug('tombolo:maps-demo');
+const debug = Debug('tombolo:map-viewer');
 
 @Component({
   selector: 'maps-viewer',
@@ -103,6 +104,11 @@ export class MapViewerComponent implements OnInit {
         queryParamsHandling: 'merge'
       });
     });
+  }
+
+  // Return rightbar route to use for the specified map
+  rightBarRoute(map: ITomboloMap) {
+    return (map.ui && map.ui['rightBar']) || 'mapinfo';
   }
 
 }

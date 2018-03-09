@@ -84,6 +84,31 @@
     text-transform: uppercase;
   }
 
+  .button-small {
+    @include mat-typography-level-to-styles($typography, caption);
+
+    color: mat-color($accent);
+    width: auto;
+    border-radius: 0;
+    padding: 0;
+    min-width: 0;
+
+    .mat-button-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+
+      .mat-icon {
+        padding-right: 0.1em;
+      }
+    }
+
+    &:hover {
+      color: mat-color($tombolo-darkblue, 500);
+    }
+  }
+
   /* Sidebars */
 
   .sidebar {
@@ -600,6 +625,7 @@
 
   h3.sidebar-header {
     @include mat-typography-level-to-styles($typography, title);
+    font-size: 16px;
 
     color: mat-color($primary, darker);
 
@@ -766,6 +792,21 @@
         min-width: 128px;
         text-transform: uppercase;
       }
+    }
+  }
+
+  .access-to {
+    color: mat-color($primary);
+
+    h4 {
+      @include mat-typography-level-to-styles($typography, subheading-1);
+      text-transform: uppercase;
+    }
+
+    hr {
+      height: 1px;
+      background-color: #D7E4E4;
+      border: none;
     }
   }
 }

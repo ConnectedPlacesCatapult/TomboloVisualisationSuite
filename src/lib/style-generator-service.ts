@@ -59,7 +59,8 @@ export class StyleGeneratorService {
       basemapDetailLevel: map.basemapDetailLevel,
       tileBaseUrl: baseUrl,
       ownerId: map.ownerId,
-      filters: this.filtersForMap(map)
+      filters: this.filtersForMap(map),
+      ui: map.ui
     };
 
     return mapDefinition;

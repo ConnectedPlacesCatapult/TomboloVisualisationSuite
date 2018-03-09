@@ -20,6 +20,7 @@ export class NumberSliderControlComponent implements ControlValueAccessor {
   @Input() step: number = 1;
   @Input() unit: string;
   @Input() value: number = 0;
+  @Input('tick-interval') tickInterval: number | 'auto';
 
   propagateChange = (_: any) => {};
 

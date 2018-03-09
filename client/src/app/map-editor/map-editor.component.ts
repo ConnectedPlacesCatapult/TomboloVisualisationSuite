@@ -130,7 +130,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           outlets: {
             primary: ['view', map.id],
             loginBar: null,
-            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : 'mapinfo']
+            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : map.rightBarRoute]
           }
         }]
       }

@@ -232,7 +232,7 @@ export class StyleGenerator {
         let value = [f.value];
 
         if (f.operator === 'in' || f.operator === '!in') {
-          value  = f.value.toString().split(',').map(s => s.trim()).filter(s => s != '');
+          value = f.value.toString().split(',').map(s => s.trim()).filter(s => s !== '');
         }
 
         return [f.operator, f.attribute, ...value];
