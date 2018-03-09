@@ -661,8 +661,6 @@ export class TomboloMapboxMap extends EmuMapboxMap {
         // Generate updated layer
         const labelLayer = this._styleGenerator.generateLabelLayer(layer, this._metadata.labelLayerStyle);
 
-        debug(labelLayer);
-
         // Insert new label layer
         this.addLayer(labelLayer as MapboxLayer);
       }
