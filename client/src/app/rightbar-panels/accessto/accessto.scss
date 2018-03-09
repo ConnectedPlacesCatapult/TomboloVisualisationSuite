@@ -4,6 +4,10 @@ $collapsed-description-height: 180px;
 
 .access-to {
 
+  h4:first-child {
+    margin: 0 0 5px 0;
+  }
+
   div[markdown] {
     overflow-y: hidden;
   }

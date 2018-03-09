@@ -200,6 +200,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         return;
       }
 
+      debug(`feature clicked on layer ${dataFeature['layer']['id']}`, dataFeature.properties);
+
       const attributes = this.getAttributesWithValues(map, dataFeature);
       this.tooltipRenderService.setTooltip(attributes, event.lngLat);
     });

@@ -40,7 +40,7 @@ export  const ICONS = [
   'transport',
   'trash',
   'user',
-  'walk'
+  'wlk'
 ];
 
 export function RegisterIcons(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
