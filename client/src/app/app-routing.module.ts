@@ -53,12 +53,6 @@ const routes: Routes = [
     component: EditPanelComponent,
     outlet: 'rightBar'
   },
-  // TODO Temorary route!!!
-  {
-    path: 'filterspanel',
-    component: MapFiltersPanelComponent,
-    outlet: 'rightBar'
-  },
   {
     path: 'appinfo',
     component: AppInfoComponent,

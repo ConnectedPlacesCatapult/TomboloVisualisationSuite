@@ -48,7 +48,8 @@
   <number-slider-control *ngIf="mode == 'number'"
                          class="full-width" formControlName="value"
                          [min]="selectedAttribute?.minValue"
-                         [max]="selectedAttribute?.maxValue"></number-slider-control>
+                         [max]="selectedAttribute?.maxValue"
+                         [step]="attributeSliderStep()"></number-slider-control>
 
 
 </form>

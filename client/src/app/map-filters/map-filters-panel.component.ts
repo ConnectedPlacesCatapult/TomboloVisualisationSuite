@@ -21,8 +21,6 @@ const debug = Debug('tombolo:map-filters-panel');
 })
 export class MapFiltersPanelComponent implements OnInit, DoCheck {
 
-  @HostBinding('class.sidebar-component') sidebarComponentClass = true;
-
   @HostBinding('class.map-filters') mapFiltersClass = true;
 
   constructor(private mapService: MapService,

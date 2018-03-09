@@ -457,7 +457,9 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     filtersCopy.splice(index, 1);
     this._mapDefinition.filters = filtersCopy;
 
-    this.setFilter(filter.datalayerId, this._styleGenerator.filtersForLayerId(filter.datalayerId));
+    if (filter.datalayerId) {
+      this.setFilter(filter.datalayerId, this._styleGenerator.filtersForLayerId(filter.datalayerId));
+    }
 
     this.setModified();
   }

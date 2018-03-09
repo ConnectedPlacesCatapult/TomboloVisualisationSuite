@@ -132,6 +132,18 @@ export class FilterEditorComponent implements OnInit, OnChanges {
     return this.map.getDataAttributesForLayer(seletedLayerId);
   }
 
+  attributeSliderStep(): number {
+    if (this.selectedAttribute) {
+      let stepSize = (this.selectedAttribute.maxValue - this.selectedAttribute.minValue) / 100;
+      // Round to a power of ten
+      stepSize = Math.pow(10, Math.round(Math.log10(stepSize)));
+      return stepSize;
+    }
+    else {
+      return 1;
+    }
+  }
+
   private emitFilterChanged() {
     this.filterChange.emit(this.filter);
   }

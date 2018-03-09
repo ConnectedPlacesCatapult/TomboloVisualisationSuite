@@ -1,8 +1,15 @@
-<h3 class="sidebar-header">
-  Map Information
-</h3>
+<div class="sidebar-content with-tabs">
 
-<div *ngIf="mapDescription" class="sidebar-content with-padding" Markdown [data]="mapDescription"></div>
+  <mat-tab-group>
+    <mat-tab label="Map Information">
+      <div *ngIf="mapDescription" class="with-padding" Markdown [data]="mapDescription"></div>
+    </mat-tab>
+    <mat-tab label="Map Filters">
+      <map-filters></map-filters>
+    </mat-tab>
+  </mat-tab-group>
+
+</div>
 
 <div class="sidebar-footer">
 

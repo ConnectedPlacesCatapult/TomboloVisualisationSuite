@@ -736,7 +736,36 @@
         }
       }
     }
-
   }
 
+  /* Sidebar content in tabs */
+  .sidebar-content.with-tabs {
+    .mat-tab-group {
+
+      &, .mat-tab-body-wrapper {
+        height: 100%;
+      }
+
+      .mat-tab-header {
+        margin: 0 $g;
+      }
+
+      .mat-tab-labels {
+        justify-content: space-around;
+      }
+
+      .mat-ink-bar {
+        background-color: mat-color($accent);
+      }
+
+      .mat-tab-label {
+        @include mat-typography-level-to-styles($typography, caption);
+        font-weight: bold;
+        color: mat-color($primary);
+        padding: 0 $g / 2;
+        min-width: 128px;
+        text-transform: uppercase;
+      }
+    }
+  }
 }

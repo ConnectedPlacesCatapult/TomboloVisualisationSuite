@@ -25,6 +25,11 @@ export class NumberSliderControlComponent implements ControlValueAccessor {
 
   constructor() {}
 
+  setValueFromSlider(val) {
+    this.value = Number.parseFloat(val.toPrecision(3));
+    this.propagateChange(val);
+  }
+
   writeValue(value: any) {
     if (value !== undefined) {
       this.value = value;
