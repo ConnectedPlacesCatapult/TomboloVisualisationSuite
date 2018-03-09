@@ -227,7 +227,13 @@ export class StyleGenerator {
     )
       .map(f => {
 
-        const value = (f.operator === 'in' || f.operator === '!in') ? f.value.split(',').map(s => s.trim()) : [f.value];
+        console.log(f);
+
+        let value = [f.value];
+
+        if (f.operator === 'in' || f.operator === '!in') {
+          value  = f.value.toString().split(',').map(s => s.trim()).filter(s => s != '');
+        }
 
         return [f.operator, f.attribute, ...value];
       });
