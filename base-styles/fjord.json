@@ -19,6 +19,12 @@
         "highway_major_subtle": 2,
         "highway_name_other": 2,
         "highway_name_other-en": 2,
+        "railway_dashline": 2,
+        "railway": 2,
+        "railway_service_dashline": 2,
+        "railway_service": 2,
+        "railway_transit_dashline": 2,
+        "railway_transit": 2,
         "highway_motorway_casing": 1,
         "highway_motorway_inner": 1,
         "highway_motorway_subtle": 1,
@@ -44,11 +50,11 @@
         "text-color": "hsl(195, 25%, 76%)",
         "text-halo-color": "hsla(228, 60%, 21%, 0.7)",
         "text-halo-width": 1,
-        "text-halo-blur": 0.8,
+        "text-halo-blur": 1,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 13,
+        "text-size": 10,
         "text-transform": "uppercase",
         "text-font": [
           "Metropolis Regular"
