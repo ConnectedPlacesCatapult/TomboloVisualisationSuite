@@ -64,6 +64,8 @@ import {ColorPickerModule} from 'ngx-color-picker';
 import {ColorWellComponent} from './map-editor/edit-panel/color-well/color-well.component';
 import {DragulaModule} from 'ng2-dragula';
 import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
+import {MapFiltersPanelComponent} from './map-filters/map-filters-panel.component';
+import {FilterEditorComponent} from './map-filters/filter-editor/filter-editor.component';
 
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -112,7 +114,9 @@ export function AppConfigFactory(configService: ConfigService) {
     ColorPaletteComponent,
     ColorPaletteSelectComponent,
     ColorWellComponent,
-    EditInfoComponent
+    EditInfoComponent,
+    MapFiltersPanelComponent,
+    FilterEditorComponent
   ],
   imports: [
     BrowserModule,

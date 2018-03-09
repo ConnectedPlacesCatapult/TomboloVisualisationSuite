@@ -116,7 +116,8 @@ export class StyleGenerator {
       minzoom: dataset.minZoom,
       maxzoom: dataset.maxZoom,
       layout: this.layoutStyleForLayer(layer),
-      paint: this.paintStyleForLayer(layer)
+      paint: this.paintStyleForLayer(layer),
+      filter: this.filtersForLayerId(layer.layerId)
     };
   }
 
@@ -163,7 +164,7 @@ export class StyleGenerator {
       'source-layer': DATA_LAYER_ID,
       layout: layout,
       paint: paint,
-      filter: ['has', layer.labelAttribute]
+      filter: [...this.filtersForLayerId(layer.layerId), ['has', layer.labelAttribute]]
     };
   }
 
@@ -200,10 +201,44 @@ export class StyleGenerator {
       fixedSize: 10,
       sizeMode: 'fixed',
       labelAttribute: null,
-      order: null,
+      order: null
     };
 
     return mapLayer;
+  }
+
+  /**
+   * Generate filter property for specified layer
+   *
+   * @param {IMapLayer} layer
+   * @returns {any} Mapbox filter property
+   */
+  filtersForLayerId(layerId: string): any {
+
+    if (this.mapDefinition.filters === null || this.mapDefinition.filters.length === 0) return ['all'];
+
+    // Concat enabled features
+    const filters = this.mapDefinition.filters.filter(f =>
+      f.enabled &&
+      f.datalayerId === layerId &&
+      f.attribute &&
+      f.operator &&
+      f.value !== null
+    )
+      .map(f => {
+
+        console.log(f);
+
+        let value = [f.value];
+
+        if (f.operator === 'in' || f.operator === '!in') {
+          value  = f.value.toString().split(',').map(s => s.trim()).filter(s => s != '');
+        }
+
+        return [f.operator, f.attribute, ...value];
+      });
+
+    return ['all', ...filters];
   }
 
   private generateSources(mapDefinition: IMapDefinition): object {

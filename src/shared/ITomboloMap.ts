@@ -1,4 +1,6 @@
 
+import {IMapFilter} from './IMapFilter';
+
 export interface ITomboloMap {
   id: string;
   name: string;
@@ -13,7 +15,5 @@ export interface ITomboloMap {
   basemapDetailLevel: number;
   isPrivate: boolean;
   order: number;
-
   basemap: any;
- // layers: TomboloMapLayer[];
 }
