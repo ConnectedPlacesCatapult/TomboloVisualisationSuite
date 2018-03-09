@@ -51,7 +51,6 @@ export class FilterEditorComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // Save form changes to map as user changes controls
-  debug('nginit');
     this._subs.push(this.form.get('dataLayerId').valueChanges.subscribe(val => {
       this.filter.datalayerId = val;
       this.emitFilterChanged();
@@ -104,8 +103,6 @@ export class FilterEditorComponent implements OnInit, OnChanges {
 
     // Transfer values to form
     if ((changes.map || changes.filter) && this.map) {
-
-      debug('ngChanges');
 
       const filter = this.filter;
 

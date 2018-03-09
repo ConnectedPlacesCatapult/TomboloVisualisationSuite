@@ -169,6 +169,15 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.setModified();
   }
 
+  get ui(): object {
+    return (this._mapDefinition) ? this._mapDefinition.ui : {};
+  }
+
+  // Return route to load map-specific UI in right bar
+  get rightBarRoute(): string {
+    return this.ui ? this.ui['rightBar'] : 'mapinfo';
+  }
+
   get datasets(): ITomboloDataset[] {
     return (this._mapDefinition) ? this._mapDefinition.datasets : [];
   }
