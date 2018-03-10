@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostBinding, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -8,6 +8,7 @@ import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {MapService} from '../services/map-service/map.service';
 import {Subscription} from 'rxjs/Subscription';
 import * as html2canvas from 'html2canvas';
+import {APP_CONFIG, AppConfig} from '../config.service';
 
 const debug = Debug('tombolo:map-export');
 
@@ -38,7 +39,8 @@ export class MapExportComponent implements OnInit, OnDestroy {
   constructor(private mapRegistry: MapRegistry,
               private location: Location,
               private notificationService: NotificationService,
-              private mapService: MapService)
+              private mapService: MapService,
+              @Inject(APP_CONFIG) private config: AppConfig)
   {
     this.exportForm = new FormGroup({
       name: new FormControl('', Validators.required),
@@ -99,6 +101,10 @@ export class MapExportComponent implements OnInit, OnDestroy {
       });
   }
 
+  routeBack(): void {
+    this.location.back();
+  }
+
   private formatFileName(name: string): string {
     return name.toLowerCase().replace(/ /g, "_");
   }
@@ -107,10 +113,6 @@ export class MapExportComponent implements OnInit, OnDestroy {
     if (this.map) {
       this.exportForm.patchValue({name: this.formatFileName(this.map.name)});
     }
-  }
-
-  private routeBack(): void {
-    this.location.back();
   }
 
   private onPresetChange(preset) {
@@ -123,8 +125,6 @@ export class MapExportComponent implements OnInit, OnDestroy {
   }
 
   private drawOverlays(ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number, done) {
-
-    debug('In draw overlay handler');
 
     const attribElement = document.getElementsByClassName('mapboxgl-ctrl-attrib').item(0);
 
@@ -158,10 +158,7 @@ export class MapExportComponent implements OnInit, OnDestroy {
       ctx.font = '12px Roboto';
       ctx.fillStyle = 'black';
       ctx.textAlign = 'right';
-      ctx.fillText('Powered by Tombolo and Emu Analytics', canvasWidth - 10, canvasHeight - brandingHeight / 2);
-
-
-      debug('render finished - about to call done');
+      ctx.fillText(this.config.poweredBy, canvasWidth - 10, canvasHeight - brandingHeight / 2);
 
       done();
     })

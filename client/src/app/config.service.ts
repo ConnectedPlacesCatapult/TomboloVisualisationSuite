@@ -10,14 +10,13 @@ import {HttpClient} from "@angular/common/http";
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 
 export class AppConfig {
-  tileUrl: string;
-  authEndpoint: string;
   socialMediaTitle: string;
   socialMediaDescription: string;
   socialMediaTags: string;
   googleAnalyticsUserId: string;
   nominatimUrl: string;
   defaultMap: string;
+  poweredBy: string;
 }
 
 @Injectable()

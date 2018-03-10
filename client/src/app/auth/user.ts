@@ -18,7 +18,6 @@ export class User implements IUser {
   }
 
   hasRole(role: 'editor' | 'admin'): boolean {
-    console.log('Checking roles', this.roles, role);
     return this.roles.indexOf(role) > -1;
   }
 }
