@@ -50,6 +50,7 @@ export class AuthService {
         debug(`Logged in user`, u);
         this._user = new User(u);
         this._user$.next(u);
+        gtag('set', {'user_id': u.id});
         return u;
       })
       .catch(e => {
@@ -144,6 +145,7 @@ export class AuthService {
         if (user) {
           // Convert to User instance to give access to instance methods
           this._user = new User(user);
+          gtag('set', {'user_id': user.id});
         }
 
         this._user$.next(this._user);
