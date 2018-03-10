@@ -32,6 +32,10 @@
       padding: $sidebar-padding !important;
     }
 
+    .with-side-padding {
+      padding: 0 $sidebar-padding !important;
+    }
+
     div.spacer {
       height: $g / 2;
     }
@@ -424,7 +428,7 @@
         // Turn from circle to rounded square
         border-radius: $br !important;
 
-        // Shrink from default FAB button size
+        // Shrink from default FAB button radius
         width: $map-zoom-button-size;
         height: $map-zoom-button-size;
 
@@ -641,10 +645,21 @@
     }
 
     .sidebar-footer {
-
+      position: relative;
     }
 
-
+    // gradient fade at footer top
+    .sidebar-right .sidebar-footer:before {
+      @include gradient-fade();
+      position: absolute;
+      display:block;
+      height: 20px;
+      top: -20px;
+      left:0;
+      right:0;
+      content:'';
+      pointer-events: none;
+    }
 
     /* Slider box */
     .slider-box {
@@ -789,7 +804,11 @@
         border: none;
       }
     }
+
+
   }
+
+  /////////////////////////////
 
   /* Markdown styling */
   div[markdown] {
@@ -835,6 +854,129 @@
     height: 40px !important;
     .mat-expansion-panel-content, .button-box, .mat-expansion-indicator {
       display: none;
+    }
+  }
+
+
+  // Map Key
+  .map-key {
+    margin: 10px 0;
+
+    .map-key-item {
+      @include mat-typography-level-to-styles($typography, caption);
+
+      padding-top: $g / 2;
+      border-top: 1px solid #E3ECEC;
+
+      .title {
+        //@include mat-typography-level-to-styles($typography, subheading-2);
+      }
+    }
+  }
+
+
+  /* Dialog-specific styles */
+
+  .cdk-overlay-pane {
+
+    // Error notification styling
+    .mat-snack-bar-container.error {
+      background-color: mat-color($warn);
+      .mat-simple-snackbar, .mat-simple-snackbar-action {
+        color: mat-contrast($warn, 500);
+      }
+    }
+
+    .datasets-dialog {
+
+      /* Search box styling */
+      .mat-input-container {
+        width: 100%;
+        background-color: #F3F6F6;
+        border: 1px solid #C8D9D9;
+        border-radius: 3px;
+      }
+
+      .mat-input-flex {
+        box-sizing: border-box;
+        padding-left: 0.5em;
+      }
+
+      .mat-input-underline {
+        display: none;
+      }
+
+      .mat-input-subscript-wrapper {
+        display: none;
+      }
+
+      .mat-form-field-wrapper {
+        padding-bottom: 0;
+      }
+
+      .mat-form-field-infix {
+        border-top: 0;
+      }
+
+      .mat-input-element {
+        caret-color: #888;
+      }
+
+      .mat-input-prefix .mat-icon-button, .mat-input-suffix .mat-icon-button {
+        color: mat-color($accent, 300);
+        width: 40px;
+        height: 30px;
+        position: relative;
+        right: -5px;
+      }
+
+      .mat-input-prefix .mat-icon-button .mat-icon, .mat-input-suffix .mat-icon-button .mat-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .mat-dialog-content {
+        padding-bottom: $g / 2;
+      }
+
+      hr {
+        margin: $g 0;
+        background-color: #E3ECEC;
+      }
+
+      h3 {
+        @include mat-typography-level-to-styles($typography, title);
+        margin: 0;
+      }
+
+      .left-column {
+        padding-right: $g;
+        border-right: 1px solid #E3ECEC;
+      }
+
+      .right-column {
+        padding-left: $g;
+      }
+
+      .mat-nav-list {
+        padding-top: $g;
+      }
+
+      .mat-list-item {
+        color: mat-color($accent);
+        height: $g * 2;
+
+        &.selected {
+          color: mat-color($primary);
+          background-color: #F3F6F6;
+        }
+      }
+
+      .message {
+        @include mat-typography-level-to-styles($typography, body-1);
+        font-style: italic;
+      }
+
     }
   }
 }

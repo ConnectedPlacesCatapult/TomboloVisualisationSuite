@@ -2,7 +2,7 @@
 
   <mat-tab-group>
     <mat-tab label="Map Information">
-      <div *ngIf="mapDescription" class="with-padding" Markdown [data]="mapDescription"></div>
+      <div *ngIf="map?.description" class="with-padding" Markdown [data]="map?.description"></div>
     </mat-tab>
     <mat-tab label="Map Filters">
       <map-filters></map-filters>
@@ -12,5 +12,5 @@
 </div>
 
 <div class="sidebar-footer">
-
+  <map-key [map]="map" class="with-side-padding"></map-key>
 </div>

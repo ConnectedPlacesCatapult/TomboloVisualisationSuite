@@ -1,4 +1,4 @@
-import {Component, HostBinding, Inject, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, OnDestroy, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -24,7 +24,7 @@ const debug = Debug('tombolo:map-viewer');
   templateUrl: './map-viewer.html',
   styles: []
 })
-export class MapViewerComponent implements OnInit {
+export class MapViewerComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
@@ -32,7 +32,6 @@ export class MapViewerComponent implements OnInit {
 
   mapGroups$: Observable<IMapGroup[]> = null;
 
-  expandedSection = 0;
 
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,

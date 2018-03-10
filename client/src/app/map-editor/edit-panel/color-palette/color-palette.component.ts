@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component, HostBinding, Input, ViewEncapsulatio
 })
 export class ColorPaletteComponent {
 
-  @HostBinding('class.color-palette') numberSliderComponentClass = true;
+  @HostBinding('class.color-palette') colorPaletteClass = true;
 
   @Input() colors: string[];
 

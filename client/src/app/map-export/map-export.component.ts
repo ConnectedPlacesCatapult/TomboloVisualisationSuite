@@ -1,31 +1,30 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Location} from '@angular/common';
-import {NotificationService} from "../dialogs/notification.service";
+import {NotificationService} from '../dialogs/notification.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
+import {MapService} from '../services/map-service/map.service';
+import {Subscription} from 'rxjs/Subscription';
+import * as html2canvas from 'html2canvas';
 
-const debug = Debug('tombolo:map-info');
+const debug = Debug('tombolo:map-export');
 
 @Component({
-  selector: 'map-info',
+  selector: 'map-export',
   templateUrl: './map-export.html',
   styleUrls: ['./map-export.scss']
 })
-export class MapExportComponent implements OnInit {
+export class MapExportComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
+  @HostBinding('class.map-export') mapExportClass = true;
 
-  constructor(private mapRegistry: MapRegistry,
-              private location: Location,
-              private notificationService: NotificationService,
-              private router: Router) {}
+  @ViewChild('theMapKey') mapKey;
 
-  exportLoading = false;
-  mapName: string;
-  mapDescription: string;
+  map: TomboloMapboxMap;
+  exporting = false;
   exportForm: FormGroup;
   presets = {
     "a4_150dpi": { width: 297, height: 210, dpi: 150, format: 'png' },
@@ -34,7 +33,13 @@ export class MapExportComponent implements OnInit {
     "a3_300dpi": { width: 420, height: 297, dpi: 300, format: 'png' }
   };
 
-  ngOnInit() {
+  private _subs: Subscription[] = [];
+
+  constructor(private mapRegistry: MapRegistry,
+              private location: Location,
+              private notificationService: NotificationService,
+              private mapService: MapService)
+  {
     this.exportForm = new FormGroup({
       name: new FormControl('', Validators.required),
       width: new FormControl(this.presets['a4_150dpi'].width, Validators.required),
@@ -43,45 +48,72 @@ export class MapExportComponent implements OnInit {
       format: new FormControl(this.presets['a4_150dpi'].format, Validators.required),
       preset: new FormControl('a4_150dpi')
     });
+  }
 
+  ngOnInit() {
+
+    // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.exportForm.patchValue({'name': this.formatFileName(map.name)});
+      if (map.mapLoaded) {
+        this.map = map;
+        this.updateUI();
+      }
     });
 
-    this.exportForm.get('preset').valueChanges.subscribe(val => this.onPresetChange(val));
+    // Update name and description when map is loaded
+    this._subs.push(this.mapService.mapLoading$().subscribe(map => {
+      this.map = null;
+    }));
+
+    // Update name and description when map is loaded
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
+      this.map = map;
+      this.updateUI();
+    }));
+
+    this._subs.push(this.exportForm.get('preset').valueChanges.subscribe(this.onPresetChange.bind(this)));
+  }
+
+  ngOnDestroy() {
+    this._subs.forEach(sub => sub.unsubscribe());
   }
 
   exportMap(): void {
-    this.exportLoading = true;
+    this.exporting = true;
 
-    this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
-      .then(map => {
-        return map.export(
+    this.map.export(
           this.exportForm.get('name').value,
           this.exportForm.get('width').value,
           this.exportForm.get('height').value,
           this.exportForm.get('dpi').value,
-          this.exportForm.get('format').value)
-      })
+          this.exportForm.get('format').value,
+          this.drawOverlays.bind(this))
       .then(name => {
         debug('Downloaded ' + name);
         this.routeBack();
+        this.exporting = false;
       })
       .catch(err => {
-        this.exportLoading = false;
-        this.notificationService.error(err)
+        this.exporting = false;
+        this.notificationService.error(err);
       });
   }
 
-  formatFileName(name: string): string {
+  private formatFileName(name: string): string {
     return name.toLowerCase().replace(/ /g, "_");
   }
 
-  routeBack(): void {
+  private updateUI() {
+    if (this.map) {
+      this.exportForm.patchValue({name: this.formatFileName(this.map.name)});
+    }
+  }
+
+  private routeBack(): void {
     this.location.back();
   }
 
-  onPresetChange(preset) {
+  private onPresetChange(preset) {
     this.exportForm.patchValue({
       width: this.presets[preset].width,
       height: this.presets[preset].height,
@@ -90,4 +122,51 @@ export class MapExportComponent implements OnInit {
     });
   }
 
+  private drawOverlays(ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number, done) {
+
+    debug('In draw overlay handler');
+
+    const attribElement = document.getElementsByClassName('mapboxgl-ctrl-attrib').item(0);
+
+    Promise.all([
+      html2canvas(attribElement as any),
+      html2canvas(this.mapKey.nativeElement)
+    ]).then(([attribCanvas, mapKeyCanvas]) => {
+
+      // Attribution
+      ctx.drawImage(attribCanvas, 0, canvasHeight - attribCanvas.height);
+
+      // Map key
+      const scaleFactor = 0.75; // Shrink the map key
+      const trimTop = 20; // Trim off top of map key
+      const brandingHeight = 10;
+
+      const srcX = 0;
+      const srcY = trimTop;
+      const srcWidth = mapKeyCanvas.width;
+      const srcHeight = mapKeyCanvas.height - trimTop;
+      const dstWidth = srcWidth * scaleFactor;
+      const dstHeight = srcHeight * scaleFactor;
+      const dstX = canvasWidth - dstWidth;
+      const dstY = canvasHeight - dstHeight - brandingHeight;
+
+      ctx.drawImage(mapKeyCanvas, srcX, srcY, srcWidth, srcHeight, dstX, dstY, dstWidth, dstHeight);
+
+      // Branding
+      ctx.fillStyle = 'white';
+      ctx.fillRect(dstX, canvasHeight - brandingHeight, dstWidth, dstHeight);
+      ctx.font = '12px Roboto';
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'right';
+      ctx.fillText('Powered by Tombolo and Emu Analytics', canvasWidth - 10, canvasHeight - brandingHeight / 2);
+
+
+      debug('render finished - about to call done');
+
+      done();
+    })
+      .catch(e => {
+        done(e);
+      });
+  }
 }
