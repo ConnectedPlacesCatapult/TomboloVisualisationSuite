@@ -129,8 +129,8 @@ export class MapService {
    *
    * @returns {Promise<IDataset[]>}
    */
-  loadDatasetsInGroup(groupId: string): Observable<ITomboloDataset[]> {
-    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
+  loadDatasetsInGroup(groupId: string): Observable<IDatasetGroup> {
+    return this.http.get<IDatasetGroup>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
   }
 
   /**

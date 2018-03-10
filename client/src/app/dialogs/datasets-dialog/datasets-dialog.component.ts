@@ -3,24 +3,29 @@
  */
 
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, HostBinding, Inject, OnInit} from '@angular/core';
 import {APP_CONFIG, AppConfig} from '../../config.service';
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
 import {MapService} from '../../services/map-service/map.service';
+import {ITomboloDataset} from '../../../../../src/shared/ITomboloDataset';
+import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
+
+import * as Debug from 'debug';
+
+const debug = Debug('tombolo:datasets-dialog');
 
 @Component({
-  selector: 'share-dialog',
+  selector: 'datasets-dialog',
   templateUrl: './datasets-dialog.html',
   styleUrls: ['./datasets-dialog.scss']
 })
 export class DatasetsDialog implements OnInit {
 
-  groups: object;
-  datasets: object[];
-  filterInput: string;
-  selectedGroupId: string;
-  selectedDataset: object = {id: null, description: ''};
+  @HostBinding('class.datasets-dialog') datasetsDialogClass = true;
+
+  groups: IDatasetGroup[];
+  datasets: ITomboloDataset[];
+  selectedGroup: IDatasetGroup;
+  selectedDataset: ITomboloDataset;
 
   constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
               private mapService: MapService,
@@ -37,32 +42,26 @@ export class DatasetsDialog implements OnInit {
       .subscribe(groups => this.groups = groups);
   }
 
-  loadDatasets(groupId: string): void {
-    this.selectedGroupId = groupId;
-    this.selectedDataset = {id: null, description: ''};
+  selectGroup(group: IDatasetGroup): void {
+    this.selectedGroup = group;
+    this.selectedDataset = null;
 
-    this.mapService.loadDatasetsInGroup(groupId)
-      .subscribe(group => this.datasets = group['datasets']);
+    this.mapService.loadDatasetsInGroup(group.id).subscribe(group => {
+      debug(group);
+      this.datasets = group.datasets;
+    });
   }
 
-  selectDataset(dataset: object): void {
+  selectDataset(dataset: ITomboloDataset): void {
     this.selectedDataset = dataset;
   }
 
-  filterByQuery(): void {
-    this.selectedGroupId = null;
-    this.selectedDataset = {id: null, description: ''};
+  filterByQuery(searchTerm: string): void {
+    this.selectedGroup = null;
+    this.selectedDataset = null;
 
-    if (this.filterInput === '') return;
-
-    this.mapService.findDatasetsByQuery(this.filterInput)
+    this.mapService.findDatasetsByQuery(searchTerm)
       .subscribe(datasets => this.datasets = datasets);
-  }
-
-  queryOnEnter(ev): void {
-    if (ev['key'] === 'Enter') {
-      this.filterByQuery();
-    }
   }
 
   close(): void {

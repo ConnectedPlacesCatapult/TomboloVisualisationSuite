@@ -1,106 +1,50 @@
-/deep/ .mat-dialog-container {
-  overflow: hidden !important;
-  padding: 25px;
-}
+@import '../../../variables';
+
+$dataset-dialog-height: 500px !default;
+$dataset-dialog-left-column-width: 300x !default;
+$dataset-dialog-datasets-list-height: 160px !default;
 
 :host {
+  display: block;
+}
 
+hr {
+  display: block;
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  background-color: black;
+  border: none;
+}
+.mat-dialog-content {
+  display: flex;
+  height: $dataset-dialog-height;
   overflow: hidden;
+}
 
-  .container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-  }
+.left-column {
+  display: flex;
+  flex-direction: column;
+  width: $dataset-dialog-left-column-width;
+}
 
-  .fixed-width {
-    flex: 0 0 30% !important;
-  }
+.right-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1;
+}
 
-  .column {
-    padding: 5px 10px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-right: 5px;
-  }
+.categories-list {
+  flex: 1 1;
+  overflow: auto;
+}
 
-  .info {
-    flex: 1;
-    margin-bottom: auto;
-  }
+.datasets-list {
+  height: $dataset-dialog-datasets-list-height;
+  flex-shrink: 0;
+  overflow: auto;
+}
 
-  .row-flex-item {
-    padding-top: 5px;
-    flex: 1;
-    overflow: scroll;
-  }
-
-  h3 {
-    padding: 0;
-    margin: 0;
-    height: auto;
-  }
-
-  /deep/ .mat-list {
-    padding: 0;
-  }
-
-  /deep/ .mat-list-item-content {
-    cursor: pointer;
-  }
-
-  .border {
-    border-right: 1px solid rgba(15,45,58,0.5);
-  }
-
-  .darkblue {
-    color: rgb(5,35,48);
-  }
-
-  .blue {
-    color: rgb(41,182,206);
-  }
-
-  .search {
-    flex: 0 0 10%;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(15,45,58,0.5);
-
-    /deep/ .mat-input-container {
-      width: 100%;
-    }
-  }
-
-  .datasets {
-    flex: 0 0 30%;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(15,45,58,0.5);
-    overflow: scroll;
-  }
-
-  .search-icon {
-    position: absolute;
-    right: -2px;
-    cursor: pointer;
-  }
-
-  /deep/ .mat-input-element {
-    width: 80%;
-  }
-
-  .description {
-    padding: 5px;
-    font-size: 14px;
-    flex-grow: 1;
-  }
-
-  .buttons {
-    margin-top: auto;
-    flex: 0 0 7%;
-    text-align: right;
-  }
+.description {
+  overflow: auto;
 }

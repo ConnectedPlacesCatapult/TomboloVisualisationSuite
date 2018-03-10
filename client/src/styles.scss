@@ -6,7 +6,7 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~dragula/dist/dragula.css';
 
 @import 'app/tombolo-theme/tombolo-theme';
-@import 'app/dialogs/dialog-theme.scss';
+@import 'app/tombolo-theme/dialog-theme.scss';
 @import 'variables.scss';
 
 // Codemirror styles
@@ -27,10 +27,14 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 // Apply material theme to base components
 @include angular-material-theme($light-theme);
 
-// Apply tombolo theme
-tombolo-root {
-  @include tombolo-theme($light-theme);
+// Apply dialogs theme
+.cdk-overlay-pane {
+  @include tombolo-dialog-theme($light-theme);
 }
+
+// Apply tombolo theme
+@include tombolo-theme($light-theme);
+
 
 // Apply dark theme variant to left sidebar
 .sidebar-left {
@@ -88,16 +92,3 @@ body {
   pointer-events: none !important;
 }
 
-.gu-mirror {
-
-
-
-  .grab-handle {
-    cursor: grab !important;
-  }
-
-  height: 40px !important;
-  .mat-expansion-panel-content, .button-box, .mat-expansion-indicator {
-    display: none;
-  }
-}
