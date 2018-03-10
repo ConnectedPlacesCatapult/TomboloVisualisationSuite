@@ -13,8 +13,8 @@ import {Component, Inject} from '@angular/core';
         <p [innerHTML]="data.message"></p>
     </div>
     <div mat-dialog-actions fxLayoutAlign="end">
-      <button type="button" mat-button (click)="dialogRef.close(false)">Cancel</button>
-        <button type="button" mat-button (click)="dialogRef.close(true)">{{data.okButtonText}}</button>
+      <button type="button" cdk-focus-start mat-raised-button (click)="dialogRef.close(false)">Cancel</button>
+        <button type="button" mat-raised-button color="accent" (click)="dialogRef.close(true)">{{data.okButtonText}}</button>
     </div>
     `,
 })

@@ -34,6 +34,7 @@ export  const ICONS = [
   'radio-on',
   'save',
   'schools',
+  'search',
   'share',
   'signup',
   'social-isolation',
