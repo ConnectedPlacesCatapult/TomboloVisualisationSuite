@@ -1,0 +1,19 @@
+<div class="title" *ngIf="title">{{title}}</div>
+<div class="chips">
+  <div class="chip-container" *ngFor="let chip of chips">
+    <div class="chip">
+      <div class="chip-marker" [matTooltip]="chip.tooltip" matTooltipPosition="above"
+           [ngStyle]="{
+          'background-color': chip.color,
+          width: chip.size + 'px',
+          height: chip.size + 'px',
+          'margin-left': -chip.size / 2 + 'px',
+          'margin-top': -chip.size / 2 + 'px'
+         }"
+           [ngClass]="{circle: mode == 'circle'}"
+      >
+      </div>
+    </div>
+    <span class="chip-value">{{chip.value}}</span>
+  </div>
+</div>

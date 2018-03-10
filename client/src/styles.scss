@@ -1,13 +1,9 @@
 $fa-font-path: "../node_modules/font-awesome/fonts";
 
-@import '~font-awesome/scss/font-awesome';
 @import '~@angular/material/theming';
+@import '~font-awesome/scss/font-awesome';
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import '~dragula/dist/dragula.css';
-
-@import 'app/tombolo-theme/tombolo-theme';
-@import 'app/tombolo-theme/dialog-theme.scss';
-@import 'variables.scss';
 
 // Codemirror styles
 @import '~codemirror/lib/codemirror.css';
@@ -15,6 +11,10 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~codemirror/theme/dracula.css';
 @import '~codemirror/theme/material.css';
 @import '~codemirror/theme/ambiance.css';
+
+// Tombolo theme
+@import 'variables.scss';
+@import 'app/tombolo-theme/tombolo-theme';
 
 @include mat-core();
 
@@ -27,21 +27,14 @@ $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 // Apply material theme to base components
 @include angular-material-theme($light-theme);
 
-// Apply dialogs theme
-.cdk-overlay-pane {
-  @include tombolo-dialog-theme($light-theme);
-}
-
 // Apply tombolo theme
 @include tombolo-theme($light-theme);
-
 
 // Apply dark theme variant to left sidebar
 .sidebar-left {
   @include angular-material-theme($dark-theme);
   @include tombolo-theme($dark-theme);
 }
-
 
 html {
     // Disable 'bounce' overscroll on Chrome
