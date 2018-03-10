@@ -227,8 +227,6 @@ export class StyleGenerator {
     )
       .map(f => {
 
-        console.log(f);
-
         let value = [f.value];
 
         if (f.operator === 'in' || f.operator === '!in') {
