@@ -16,13 +16,12 @@ export class MapInfoComponent implements OnInit {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
+  map: TomboloMapboxMap;
+
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry) {}
 
-  map: TomboloMapboxMap;
-  mapName: string;
-  mapDescription: string;
-  mapServiceSubscription: Subscription;
+  private _subs: Subscription[] = [];
 
   ngOnInit() {
 
@@ -30,27 +29,21 @@ export class MapInfoComponent implements OnInit {
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       if (map.mapLoaded) {
         this.map = map;
-        this.mapName = map.name;
-        this.mapDescription = map.description;
       }
     });
 
     // Update name and description when map is loaded
-    this.mapServiceSubscription = this.mapService.mapLoading$().subscribe(map => {
+    this._subs.push(this.mapService.mapLoading$().subscribe(map => {
       this.map = null;
-      this.mapName ='';
-      this.mapDescription = '';
-    });
+    }));
 
     // Update name and description when map is loaded
-    this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       this.map = map;
-      this.mapName = map.name;
-      this.mapDescription = map.description;
-    });
+    }));
   }
 
   ngOnDestroy() {
-    this.mapServiceSubscription.unsubscribe();
+    this._subs.forEach(sub => sub.unsubscribe());
   }
 }
