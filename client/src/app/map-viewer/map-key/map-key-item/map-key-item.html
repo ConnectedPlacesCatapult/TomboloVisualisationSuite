@@ -5,10 +5,10 @@
       <div class="chip-marker" [matTooltip]="chip.tooltip" matTooltipPosition="above"
            [ngStyle]="{
           'background-color': chip.color,
-          width: chip.size + 'px',
-          height: chip.size + 'px',
-          'margin-left': -chip.size / 2 + 'px',
-          'margin-top': -chip.size / 2 + 'px'
+          width: chip.radius * 2 + 'px',
+          height: chip.radius * 2 + 'px',
+          'margin-left': -chip.radius + 'px',
+          'margin-top': -chip.radius + 'px'
          }"
            [ngClass]="{circle: mode == 'circle'}"
       >

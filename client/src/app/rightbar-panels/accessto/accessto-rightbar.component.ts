@@ -7,6 +7,7 @@ import {MapRegistry} from '../../mapbox/map-registry.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FormControl, FormGroup} from '@angular/forms';
 import {IMapFilter} from '../../../../../src/shared/IMapFilter';
+import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 
 const debug = Debug('tombolo:access-to');
 
@@ -21,7 +22,7 @@ const debug = Debug('tombolo:access-to');
         height: '*'
       })),
       state('collapsed',   style({
-        height: '180px'
+        height: '146px'
       })),
       transition('collapsed <=> expanded', animate('100ms ease-in-out'))
     ])
@@ -43,12 +44,12 @@ export class AccesstoRightBarComponent implements OnInit {
   }
 
   map: TomboloMapboxMap;
-  mapName: string;
   mapDescription: string;
   descriptionExpanded: 'expanded' | 'collapsed' = 'collapsed';
   form: FormGroup;
 
-  accessLayerId: string;
+  numberOfGPsLayer: IMapLayer;
+  gpLocationsLayer: IMapLayer;
   satisfactionFilter: IMapFilter;
   gpRatioFilter: IMapFilter;
   prescSetFilter: IMapFilter;
@@ -72,18 +73,22 @@ export class AccesstoRightBarComponent implements OnInit {
 
     this._subs.push(this.mapService.mapLoading$().subscribe(map => {
       this.map = null;
-      this.accessLayerId = null;
+      this.numberOfGPsLayer = null;
       this.satisfactionFilter = null;
       this.gpRatioFilter = null;
       this.prescSetFilter = null;
     }));
 
     this._subs.push(this.form.get('transportMode').valueChanges.subscribe(val => {
-      this.map.setDataLayerColorAttribute(this.accessLayerId, val + this.form.get('journeyTime').value);
+      if (val && this.form.get('journeyTime').value) {
+        this.map.setDataLayerColorAttribute(this.numberOfGPsLayer.layerId, val + this.form.get('journeyTime').value);
+      }
     }));
 
     this._subs.push(this.form.get('journeyTime').valueChanges.subscribe(val => {
-      this.map.setDataLayerColorAttribute(this.accessLayerId, this.form.get('transportMode').value + val);
+      if (val && this.form.get('transportMode').value) {
+        this.map.setDataLayerColorAttribute(this.numberOfGPsLayer.layerId, this.form.get('transportMode').value + val);
+      }
     }));
 
     this._subs.push(this.form.get('satisfaction').valueChanges.subscribe(val => {
@@ -120,37 +125,34 @@ export class AccesstoRightBarComponent implements OnInit {
   // Update UI from map after load
   private updateFormFromMap(map: TomboloMapboxMap): void {
 
+    this.numberOfGPsLayer = map.dataLayers.find(l => l.name === 'Number of GPs');
+    this.gpLocationsLayer = map.dataLayers.find(l => l.name === 'GP Locations');
+    this.satisfactionFilter = map.filters.find(f => f.attribute === 'phe_survey');
+    this.gpRatioFilter = map.filters.find(f => f.attribute === 'reg_pat_gp');
+    this.prescSetFilter = map.filters.find(f => f.attribute === 'prescr_set');
+
+    if (!this.numberOfGPsLayer || !this.satisfactionFilter || !this.gpRatioFilter || !this.prescSetFilter) {
+      // Badly formed access-to map
+      throw new Error('Access-to map is missing required layers or filters');
+    }
+
     let transportMode = 'wlk';
     let journeyTime = 5;
     let satisfaction: number = 0;
     let gpRatio: number = 0;
 
-    map.dataLayers.forEach(l => {
-      debug(`type: ${l.layerType}, attr:${l.colorAttribute}`);
+    if (this.numberOfGPsLayer) {
+      transportMode = this.numberOfGPsLayer.colorAttribute.substring(0, 3);
+      journeyTime = +this.numberOfGPsLayer.colorAttribute.substring(3);
+    }
 
-      if (l.layerType === 'line') {
-        // Extract transport mode and journey time
-        this.accessLayerId = l.layerId;
-        transportMode = l.colorAttribute.substring(0, 3);
-        journeyTime = +l.colorAttribute.substring(3);
-      }
-      else if (l.layerType === 'circle') {
-        // Capture filters and extract satisfaction and gp ratio
-        const filters = map.filters.filter(f => f.datalayerId === l.layerId);
+    if (this.satisfactionFilter) {
+      satisfaction = this.satisfactionFilter.value;
+    }
 
-        if (filters && filters.length === 3) {
-          this.satisfactionFilter = filters[0];
-          this.gpRatioFilter = filters[1];
-          this.prescSetFilter = filters[2];
-
-          satisfaction = this.satisfactionFilter.value;
-          gpRatio = this.gpRatioFilter.value;
-        }
-        else {
-          throw new Error(`Bad filters for AccessTo map ${map.id}`);
-        }
-      }
-    });
+    if (this.gpRatioFilter) {
+      gpRatio = this.gpRatioFilter.value;
+    }
 
     const formVals = {
       transportMode,

@@ -14,7 +14,7 @@ export const DATA_LAYER_ID = 'data';
 export const DATA_LAYER_PREFIX = 'datalayer-';
 export const LABEL_LAYER_PREFIX = 'labellayer-';
 
-const MIN_POINT_RADIUS = 3;
+export const MIN_POINT_RADIUS = 3;
 
 export class StyleGenerator {
 

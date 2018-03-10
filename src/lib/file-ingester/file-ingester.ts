@@ -270,7 +270,7 @@ export class FileIngester {
       });
     }));
 
-    // Calculate dataset stats, extent and dataset size
+    // Calculate dataset stats, extent and dataset radius
     await dataset.calculateDataAttributeStats();
     await dataset.calculateGeometryExtent();
     await dataset.calculateDatasetBytes();

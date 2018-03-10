@@ -428,7 +428,7 @@
         // Turn from circle to rounded square
         border-radius: $br !important;
 
-        // Shrink from default FAB button size
+        // Shrink from default FAB button radius
         width: $map-zoom-button-size;
         height: $map-zoom-button-size;
 
@@ -859,20 +859,21 @@
 
 
   // Map Key
-  .map-key-item {
-    @include mat-typography-level-to-styles($typography, caption);
+  .map-key {
+    margin: 10px 0;
 
-    margin: $g / 2 0;
-    border-top: 1px solid #E3ECEC;
+    .map-key-item {
+      @include mat-typography-level-to-styles($typography, caption);
 
-    &:first-of-type {
-      margin: 0;
-    }
+      padding-top: $g / 2;
+      border-top: 1px solid #E3ECEC;
 
-    .title {
-      //@include mat-typography-level-to-styles($typography, subheading-2);
+      .title {
+        //@include mat-typography-level-to-styles($typography, subheading-2);
+      }
     }
   }
+
 
   /* Dialog-specific styles */
 

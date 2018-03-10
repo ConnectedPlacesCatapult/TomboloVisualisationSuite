@@ -250,6 +250,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return attribute;
   }
 
+  // TODO - These methods mutate layers
+  // Should fix to do immutable updates of layer and mapDefinition layers
+  // However other bits of the app now rely on mutable updating - e.g. map editor
+
   setDataLayerVisibility(layerId: string, visible: boolean): void {
 
     const layer = this.getDataLayer(layerId);
@@ -348,7 +352,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this.regenerateLayerPaintStyle(layer);
 
     if (layer.labelAttribute) {
-      // Reposition label based on fixed size
+      // Reposition label based on fixed radius
       this.regenerateLabelLayer(layer);
     }
 

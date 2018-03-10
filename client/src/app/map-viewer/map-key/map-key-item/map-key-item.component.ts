@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input, OnChanges, ViewEncapsulation} from '@angular/core';
 import {IPalette} from '../../../../../../src/shared/IPalette';
 
-const DEFAULT_CHIP_SIZE = 20;
+const DEFAULT_CHIP_SIZE = 10;
 
 interface MapKeyChip {
   color: string;
   value: number | string;
-  size: number,
+  radius: number,
   tooltip: string
 }
 
@@ -23,10 +23,11 @@ export class MapKeyItemComponent implements OnChanges {
 
   @Input() title: string;
   @Input() palette: IPalette; // With 5 color stops to apply to chips
+  @Input() paletteInverted: boolean = false;
   @Input() ndColor: string;
-  @Input() values: number[]; // Array of 5 values to annotate each chip
+  @Input() values: string[]; // Array of 5 values to annotate each chip
   @Input() mode: 'square' | 'circle';
-  @Input() sizes: number[]; // Array of 5 pixels sizes for each chip. Can be null to specify fixed max size
+  @Input() radii: number[]; // Array of 5 pixels radii for each chip. Can be null to specify fixed max radius
 
   chips: MapKeyChip[];
 
@@ -41,15 +42,16 @@ export class MapKeyItemComponent implements OnChanges {
     chips.push({
       color: this.ndColor,
       value: 'ND',
-      size: ((this.sizes)? this.sizes[0] : DEFAULT_CHIP_SIZE),
+      radius: ((this.radii)? this.radii[0] : DEFAULT_CHIP_SIZE),
       tooltip: 'No Data'
     });
 
     for(let i = 0; i < 5; i++) {
+      const paletteIndex = (this.paletteInverted)?  4 - i : i;
       chips.push({
-        color: (this.palette)? this.palette.colorStops[i] : this.ndColor,
+        color: (this.palette)? this.palette.colorStops[paletteIndex] : this.ndColor,
         value: this.values[i],
-        size: ((this.sizes)? this.sizes[i + 1] : DEFAULT_CHIP_SIZE),
+        radius: ((this.radii)? this.radii[i + 1] : DEFAULT_CHIP_SIZE),
         tooltip: null
       })
     }

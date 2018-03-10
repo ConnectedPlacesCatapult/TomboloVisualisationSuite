@@ -19,6 +19,7 @@ export class MapInfoComponent implements OnInit {
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry) {}
 
+  map: TomboloMapboxMap;
   mapName: string;
   mapDescription: string;
   mapServiceSubscription: Subscription;
@@ -28,13 +29,22 @@ export class MapInfoComponent implements OnInit {
     // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       if (map.mapLoaded) {
+        this.map = map;
         this.mapName = map.name;
         this.mapDescription = map.description;
       }
     });
 
     // Update name and description when map is loaded
+    this.mapServiceSubscription = this.mapService.mapLoading$().subscribe(map => {
+      this.map = null;
+      this.mapName ='';
+      this.mapDescription = '';
+    });
+
+    // Update name and description when map is loaded
     this.mapServiceSubscription = this.mapService.mapLoaded$().subscribe(map => {
+      this.map = map;
       this.mapName = map.name;
       this.mapDescription = map.description;
     });
