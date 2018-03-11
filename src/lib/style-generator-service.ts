@@ -131,6 +131,7 @@ export class StyleGeneratorService {
         description: layer.description,
         layerType: layer.layerType,
         palette: layer.palette,
+        paletteId: layer.palette.id,
         paletteInverted: layer.paletteInverted,
         datasetId: layer.datasetId,
         colorMode: layer.colorMode,

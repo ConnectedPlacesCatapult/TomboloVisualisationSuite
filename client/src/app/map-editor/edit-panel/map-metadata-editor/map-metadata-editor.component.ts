@@ -24,7 +24,7 @@ export class MapMetadataEditorComponent implements OnInit, OnChanges {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
       description: new FormControl('', Validators.required),
-      isPrivate: new FormControl(false, Validators.required)
+      isPublic: new FormControl(false, Validators.required)
     });
   }
 
@@ -38,8 +38,9 @@ export class MapMetadataEditorComponent implements OnInit, OnChanges {
       if (this.map) this.map.description = val;
     }));
 
-    this._subs.push(this.form.get('isPrivate').valueChanges.subscribe(val => {
-      if (this.map) this.map.isPrivate = val;
+    this._subs.push(this.form.get('isPublic').valueChanges.subscribe(val => {
+      // !!! Note switch from isPrivate to isPublic in UI!!!
+      if (this.map) this.map.isPrivate = !val;
     }));
   }
 
@@ -54,7 +55,8 @@ export class MapMetadataEditorComponent implements OnInit, OnChanges {
       this.form.setValue({
         name: map.name,
         description: map.description,
-        isPrivate: map.isPrivate
+        // !!! Note switch from isPrivate to isPublic in UI!!!
+        isPublic: !map.isPrivate
       });
     }
   }

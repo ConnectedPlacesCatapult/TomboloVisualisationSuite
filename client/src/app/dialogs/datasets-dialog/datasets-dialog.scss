@@ -40,7 +40,7 @@ hr {
 }
 
 .datasets-list {
-  height: $dataset-dialog-datasets-list-height;
+  max-height: $dataset-dialog-datasets-list-height;
   flex-shrink: 0;
   overflow: auto;
 }

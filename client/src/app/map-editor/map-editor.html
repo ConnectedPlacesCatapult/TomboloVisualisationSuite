@@ -77,7 +77,10 @@
     <p class="mat-caption">
       Drag and drop a file here or
       <label class="upload-button">
-        <input type="file" ngFileSelect [options]="options" (uploadOutput)="uploadOutput.next($event)" [uploadInput]="uploadInput" (click)="checkUpload()">
+        <input #fileUploadInput type="file" ngFileSelect
+               [options]="options"
+               (uploadOutput)="uploadOutput.next($event)"
+               [uploadInput]="uploadInput" (click)="checkUpload()">
         browse
       </label>
       to upload.

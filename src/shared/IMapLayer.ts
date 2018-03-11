@@ -9,6 +9,7 @@ export interface IMapLayer {
   description: string;
   layerType: 'fill' | 'circle' | 'line';
   palette: IPalette;
+  paletteId: string;
   paletteInverted: boolean;
   datasetId: string;
   colorAttribute: string;
