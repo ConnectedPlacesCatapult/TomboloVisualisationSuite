@@ -15,6 +15,7 @@ pipelines:
 
             # Server build
             - yarn
+            - npm run version
             - npm run build
 
             # Client build
