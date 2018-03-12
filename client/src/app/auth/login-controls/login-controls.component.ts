@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../auth.service';
 import {User} from '../user';
+import {APP_CONFIG, AppConfig} from '../../config.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -15,10 +16,10 @@ const debug = Debug('tombolo:maps-demo');
 })
 export class LoginControlsComponent implements OnInit {
 
-
   constructor(
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    @Inject(APP_CONFIG) public config: AppConfig) {}
 
   private _subs: Subscription[] = [];
 

@@ -22,7 +22,7 @@ credentials = true
 
 [mapnik]
 simplify_distance = 1
-area_threshold = 50
+area_threshold = 20
 
 [server]
 baseUrl = "http://localhost:4200"
@@ -55,6 +55,9 @@ googleAnalyticsUserId = "UA-79725616-5"
 nominatimUrl = "https://nominatim.openstreetmap.org"
 defaultMap = "950db2c7-1a3b-448d-9b21-444a0ec7b5e0"
 poweredBy = "Powered by Tombolo and Emu Analytics"
+uploadEnabled = true
+saveEnabled = true
+createAccountEnabled = true
 
 [emailTemplates]
 from = "tombolo@emu-analytics.net"

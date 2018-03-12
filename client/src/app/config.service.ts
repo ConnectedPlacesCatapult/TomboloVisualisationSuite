@@ -17,6 +17,9 @@ export class AppConfig {
   nominatimUrl: string;
   defaultMap: string;
   poweredBy: string;
+  uploadEnabled;
+  saveEnabled;
+  createAccountEnabled ;
 }
 
 @Injectable()
