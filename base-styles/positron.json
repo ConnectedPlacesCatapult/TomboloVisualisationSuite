@@ -110,8 +110,8 @@
       "url": "38080fa1-e5c3-487d-8347-3532d071c8a6/index.json"
     }
   },
-  "sprite": "https://maps.emu-analytics.net:4430/static/sprites/positron",
-  "glyphs": "https://maps.emu-analytics.net:4430/static/fonts/{fontstack}/{range}.pbf",
+  "sprite": "sprites/positron",
+  "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",

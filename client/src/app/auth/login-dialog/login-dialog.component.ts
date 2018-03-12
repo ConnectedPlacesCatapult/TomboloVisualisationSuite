@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 
 import {ActivatedRoute, Router} from '@angular/router';
@@ -7,6 +7,8 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 import {Angulartics2} from 'angulartics2';
 import {FocusTrapFactory} from '@angular/cdk/a11y';
+import {APP_CONFIG, AppConfig} from '../../config.service';
+import {DialogsService} from '../../dialogs/dialogs.service';
 
 const debug = Debug('tombolo:login-dialog');
 
@@ -22,7 +24,9 @@ export class LoginDialogComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private analytics: Angulartics2,) {}
+    private analytics: Angulartics2,
+    private dialogsService: DialogsService,
+    @Inject(APP_CONFIG) public config: AppConfig) {}
 
   loginForm: FormGroup;
   errorMessage: string;
@@ -43,7 +47,13 @@ export class LoginDialogComponent implements OnInit {
   }
 
   signup() {
-    this.router.navigate([{outlets: {'loginBox': 'signup'}}]);
+    if (!this.config.createAccountEnabled) {
+      this.dialogsService.information('Sign Up Disabled', 'Signing up for a new account is currently disbaled.').
+        subscribe();
+    }
+    else {
+      this.router.navigate([{outlets: {'loginBox': 'signup'}}]);
+    }
   }
 
   close() {
