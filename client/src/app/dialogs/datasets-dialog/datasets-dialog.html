@@ -44,8 +44,8 @@
 
     <mat-nav-list class="datasets-list" *ngIf="datasets">
       <mat-list-item *ngFor="let dataset of datasets"
-                     [ngClass]="{selected: dataset == selectedDataset}"
-                     (click)="selectDataset(dataset)">{{dataset.name}}
+                     [ngClass]="{selected: dataset.id === selectedDataset?.id}"
+                     (click)="selectDataset(dataset)"><mat-icon [svgIcon]="typeIconForGeometryType(dataset.geometryType)"></mat-icon>{{dataset.name}}
       </mat-list-item>
     </mat-nav-list>
 
@@ -59,8 +59,27 @@
       Your search did not return any relevant datasets.
     </div>
 
-    <div *ngIf="selectedDataset" class="description row-flex-item" Markdown
-         [data]="selectedDataset.description">
+    <div *ngIf="selectedDataset" class="description">
+      <div Markdown [data]="selectedDataset.description"></div>
+      <h4 class="attribute-table-title">Data Attributes</h4>
+      <table class="attribute-table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Units</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let attr of selectedDataset.dataAttributes">
+            <td>{{typeIndicatorForAttribute(attr)}}</td>
+            <td>{{attr.name}}</td>
+            <td>{{attr.description}}</td>
+            <td>{{attr.units}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
