@@ -43,8 +43,18 @@ hr {
   max-height: $dataset-dialog-datasets-list-height;
   flex-shrink: 0;
   overflow: auto;
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
 }
 
 .description {
   overflow: auto;
+}
+
+.attribute-table {
+  width: 100%;
 }
