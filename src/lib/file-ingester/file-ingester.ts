@@ -99,46 +99,6 @@ export class FileIngester {
     }
   }
 
-  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
-
-    // Change column types
-    await Promise.all(newOgrInfo.attributes
-      .filter(attr => attr.type !== file.attributeType(attr.id))
-      .map(attr => {
-
-        let dataType;
-        switch (attr.type) {
-          case 'string':
-            dataType = 'VARCHAR';
-            break;
-          case 'real':
-            dataType = 'DOUBLE PRECISION';
-            break;
-          case 'integer':
-            dataType = 'INTEGER';
-            break;
-          case 'datetime':
-            dataType = 'TIMESTAMP WITH TIMEZONE';
-            break;
-          default:
-            throw new Error(`Unsupported field type: ${attr.type}`);
-        }
-
-        const columnTypeSql = `
-          ALTER TABLE ${file.sqlSafeTableName()} 
-          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
-        return file.sequelize.query(columnTypeSql);
-      }));
-
-    // Remove unwanted columns
-    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
-      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
-      return file.sequelize.query(dropColumnSql);
-    }));
-
-    return;
-  }
-
   /**
    * Validate given file is a supported geospatial file using ogrinfo
    *
@@ -237,6 +197,47 @@ export class FileIngester {
         resolve();
       });
     });
+  }
+
+  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
+
+    // Change column types - update all columns whose type has been changed *and* also
+    // all integer columns to fix any integer columns that were imported as 'bigint'
+    await Promise.all(newOgrInfo.attributes
+      .filter(attr => attr.type === 'integer' || attr.type !== file.attributeType(attr.id))
+      .map(attr => {
+
+        let dataType;
+        switch (attr.type) {
+          case 'string':
+            dataType = 'VARCHAR';
+            break;
+          case 'real':
+            dataType = 'DOUBLE PRECISION';
+            break;
+          case 'integer':
+            dataType = 'INTEGER';
+            break;
+          case 'datetime':
+            dataType = 'TIMESTAMP WITH TIMEZONE';
+            break;
+          default:
+            throw new Error(`Unsupported field type: ${attr.type}`);
+        }
+
+        const columnTypeSql = `
+          ALTER TABLE ${file.sqlSafeTableName()} 
+          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
+        return file.sequelize.query(columnTypeSql);
+      }));
+
+    // Remove unwanted columns
+    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
+      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
+      return file.sequelize.query(dropColumnSql);
+    }));
+
+    return;
   }
 
   async generateDataset(file: FileUpload): Promise<Dataset> {
