@@ -88,7 +88,13 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
 
   addFilter()  {
 
-    const defaultLayerId = this.map.dataLayers.length ? this.map.dataLayers[0].layerId : null;
+    if (this.map.dataLayers.length === 0) {
+      this.dialogsService.information('No Data Layers on Map', 'You can only add a filter if the map has one or more data layers.');
+      return;
+    }
+
+    const defaultLayerId = this.map.dataLayers[0].layerId;
+
     const defaultAttribute = defaultLayerId ?
       this.map.getDataAttributesForLayer(defaultLayerId).find(attr => attr.type === 'number') : null;
 
@@ -98,7 +104,7 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
       operator: '',
       value: null,
       enabled: true
-    }
+    };
 
     this.map.addFilter(filter);
   }
@@ -109,6 +115,7 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
       .filter(result => result)
       .subscribe(() => {
         this.map.removeFilter(filter);
+        this.cd.markForCheck();
       });
   }
 
