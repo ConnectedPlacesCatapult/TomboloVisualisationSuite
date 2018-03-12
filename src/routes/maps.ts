@@ -38,7 +38,10 @@ router.get('/', async (req, res, next) => {
       };
     }
 
-    const maps = await TomboloMap.findAll<TomboloMap>({where, limit: 1000});
+    const maps = await TomboloMap.findAll<TomboloMap>({
+      where,
+      order: ['name'],
+      limit: 1000});
 
     res.json(maps.map(clientSafeMap));
   }
@@ -107,7 +110,10 @@ router.get('/grouped', async (req, res, next) => {
 
     // Get user's maps
     if (req.user) {
-      const userMaps = await TomboloMap.findAll<TomboloMap>({where: {ownerId: req.user.id}});
+      const userMaps = await TomboloMap.findAll<TomboloMap>({
+        where: {ownerId: req.user.id},
+        order: ['name']
+      });
 
       const userGroup = {
         id: 'usergroup',
