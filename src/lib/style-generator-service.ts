@@ -31,9 +31,9 @@ export class StyleGeneratorService {
    * @param {string} baseUrl
    * @returns {Object}
    */
-  generateMapStyle(map: TomboloMap, baseUrl: string): IStyle {
+  generateMapStyle(map: TomboloMap, tileUrl: string, mapAssetsUrl: string): IStyle {
 
-    const mapDefinition = this.generateMapDefinition(map, baseUrl);
+    const mapDefinition = this.generateMapDefinition(map, tileUrl, mapAssetsUrl);
     const styleGenerator = new StyleGenerator(mapDefinition);
     return styleGenerator.generateMapStyle(map.basemap);
   }
@@ -44,7 +44,7 @@ export class StyleGeneratorService {
    * @param {TomboloMap} map
    * @returns {IMapDefinition}
    */
-  generateMapDefinition(map: TomboloMap, baseUrl: string): IMapDefinition {
+  generateMapDefinition(map: TomboloMap, tileUrl: string, mapAssetsUrl): IMapDefinition {
     let mapDefinition: IMapDefinition = {
       id: map.id,
       name: map.name,
@@ -57,7 +57,8 @@ export class StyleGeneratorService {
       recipe: map.recipe,
       basemapId: map.basemapId,
       basemapDetailLevel: map.basemapDetailLevel,
-      tileBaseUrl: baseUrl,
+      tileUrl: tileUrl,
+      mapAssetsUrl: mapAssetsUrl,
       ownerId: map.ownerId,
       filters: this.filtersForMap(map),
       ui: map.ui
