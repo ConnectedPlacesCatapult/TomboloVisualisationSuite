@@ -17,6 +17,8 @@
     "node_modules",
     "client",
     "test",
-    "src/lib/customTypings"
+    "src/lib/customTypings",
+    "build",
+    "db"
   ]
 }
