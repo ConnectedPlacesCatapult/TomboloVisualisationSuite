@@ -14,11 +14,23 @@
         "building": 4,
         "highway_path": 4,
         "highway_minor": 3,
+        "aeroway-runway": 3,
+        "aeroway-area": 3,
+        "aeroway-runway-casing": 3,
+        "aeroway-taxiway": 3,
+        "tunnel_motorway_inner": 3,
+        "tunnel_motorway_casing": 3,
         "highway_major_casing": 2,
         "highway_major_inner": 2,
         "highway_major_subtle": 2,
         "highway_name_other": 2,
         "highway_name_other-en": 2,
+        "railway_dashline": 2,
+        "railway": 2,
+        "railway_service_dashline": 2,
+        "railway_service": 2,
+        "railway_transit_dashline": 2,
+        "railway_transit": 2,
         "highway_motorway_casing": 1,
         "highway_motorway_inner": 1,
         "highway_motorway_subtle": 1,
@@ -30,13 +42,7 @@
         "place_suburb": 1,
         "place_suburb-en": 1,
         "place_other-en": 1,
-        "place_other": 1,
-        "railway_dashline": 1,
-        "railway": 1,
-        "railway_service_dashline": 1,
-        "railway_service": 1,
-        "railway_transit_dashline": 1,
-        "railway_transit": 1
+        "place_other": 1
       }
     },
     "labelLayerStyle": {
@@ -44,11 +50,11 @@
         "text-color": "hsl(195, 25%, 76%)",
         "text-halo-color": "hsla(228, 60%, 21%, 0.7)",
         "text-halo-width": 1,
-        "text-halo-blur": 0.8,
+        "text-halo-blur": 1,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 13,
+        "text-size": 10,
         "text-transform": "uppercase",
         "text-font": [
           "Metropolis Regular"
