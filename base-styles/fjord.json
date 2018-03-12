@@ -14,6 +14,12 @@
         "building": 4,
         "highway_path": 4,
         "highway_minor": 3,
+        "aeroway-runway": 3,
+        "aeroway-area": 3,
+        "aeroway-runway-casing": 3,
+        "aeroway-taxiway": 3,
+        "tunnel_motorway_inner": 3,
+        "tunnel_motorway_casing": 3,
         "highway_major_casing": 2,
         "highway_major_inner": 2,
         "highway_major_subtle": 2,
@@ -37,12 +43,6 @@
         "place_suburb-en": 1,
         "place_other-en": 1,
         "place_other": 1,
-        "railway_dashline": 1,
-        "railway": 1,
-        "railway_service_dashline": 1,
-        "railway_service": 1,
-        "railway_transit_dashline": 1,
-        "railway_transit": 1
       }
     },
     "labelLayerStyle": {
