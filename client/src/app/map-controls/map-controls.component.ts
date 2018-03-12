@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
@@ -13,6 +13,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
 import {NotificationService} from '../dialogs/notification.service';
 import {IStyle} from '../../../../src/shared/IStyle';
+import {APP_CONFIG, AppConfig} from '../config.service';
 
 const debug = Debug('tombolo:maps-demo');
 
@@ -39,7 +40,8 @@ export class MapControlsComponent implements OnInit {
     private authService: AuthService,
     private mapService: MapService,
     private router: Router,
-    private notificationService: NotificationService) {}
+    private notificationService: NotificationService,
+    @Inject(APP_CONFIG) private config: AppConfig) {}
 
   private _subs: Subscription[] = [];
 
@@ -133,7 +135,13 @@ export class MapControlsComponent implements OnInit {
   saveMap() {
     const user = this.authService.getUserSync();
 
-    if (!user) {
+    if (!this.config.saveEnabled) {
+      this.dialogsService
+        .information('Save Disabled', 'Saving maps is currently disabled.')
+        .subscribe(() => {
+        });
+    }
+    else if (!user) {
       this.dialogsService
         .confirm('Login', 'You must be logged in to save a map.', 'Go to login')
         .filter(ok => ok)

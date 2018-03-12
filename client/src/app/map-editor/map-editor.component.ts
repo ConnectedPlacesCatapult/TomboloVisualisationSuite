@@ -157,8 +157,14 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       debug('All added', output);
       this.dragOver = false;
 
+      // Check if uploads are disabled
+      if (!this.config.uploadEnabled) {
+        this.dialogsService
+          .information('Upload Disabled', 'Uploading your own data is currently disabled.')
+          .subscribe();
+      }
       // Prompt for login
-      if (!this.authService.getUserSync()) {
+      else if (!this.authService.getUserSync()) {
         this.dialogsService
           .confirm('Login', 'You must be logged in to upload data.', 'Go to login')
           .filter(ok => ok)
