@@ -67,6 +67,7 @@
   <hr>
 
   <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground"
+          angulartics2On="click"
           angularticsCategory="Playground"
           angularticsAction="NavigatePublicDatasets">
     Public Datasets...</button>
@@ -82,6 +83,7 @@
         <input #fileUploadInput type="file" ngFileSelect
                [options]="options"
                (uploadOutput)="uploadOutput.next($event)"
+               angulartics2On="click"
                angularticsCategory="UploadDataset"
                angularticsAction="BrowseDataset"
                [uploadInput]="uploadInput" (click)="checkUpload()">

@@ -11,6 +11,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import {Subscription} from 'rxjs/Subscription';
+import {Angulartics2} from "angulartics2";
 
 @Component({
   selector: 'geosearch-component',
@@ -29,7 +30,7 @@ export class GeosearchComponent implements OnInit, OnDestroy {
   @ViewChild('searchBox') searchBox: ElementRef;
   @Output() selectItem: EventEmitter<GeosearchItem> = new EventEmitter<GeosearchItem>();
 
-  constructor(private geosearchService: GeosearchService) { }
+  constructor(private geosearchService: GeosearchService, private angulartics2: Angulartics2) { }
 
   ngOnInit(): void {
     this.searchBox.nativeElement.blur();
@@ -50,10 +51,21 @@ export class GeosearchComponent implements OnInit, OnDestroy {
 
   search(term: string): void {
     this.searchTerms$.next(term);
+
+    this.angulartics2.eventTrack.next({
+      action: 'SearchLocation',
+      properties: { category: 'Geosearch', label: term }
+    });
   }
 
   locationClick(item: GeosearchItem): void {
     if (item.boundingBox) this.selectItem.emit(item);
+
+    this.angulartics2.eventTrack.next({
+      action: 'ClickLocation',
+      properties: { category: 'Geosearch', label: item.displayName }
+    });
+
     this.clear();
   }
 }
