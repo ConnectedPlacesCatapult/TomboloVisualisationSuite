@@ -23,6 +23,9 @@
   <!-- Export Button -->
   <button mat-icon-button disableRipple
           [disabled]="!mapId"
+          angulartics2On="click"
+          angularticsCategory="ExportShare"
+          angularticsAction="NavigateExportMap"
           [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]">
     <mat-icon svgIcon="export"></mat-icon>Export
   </button>
@@ -30,6 +33,9 @@
   <!-- Share Button -->
   <button mat-icon-button disableRipple
           (click)="postBookmark()"
+          angulartics2On="click"
+          angularticsCategory="ExportShare"
+          angularticsAction="ShareMap"
           [disabled]="!shareButtonEnabled()">
     <mat-icon svgIcon="share"></mat-icon>Share
   </button>

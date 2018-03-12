@@ -8,6 +8,9 @@
     <mat-expansion-panel *ngFor="let i = index; let group of mapGroups$ | async"
                          #rla="routerLinkActive"
                          routerLinkActive
+                         angulartics2On="click"
+                         angularticsCategory="MapGroup"
+                         angularticsAction="NavigateMapGroup"
                          [expanded]="rla.isActive"
                          [routerLinkActiveOptions]="{exact: false}">
       <mat-expansion-panel-header collapsedHeight="40px" expandedHeight="40px">
@@ -21,11 +24,7 @@
                        routerLinkActive="active"
                        [routerLinkActiveOptions]="{exact: false}">
           <a matLine
-             [routerLink]="['/',{outlets:{primary:['view', map.id], rightBar:[rightBarRoute(map)]}}]"
-             angulartics2On="click"
-             angularticsCategory="CityIndices"
-             angularticsAction="NavigateCityIndexDataset"
-             [angularticsLabel]="map.name">
+             [routerLink]="['/',{outlets:{primary:['view', map.id], rightBar:[rightBarRoute(map)]}}]">
             <mat-icon [svgIcon]="map.icon || 'map'" color="accent"></mat-icon>
             {{map.name}}
           </a>
@@ -41,7 +40,9 @@
 
 <div class="sidebar-footer">
 
-  <button mat-raised-button (click)="gotoPlayground()" class="button-playground">
+  <button mat-raised-button (click)="gotoPlayground()" class="button-playground"
+          angularticsCategory="Playground"
+          angularticsAction="NavigatePlayground">
     <mat-icon svgIcon="edit"></mat-icon>&nbsp;&nbsp;Go to playground
   </button>
   <div class="tombolo-branding">

@@ -23,8 +23,7 @@
              [routerLinkActiveOptions]="{exact: false}"
              angulartics2On="click"
              angularticsCategory="Playground"
-             angularticsAction="Edit map"
-             [angularticsLabel]="map.name">
+             angularticsAction="Edit map">
             {{map.name}}</a>
           <button mat-icon-button class="compressed" (click)="deleteMap(map)">
             <mat-icon svgIcon="trash"></mat-icon>
@@ -67,7 +66,10 @@
 
   <hr>
 
-  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground">Public Datasets...</button>
+  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground"
+          angularticsCategory="Playground"
+          angularticsAction="NavigatePublicDatasets">
+    Public Datasets...</button>
 </div>
 
 <div class="sidebar-footer">
@@ -80,6 +82,8 @@
         <input #fileUploadInput type="file" ngFileSelect
                [options]="options"
                (uploadOutput)="uploadOutput.next($event)"
+               angularticsCategory="UploadDataset"
+               angularticsAction="BrowseDataset"
                [uploadInput]="uploadInput" (click)="checkUpload()">
         browse
       </label>

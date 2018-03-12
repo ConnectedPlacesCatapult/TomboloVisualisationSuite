@@ -67,6 +67,12 @@
 </div>
 
 <div mat-dialog-actions fxLayoutAlign="end">
-  <button mat-raised-button (click)="close()">Cancel</button>
-  <button mat-raised-button cdk-focus-start color="accent" [disabled]="!selectedDataset" (click)="addToMap()">Add to Map</button>
+  <button mat-raised-button (click)="close()"
+          angularticsCategory="Playground"
+          angularticsAction="CancelPublicDatasets">Cancel</button>
+  <button mat-raised-button cdk-focus-start color="accent"
+          [disabled]="!selectedDataset"
+          (click)="addToMap()"
+          angularticsCategory="Playground"
+          angularticsAction="AddPublicDatasetToMap">Add to Map</button>
 </div>
