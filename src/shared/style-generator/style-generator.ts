@@ -14,7 +14,7 @@ export const DATA_LAYER_ID = 'data';
 export const DATA_LAYER_PREFIX = 'datalayer-';
 export const LABEL_LAYER_PREFIX = 'labellayer-';
 
-const MIN_POINT_RADIUS = 3;
+export const MIN_POINT_RADIUS = 3;
 
 export class StyleGenerator {
 
@@ -116,7 +116,8 @@ export class StyleGenerator {
       minzoom: dataset.minZoom,
       maxzoom: dataset.maxZoom,
       layout: this.layoutStyleForLayer(layer),
-      paint: this.paintStyleForLayer(layer)
+      paint: this.paintStyleForLayer(layer),
+      filter: this.filtersForLayerId(layer.layerId)
     };
   }
 
@@ -163,7 +164,7 @@ export class StyleGenerator {
       'source-layer': DATA_LAYER_ID,
       layout: layout,
       paint: paint,
-      filter: ['has', layer.labelAttribute]
+      filter: [...this.filtersForLayerId(layer.layerId), ['has', layer.labelAttribute]]
     };
   }
 
@@ -192,6 +193,7 @@ export class StyleGenerator {
       opacity: 1,
       layerType: this.layerTypeForGeometryType(dataset.geometryType),
       palette: defaultPalette,
+      paletteId: defaultPalette.id,
       paletteInverted: false,
       colorAttribute: null,
       fixedColor: '#888',
@@ -200,10 +202,57 @@ export class StyleGenerator {
       fixedSize: 10,
       sizeMode: 'fixed',
       labelAttribute: null,
-      order: null,
+      order: null
     };
 
+    // Sort attributes with 'number' attributes first and then by name
+    const sortedAttributes = dataset.dataAttributes.sort((a, b) => {
+      if (a.type === b.type) return (a.name < b.name) ? -1 : 1;
+      if (a.type === 'number') return -1;
+      if (b.type === 'number') return 1;
+
+      return (a.name < b.name) ? -1 : 1;
+    });
+
+    if (sortedAttributes.length > 0 && sortedAttributes[0].type === 'number') {
+      // Select first numeric attribute for color
+      mapLayer.colorAttribute = sortedAttributes[0].field;
+      mapLayer.colorMode = 'attribute';
+    }
+
     return mapLayer;
+  }
+
+  /**
+   * Generate filter property for specified layer
+   *
+   * @param {IMapLayer} layer
+   * @returns {any} Mapbox filter property
+   */
+  filtersForLayerId(layerId: string): any {
+
+    if (this.mapDefinition.filters === null || this.mapDefinition.filters.length === 0) return ['all'];
+
+    // Concat enabled features
+    const filters = this.mapDefinition.filters.filter(f =>
+      f.enabled &&
+      f.datalayerId === layerId &&
+      f.attribute &&
+      f.operator &&
+      f.value !== null
+    )
+      .map(f => {
+
+        let value = [f.value];
+
+        if (f.operator === 'in' || f.operator === '!in') {
+          value = f.value.toString().split(',').map(s => s.trim()).filter(s => s !== '');
+        }
+
+        return [f.operator, f.attribute, ...value];
+      });
+
+    return ['all', ...filters];
   }
 
   private generateSources(mapDefinition: IMapDefinition): object {

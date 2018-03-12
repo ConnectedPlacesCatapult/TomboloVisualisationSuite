@@ -12,10 +12,18 @@ import {TomboloMapLayer} from '../../db/models/TomboloMapLayer';
 import {Palette} from '../../db/models/Palette';
 import * as sequelize from 'sequelize';
 import {FileUploadBase} from '../../shared/fileupload-base';
+import {StyleGenerator} from '../../shared/style-generator/style-generator';
+import {IMapDefinition} from '../../shared/IMapDefinition';
 
 const exec = require('child_process').exec;
 
 export const DATATABLE_SUFFIX = '_data';
+
+const OGRINFO_OPTIONS = '-ro -al -so -oo FLATTEN_NESTED_ATTRIBUTES=yes';
+const OGR2OGR_OPTIONS = '-t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -lco PRECISION=NO';
+const DEFAULT_TILE_HEADERS = {'Cache-Control': 'public, max-age=86400'};
+const DEFAULT_MIN_ZOOM = 7;
+const DEFAULT_MAX_ZOOM = 20;
 
 export interface OgrFileInfo {
   id: string;
@@ -91,46 +99,6 @@ export class FileIngester {
     }
   }
 
-  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
-
-    // Remove unwanted columns
-    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
-      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
-      return file.sequelize.query(dropColumnSql);
-    }));
-
-    // Change column types
-    await Promise.all(newOgrInfo.attributes
-      .filter(attr => attr.type !== file.attributeType(attr.id))
-      .map(attr => {
-
-        let dataType;
-        switch (attr.type) {
-          case 'string':
-            dataType = 'TEXT';
-            break;
-          case 'real':
-            dataType = 'DOUBLE PRECISION';
-            break;
-          case 'integer':
-            dataType = 'INTEGER';
-            break;
-          case 'datetime':
-            dataType = 'TIMESTAMP WITH TIMEZONE';
-            break;
-          default:
-            throw new Error(`Unsupported field type: ${attr.type}`);
-        }
-
-        const columnTypeSql = `
-          ALTER TABLE ${file.sqlSafeTableName()} 
-          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
-        return file.sequelize.query(columnTypeSql);
-      }));
-
-    return;
-  }
-
   /**
    * Validate given file is a supported geospatial file using ogrinfo
    *
@@ -140,7 +108,7 @@ export class FileIngester {
 
     if (!file) return Promise.reject(new Error('file required'));
 
-    const cmd = `ogrinfo -ro -al -so -oo FLATTEN_NESTED_ATTRIBUTES=yes ${file.path}`;
+    const cmd = `ogrinfo ${OGRINFO_OPTIONS} ${file.path}`;
 
     this.logger.info(`Executing ogrinfo for upload: ${file.id}`, cmd);
 
@@ -183,9 +151,9 @@ export class FileIngester {
             for (let i = attributeStartIndex + 1; i < keys.length; i++) {
               const key = keys[i];
               const value = keyValues[key];
-              const type = value.match(/^(\w*)/)[1].toLowerCase();
+              const type = this.convertOgrType(value.match(/^(\w*)/)[1].toLowerCase());
               const precision = +(value.match(/\((.*)\)/)[1]);
-              attributes.push({id: keys[i].toLowerCase().replace('-', '_'), type, precision});
+              attributes.push({id: this.convertKeyToPostgres(keys[i]), type, precision});
             }
           }
 
@@ -212,7 +180,7 @@ export class FileIngester {
     const password = this.dbConfig['password'];
 
     const cmd = `ogr2ogr -f "PostgreSQL" PG:"dbname='${database}' host='${host}' port='${port}' user='${username}' password='${password}'" \
-    ${file.path} -t_srs EPSG:4326 -oo FLATTEN_NESTED_ATTRIBUTES=yes -nlt PROMOTE_TO_MULTI -nln ${file.id}${DATATABLE_SUFFIX}`;
+    ${file.path} ${OGR2OGR_OPTIONS} -nln ${file.id}${DATATABLE_SUFFIX}`;
 
     this.logger.info(`Executing ogr2ogr for upload: ${file.id}`, cmd);
 
@@ -231,6 +199,47 @@ export class FileIngester {
     });
   }
 
+  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
+
+    // Change column types - update all columns whose type has been changed *and* also
+    // all integer columns to fix any integer columns that were imported as 'bigint'
+    await Promise.all(newOgrInfo.attributes
+      .filter(attr => attr.type === 'integer' || attr.type !== file.attributeType(attr.id))
+      .map(attr => {
+
+        let dataType;
+        switch (attr.type) {
+          case 'string':
+            dataType = 'VARCHAR';
+            break;
+          case 'real':
+            dataType = 'DOUBLE PRECISION';
+            break;
+          case 'integer':
+            dataType = 'INTEGER';
+            break;
+          case 'datetime':
+            dataType = 'TIMESTAMP WITH TIMEZONE';
+            break;
+          default:
+            throw new Error(`Unsupported field type: ${attr.type}`);
+        }
+
+        const columnTypeSql = `
+          ALTER TABLE ${file.sqlSafeTableName()} 
+          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
+        return file.sequelize.query(columnTypeSql);
+      }));
+
+    // Remove unwanted columns
+    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
+      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
+      return file.sequelize.query(dropColumnSql);
+    }));
+
+    return;
+  }
+
   async generateDataset(file: FileUpload): Promise<Dataset> {
 
     if (!file) return Promise.reject(Error('file required'));
@@ -247,13 +256,19 @@ export class FileIngester {
       geometryColumn: 'wkb_geometry',
       geometryType: geometryType,
       originalBytes: file.size,
-      isPrivate: false,
+      isPrivate: true,
+      headers: DEFAULT_TILE_HEADERS,
+      minZoom: DEFAULT_MIN_ZOOM,
+      maxZoom: DEFAULT_MAX_ZOOM,
       ownerId: file.ownerId
     });
 
     await file.$set('dataset', dataset);
 
     // Create data attributes
+
+    this.logger.info('OGR Attributes', file.ogrInfo.attributes);
+
     await Promise.all(file.ogrInfo.attributes.filter(attr => !attr.removed).map((attr, index) => {
 
       // Convert attr type to javascript type
@@ -261,7 +276,7 @@ export class FileIngester {
 
       return dataset.$create('dataAttribute', {
         datasetId: dataset.id,
-          field: attr.id,
+        field: attr.id,
         type: datasetType,
         name: attr.name,
         description: attr.description,
@@ -270,7 +285,7 @@ export class FileIngester {
       });
     }));
 
-    // Calculate dataset stats, extent and dataset size
+    // Calculate dataset stats, extent and dataset radius
     await dataset.calculateDataAttributeStats();
     await dataset.calculateGeometryExtent();
     await dataset.calculateDatasetBytes();
@@ -288,33 +303,28 @@ export class FileIngester {
 
     // Create map
     const map = await TomboloMap.create<TomboloMap>({
-      name: file.dataset.name,
-      description: file.dataset.description,
+      name: `Map of ${file.dataset.name}`,
+      description: `Map of uploaded dataset ${file.dataset.name}`,
       center: [lng, lat],
       zoom: zoom,
       basemapId: (basemap) ? basemap.id : null,
-      ownerId: file.ownerId
+      basemapDetailLevel: 4,
+      ownerId: file.ownerId,
+      isPrivate: true
     });
 
     await file.$set('map', map);
 
-    // Sort attributes with 'number' attributes first and then by order
-    const sortedAttributes = file.dataset.dataAttributes.sort((a, b) => {
-      if (a.type === b.type) return a.order - b.order;
-      if (a.type === 'number') return -1;
-      if (b.type === 'number') return 1;
+    // Style generator is used to create the default map layer.
+    // !!!No map definition is given so don't try to call anything other than generateDefaultDataLayer!!!
+    const styleGenerator = new StyleGenerator(null);
+    let layer = styleGenerator.generateDefaultDataLayer(file.dataset, palette);
 
-      return a.order - b.order;
-    });
+    // !!! styleGenerator.generateDefaultDataLayer generates layerId as mapboxGl prefixed layer ID !!!
+    layer.layerId = layer.originalLayerId;
 
     // Create map layer
-    const layer = await map.$create<TomboloMapLayer>('layer', {
-      name: file.dataset.name,
-      datasetId: file.dataset.id,
-      paletteId: (palette) ? palette.id : null,
-      datasetAttribute: (sortedAttributes.length) ? sortedAttributes[0].field : null,
-      layerType: this.layerTypeForGeometryType(file.dataset.geometryType)
-    });
+    await map.$create<TomboloMapLayer>('layer', layer);
 
     return map;
   }
@@ -325,17 +335,6 @@ export class FileIngester {
 
       return result[0]['geometrytype'];
     });
-  }
-
-  private layerTypeForGeometryType(geometryType: string): string {
-    switch (geometryType) {
-      case 'ST_MultiPoint': return 'circle';
-      case 'ST_Point': return 'circle';
-      case 'ST_MultiLineString': return 'line';
-      case 'ST_LineString': return 'line';
-      case 'ST_MultiPolygon': return 'fill';
-      case 'ST_Polygon': return 'fill';
-    }
   }
 
   private centerAndZoomFromExtent(extent: number[]): number[] {
@@ -352,5 +351,18 @@ export class FileIngester {
       return 'The datasource is not in a supported format.';
     }
     return ogInfo;
+  }
+
+  private convertKeyToPostgres(key: string): string {
+
+    // TODO - check what else GDAL laundering does to field names
+
+    return key.toLowerCase().replace(/[-#]/g, '_');
+  }
+
+  // Massage type return from OGR
+  private convertOgrType(type: string): string {
+    if (type === 'integer64') type = 'integer';
+    return type;
   }
 }

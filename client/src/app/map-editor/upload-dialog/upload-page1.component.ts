@@ -111,10 +111,9 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   private handleUploadEvent(event: UploadOutput): void {
     if (event.file.response && event.file.response.success === false) {
       debug(event.file.response.message);
-      this.finish(event.file.response.message);
+      this.finish(event.file.response);
     }
-
-    if (event.type === 'start') {
+    else if (event.type === 'start') {
       debug('starting upload');
       this.progressValue = event.file.progress.data.percentage;
     }

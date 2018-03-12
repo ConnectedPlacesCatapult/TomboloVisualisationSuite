@@ -1,19 +1,24 @@
-.spinner {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-}
+@import '~@angular/material/theming';
 
 :host {
-  .full-width {
-    width: 100%;
-  }
-
-  .buttons {
-    margin-top: 15px;
-    display: flex;
-    justify-content: space-around;
-  }
-
+  display: block;
+  position: relative;
 }
+
+.buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.spinner-wrapper {
+  @include mat-fill();
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(black, 0.2);
+  z-index: 1000;
+}
+
 

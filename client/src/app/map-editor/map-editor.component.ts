@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import * as Debug from 'debug';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MapService} from '../services/map-service/map.service';
@@ -43,6 +43,8 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
+
+  @ViewChild('fileUploadInput') fileUploadInput;
 
   private _subs: Subscription[] = [];
 
@@ -130,7 +132,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           outlets: {
             primary: ['view', map.id],
             loginBar: null,
-            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : 'mapinfo']
+            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : map.rightBarRoute]
           }
         }]
       }
@@ -214,15 +216,17 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       });
     }
 
-    dialogRef.afterClosed().filter(d => !!d).subscribe((context: UploadDialogContext) => {
-
-      // Cancel all uploads
-      this.uploadInput.next({type: 'cancelAll'});
-
+    dialogRef.afterClosed()
+      .do(() => {
+        // Cancel all uploads
+        this.uploadInput.next({type: 'cancelAll'});
+        this.fileUploadInput.nativeElement.value = null;
+      })
+      .filter(d => !!d).subscribe((context: UploadDialogContext) => {
       if (context.openInMap) {
         this.mapService.createMapForUpload(context.file.id).subscribe(map => {
           this.mapService.notifyMapsUpdated();
-          this.router.navigate(['/', {outlets:{primary:['edit', map.id], rightBar:['editpanel']}}]);
+          this.router.navigate(['/', {outlets: {primary: ['edit', map.id], rightBar: ['editpanel']}}]);
         });
       }
     });
@@ -240,7 +244,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   browsePublicDatasets() {
-    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px', height: '500px'});
+    const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px'});
 
     dialogRef.afterClosed().filter(res => res.result).subscribe(res => {
       this.addDataLayerToMap(res['dataset']);

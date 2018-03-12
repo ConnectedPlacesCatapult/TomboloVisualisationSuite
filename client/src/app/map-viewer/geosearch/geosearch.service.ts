@@ -30,7 +30,7 @@ export class GeosearchService {
         ? this.geolookup(term)
         : Observable.of<GeosearchItem[]>([]))
       .catch(error => {
-        console.log(error);
+        debug(error);
         return Observable.of<GeosearchItem[]>([]);
       });
   }

@@ -9,6 +9,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {IPalette} from '../../../../../../src/shared/IPalette';
 import {ITomboloDatasetAttribute} from '../../../../../../src/shared/ITomboloDatasetAttribute';
 import {IMapLayer} from '../../../../../../src/shared/IMapLayer';
+import {MIN_POINT_RADIUS} from '../../../../../../src/shared/style-generator/style-generator';
 
 const debug = Debug('tombolo:map-layer-editor');
 
@@ -31,6 +32,7 @@ export class MapLayerEditorComponent implements OnInit, OnChanges {
   allAttributes: ITomboloDatasetAttribute[];
   rampAttributes: ITomboloDatasetAttribute[];
   mode: 'fill' | 'line' | 'circle' = 'fill';
+  minPointSize = MIN_POINT_RADIUS;
 
   _subs: Subscription[] = [];
 

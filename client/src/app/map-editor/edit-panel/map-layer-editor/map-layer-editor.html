@@ -21,7 +21,7 @@
   <div *ngIf="mode == 'circle'" class="panel-group">
     <label>Size:</label>
     <mat-radio-group formControlName="sizeRadio">
-      <number-slider-control min="5" max="50" step="1" unit="px" formControlName="size" class="full-width"></number-slider-control>
+      <number-slider-control [min]="minPointSize" max="50" step="1" unit="px" formControlName="size" class="full-width"></number-slider-control>
       <mat-radio-button value="fixed" class="full-width radio-control-container">Fixed</mat-radio-button>
       <mat-radio-button value="attribute" class="full-width">
         <mat-select placeholder="Data Attribute" formControlName="sizeAttribute">

@@ -11,6 +11,7 @@ import {ITomboloMap} from '../../shared/ITomboloMap';
 import {IMapDefinition} from '../../shared/IMapDefinition';
 import {LoggerService} from '../../lib/logger';
 import {Container} from 'typedi';
+import {DATA_LAYER_PREFIX} from '../../shared/style-generator/style-generator';
 
 const logger = Container.get(LoggerService);
 
@@ -88,6 +89,11 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
   })
   basemapDetailLevel: number;
 
+  @Column({
+    type: DataType.JSON
+  })
+  ui: object;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
@@ -146,7 +152,7 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
         logger.debug(`Created map ${map.id}`);
       }
 
-      const mapLayers: TomboloMapLayer[] = await map.$get('layers') as TomboloMapLayer[];
+      let mapLayers: TomboloMapLayer[] = await map.$get('layers') as TomboloMapLayer[];
 
       // Update existing layers and insert new layers
       const updatesAndInserts = mapDefinition.layers.map(defLayer => {
@@ -154,7 +160,7 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
         if (mapLayer) {
           logger.debug(`Updating map layer ${mapLayer.layerId}`);
-          return mapLayer.update({...defLayer, paletteId: defLayer.palette.id});
+          return mapLayer.update({...defLayer, palette: defLayer.palette, paletteId: defLayer.palette.id});
         }
         else {
           logger.debug(`Creating new map layer ${defLayer.originalLayerId}`);
@@ -182,6 +188,26 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
       });
 
       await Promise.all(deletions);
+
+      // Save map layer filters
+      //
+
+      // Reload layers to pick up insertions and deletions
+      mapLayers = await map.$get('layers') as TomboloMapLayer[];
+
+      const filterUpdates = mapLayers.map(layer => {
+        const filtersForLayer = mapDefinition.filters.filter(f => f.datalayerId === DATA_LAYER_PREFIX + layer.layerId);
+        layer.filters = filtersForLayer.map(filter => {
+          // Delete datalayerId from filter
+          const filterCopy = {...filter};
+          delete filterCopy.datalayerId;
+          return filterCopy;
+        });
+
+        return layer.save();
+      });
+
+      await Promise.all(filterUpdates);
 
       return map;
     }

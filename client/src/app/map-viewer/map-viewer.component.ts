@@ -1,4 +1,4 @@
-import {Component, HostBinding, Inject, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, OnDestroy, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import * as Debug from 'debug';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -15,15 +15,16 @@ import LngLatBoundsLike = mapboxgl.LngLatBoundsLike;
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../auth/auth.service';
 import {APP_CONFIG, AppConfig} from '../config.service';
+import {ITomboloMap} from '../../../../src/shared/ITomboloMap';
 
-const debug = Debug('tombolo:maps-demo');
+const debug = Debug('tombolo:map-viewer');
 
 @Component({
   selector: 'maps-viewer',
   templateUrl: './map-viewer.html',
   styles: []
 })
-export class MapViewerComponent implements OnInit {
+export class MapViewerComponent implements OnInit, OnDestroy {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
 
@@ -31,7 +32,6 @@ export class MapViewerComponent implements OnInit {
 
   mapGroups$: Observable<IMapGroup[]> = null;
 
-  expandedSection = 0;
 
   constructor(private mapRegistry: MapRegistry,
               private activatedRoute: ActivatedRoute,
@@ -103,6 +103,11 @@ export class MapViewerComponent implements OnInit {
         queryParamsHandling: 'merge'
       });
     });
+  }
+
+  // Return rightbar route to use for the specified map
+  rightBarRoute(map: ITomboloMap) {
+    return (map.ui && map.ui['rightBar']) || 'mapinfo';
   }
 
 }

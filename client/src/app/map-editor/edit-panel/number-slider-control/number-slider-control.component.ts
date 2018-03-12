@@ -1,4 +1,7 @@
-import {ChangeDetectionStrategy, Component, forwardRef, HostBinding, Input, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, Input,
+  ViewEncapsulation
+} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
@@ -20,14 +23,21 @@ export class NumberSliderControlComponent implements ControlValueAccessor {
   @Input() step: number = 1;
   @Input() unit: string;
   @Input() value: number = 0;
+  @Input('tick-interval') tickInterval: number | 'auto';
 
   propagateChange = (_: any) => {};
 
-  constructor() {}
+  constructor(private cd: ChangeDetectorRef) {}
+
+  setValueFromSlider(val) {
+    this.value = Number.parseFloat(val.toPrecision(3));
+    this.propagateChange(val);
+  }
 
   writeValue(value: any) {
     if (value !== undefined) {
       this.value = value;
+      this.cd.markForCheck();
     }
   }
 

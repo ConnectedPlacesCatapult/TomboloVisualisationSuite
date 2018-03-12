@@ -4,6 +4,7 @@ import {TomboloMap} from './TomboloMap';
 import {Palette} from './Palette';
 import * as sequelize from 'sequelize';
 import {IMapLayer} from '../../shared/IMapLayer';
+import {IMapFilter} from '../../shared/IMapFilter';
 
 @Table({
   tableName: 'map_layers',
@@ -120,6 +121,11 @@ export class TomboloMapLayer extends Model<TomboloMapLayer> implements IMapLayer
     defaultValue: 10
   })
   opacity: number;
+
+  @Column({
+    type: DataType.JSON
+  })
+  filters: IMapFilter[];
 
   @Column({
     type: DataType.FLOAT,

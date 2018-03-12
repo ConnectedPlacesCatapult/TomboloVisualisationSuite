@@ -150,7 +150,10 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
 
   // Find all datasets by userId
   static findByUserId(userId: string) {
-    return Dataset.findAll<Dataset>({where: { ownerId: userId}});
+    return Dataset.findAll<Dataset>({
+      where: { ownerId: userId},
+      order: ['name']
+    });
   }
 
   // Find datasets by full-text query
@@ -165,7 +168,8 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
     return Dataset.findAll<Dataset>({
       where: {
         query: sequelize.literal(fullTextQuery)
-      } as any
+      } as any,
+      order: ['name']
     });
   }
 

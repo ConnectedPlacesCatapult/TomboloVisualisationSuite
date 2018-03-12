@@ -7,6 +7,8 @@ export  const ICONS = [
   'air-quality',
   'backarrow',
   'bike',
+  'bus',
+  'car',
   'cross',
   'disclosure',
   'dropdown',
@@ -32,12 +34,14 @@ export  const ICONS = [
   'radio-on',
   'save',
   'schools',
+  'search',
   'share',
   'signup',
   'social-isolation',
   'transport',
   'trash',
-  'user'
+  'user',
+  'wlk'
 ];
 
 export function RegisterIcons(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

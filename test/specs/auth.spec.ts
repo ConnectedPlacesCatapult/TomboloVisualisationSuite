@@ -30,7 +30,9 @@ describe('Authentication Service', () => {
   const mockMailer: Mailer = {} as Mailer;
 
   beforeEach(() => {
-    authService = new AuthService(mockLocker, mockMailer, config.get('auth'));
+    const baseUrl = config.get('server.baseUrl');
+    const authConfig = config.get('auth');
+    authService = new AuthService(mockLocker, mockMailer, baseUrl, authConfig);
   });
 
   describe('Authentication Service', () => {
