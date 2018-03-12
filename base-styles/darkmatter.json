@@ -31,6 +31,8 @@
         "highway_motorway_subtle": 1,
         "place_town": 1,
         "place_town-en": 1,
+        "place_city": 1,
+        "place_city-en": 1,
         "place_village": 1,
         "place_village-en": 1,
         "place_suburb": 1,
