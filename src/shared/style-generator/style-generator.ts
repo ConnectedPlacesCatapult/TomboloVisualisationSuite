@@ -193,6 +193,7 @@ export class StyleGenerator {
       opacity: 1,
       layerType: this.layerTypeForGeometryType(dataset.geometryType),
       palette: defaultPalette,
+      paletteId: defaultPalette.id,
       paletteInverted: false,
       colorAttribute: null,
       fixedColor: '#888',
@@ -203,6 +204,21 @@ export class StyleGenerator {
       labelAttribute: null,
       order: null
     };
+
+    // Sort attributes with 'number' attributes first and then by name
+    const sortedAttributes = dataset.dataAttributes.sort((a, b) => {
+      if (a.type === b.type) return (a.name < b.name) ? -1 : 1;
+      if (a.type === 'number') return -1;
+      if (b.type === 'number') return 1;
+
+      return (a.name < b.name) ? -1 : 1;
+    });
+
+    if (sortedAttributes.length > 0 && sortedAttributes[0].type === 'number') {
+      // Select first numeric attribute for color
+      mapLayer.colorAttribute = sortedAttributes[0].field;
+      mapLayer.colorMode = 'attribute';
+    }
 
     return mapLayer;
   }

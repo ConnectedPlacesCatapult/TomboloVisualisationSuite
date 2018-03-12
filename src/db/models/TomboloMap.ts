@@ -160,7 +160,7 @@ export class TomboloMap extends Model<TomboloMap> implements ITomboloMap {
 
         if (mapLayer) {
           logger.debug(`Updating map layer ${mapLayer.layerId}`);
-          return mapLayer.update({...defLayer, paletteId: defLayer.palette.id});
+          return mapLayer.update({...defLayer, palette: defLayer.palette, paletteId: defLayer.palette.id});
         }
         else {
           logger.debug(`Creating new map layer ${defLayer.originalLayerId}`);

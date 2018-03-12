@@ -327,6 +327,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     if (!layer) throw new Error(`Data layer ${layerId} not found`);
 
     layer.palette = palette;
+    layer.paletteId = palette.id;
     this.regenerateLayerPaintStyle(layer);
 
     this.setModified();
