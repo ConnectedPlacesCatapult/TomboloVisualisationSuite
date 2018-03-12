@@ -74,7 +74,7 @@ export class StyleGenerator {
     if (layer.layerType === 'fill') {
       return {
         'fill-color': this.colorRampForLayer(layer),
-        'fill-outline-color': 'white',
+        'fill-outline-color': {stops:[[8, 'rgba(255,255,255,0)'], [9, 'rgba(255,255,255,1)']]},
         'fill-opacity': ['interpolate', ['linear'], ['zoom'],
           dataset.minZoom, 0,
           dataset.minZoom + 0.5, layer.opacity || 1

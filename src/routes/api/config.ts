@@ -10,7 +10,7 @@
 
 import * as express from 'express';
 import * as config from 'config';
-import * as version from '../../../version';
+import * as version from '../../version';
 
 const router = express.Router();
 
