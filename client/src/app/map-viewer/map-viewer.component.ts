@@ -56,7 +56,9 @@ export class MapViewerComponent implements OnInit, OnDestroy {
         this.router.navigate(['/', {outlets: {
           primary: ['view', this.config.defaultMap],
           loginBar: null,
-          rightBar: ['appinfo']}}]);
+          rightBar: ['appinfo']}}], {
+            queryParamsHandling: 'preserve'
+        });
         return
       }
 
