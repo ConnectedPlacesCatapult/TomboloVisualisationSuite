@@ -44,7 +44,6 @@ export class AccesstoRightBarComponent implements OnInit {
   }
 
   map: TomboloMapboxMap;
-  mapDescription: string;
   descriptionExpanded: 'expanded' | 'collapsed' = 'collapsed';
   form: FormGroup;
 
@@ -61,7 +60,9 @@ export class AccesstoRightBarComponent implements OnInit {
     // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       if (map.mapLoaded) {
+        
         this.map = map;
+        this.updateFormFromMap(map);
       }
     });
 
