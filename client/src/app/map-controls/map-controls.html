@@ -5,7 +5,7 @@
           angulartics2On="click"
           angularticsCategory="View"
           angularticsAction="Edit"
-          [angularticsLabel]="mapId"
+          [angularticsLabel]="map?.name"
           [disabled]="!editButtonEnabled()">
     <mat-icon svgIcon="edit"></mat-icon>Edit
   </button>
@@ -16,29 +16,29 @@
           angulartics2On="click"
           angularticsCategory="Playground"
           angularticsAction="SaveMap"
-          [angularticsLabel]="mapId"
+          [angularticsLabel]="map?.name"
           [disabled]="!saveButtonEnabled()">
     <mat-icon svgIcon="save"></mat-icon>Save
   </button>
 
   <!-- Recipe Button -->
   <button mat-icon-button disableRipple
-          [disabled]="!mapId"
+          [disabled]="!map"
           angulartics2On="click"
           angularticsCategory="View"
           angularticsAction="ViewRecipe"
-          [angularticsLabel]="mapId"
+          [angularticsLabel]="map?.name"
           (click)="showRecipeDialog()">
     <mat-icon svgIcon="info"></mat-icon>Recipe
   </button>
 
   <!-- Export Button -->
   <button mat-icon-button disableRipple
-          [disabled]="!mapId"
+          [disabled]="!map"
           angulartics2On="click"
           angularticsCategory="View"
           angularticsAction="GoToExportMap"
-          [angularticsLabel]="mapId"
+          [angularticsLabel]="map?.name"
           [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]">
     <mat-icon svgIcon="export"></mat-icon>Export
   </button>
@@ -49,7 +49,7 @@
           angulartics2On="click"
           angularticsCategory="View"
           angularticsAction="ShareMap"
-          [angularticsLabel]="mapId"
+          [angularticsLabel]="map?.name"
           [disabled]="!shareButtonEnabled()">
     <mat-icon svgIcon="share"></mat-icon>Share
   </button>
