@@ -271,6 +271,19 @@
       .mat-expansion-panel-body {
         padding: 0 $g 16px $g;
       }
+
+      &.map-layer-editor-panel .mat-expansion-panel-body {
+       padding: 0 0 16px 0;
+
+        .panel-group {
+          border-bottom: 1px solid rgba(228, 237, 237, 1);
+          padding: 0 $g 16px $g;
+
+          &:last-of-type {
+            border-bottom: none;
+          }
+        }
+      }
     }
 
     /* Basemap editor */
