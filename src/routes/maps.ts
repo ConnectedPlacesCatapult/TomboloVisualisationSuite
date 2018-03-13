@@ -13,7 +13,9 @@ const styleGeneratorService = Container.get(StyleGeneratorService);
 const router = express.Router();
 
 // Tile server config options
-const baseUrl = config.get('server.baseUrl');
+const mapsUrl = config.get('server.baseUrl') + '/maps/';
+const tilesUrl = config.get('server.baseUrl') + '/tiles/';
+const mapAssetsUrl = config.get('server.mapAssetsUrl') || config.get('server.baseUrl') + '/static/';
 
 //////////////////////
 // Routes
@@ -61,7 +63,7 @@ router.put('/:mapId', isAuthenticated, async (req, res, next) => {
 
     // Generate style from updated map and respond
     const map = await TomboloMap.scope('full').findById<TomboloMap>(req.params.mapId);
-    res.json(styleGeneratorService.generateMapStyle(map, baseUrl + '/tiles/'));
+    res.json(styleGeneratorService.generateMapStyle(map, tilesUrl, mapAssetsUrl));
   }
   catch (e) {
     logger.error(e);
@@ -144,7 +146,7 @@ router.get('/:mapId/style.json', async (req, res, next) => {
       return next({status: 404, message: 'Map not found'});
     }
 
-    res.json(styleGeneratorService.generateMapStyle(map, baseUrl + '/tiles/'));
+    res.json(styleGeneratorService.generateMapStyle(map, tilesUrl, mapAssetsUrl));
   }
   catch (e) {
     logger.error(e);
@@ -166,7 +168,7 @@ function clientSafeMap(map: TomboloMap): object {
     groupId: map.mapGroupId,
     ownerId: map.ownerId,
     ui: map.ui,
-    styleUrl: `${baseUrl}/maps/${map.id}/style.json`
+    styleUrl: `${mapsUrl}/${map.id}/style.json`
   };
 }
 

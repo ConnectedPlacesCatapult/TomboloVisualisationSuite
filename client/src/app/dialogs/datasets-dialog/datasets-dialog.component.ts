@@ -10,6 +10,7 @@ import {ITomboloDataset} from '../../../../../src/shared/ITomboloDataset';
 import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
 
 import * as Debug from 'debug';
+import {ITomboloDatasetAttribute} from '../../../../../src/shared/ITomboloDatasetAttribute';
 
 const debug = Debug('tombolo:datasets-dialog');
 
@@ -53,7 +54,9 @@ export class DatasetsDialog implements OnInit {
   }
 
   selectDataset(dataset: ITomboloDataset): void {
-    this.selectedDataset = dataset;
+    this.mapService.loadDataset(dataset.id).subscribe(dataset => {
+      this.selectedDataset = dataset;
+    });
   }
 
   filterByQuery(searchTerm: string): void {
@@ -70,5 +73,24 @@ export class DatasetsDialog implements OnInit {
 
   addToMap(): void {
     this.dialogRef.close({result: true, dataset: this.selectedDataset});
+  }
+
+  typeIconForGeometryType(geometryType: string): 'polygon' | 'line' | 'point' {
+    switch (geometryType) {
+      case 'ST_MultiPoint': return 'point';
+      case 'ST_Point': return 'point';
+      case 'ST_MultiLineString': return 'line';
+      case 'ST_LineString': return 'line';
+      case 'ST_MultiPolygon': return 'polygon';
+      case 'ST_Polygon': return 'polygon';
+    }
+  }
+
+  typeIndicatorForAttribute(attr: ITomboloDatasetAttribute): string {
+    switch (attr.type) {
+      case 'string': return 'Aa';
+      case 'number': return '#';
+      default: return '?'
+    }
   }
 }

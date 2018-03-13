@@ -14,11 +14,17 @@
         "building": 4,
         "highway_path": 4,
         "highway_minor": 3,
+        "aeroway-runway": 3,
+        "aeroway-area": 3,
+        "aeroway-runway-casing": 3,
+        "aeroway-taxiway": 3,
         "highway_major_casing": 2,
         "highway_major_inner": 2,
         "highway_major_subtle": 2,
         "highway_name_other": 2,
         "highway_name_other-en": 2,
+        "tunnel_motorway_inner": 2,
+        "tunnel_motorway_casing": 2,
         "highway_motorway_casing": 1,
         "highway_motorway_inner": 1,
         "highway_motorway_subtle": 1,
@@ -45,12 +51,12 @@
       "paint": {
         "text-color": "rgb(117, 129, 145)",
         "text-halo-color": "rgb(242,243,240)",
-        "text-halo-width": 0.7,
-        "text-halo-blur": 0.5,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 13,
+        "text-size": 10,
         "icon-image": {
           "base": 1,
           "stops": [
@@ -104,8 +110,8 @@
       "url": "38080fa1-e5c3-487d-8347-3532d071c8a6/index.json"
     }
   },
-  "sprite": "https://maps.emu-analytics.net:4430/static/sprites/positron",
-  "glyphs": "https://maps.emu-analytics.net:4430/static/fonts/{fontstack}/{range}.pbf",
+  "sprite": "sprites/positron",
+  "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",

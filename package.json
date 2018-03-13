@@ -12,7 +12,8 @@
     "lint": "tsconfig-lint",
     "test": "NODE_ENV=test nodemon --ext ts --watch src --watch test --exec 'jasmine-ts' JASMINE_CONFIG_PATH=./jasmine.json",
     "gen-doc": "typedoc --out doc --mode modules --readme README.md",
-    "view-doc": "http-server doc -p 8001 -o"
+    "view-doc": "http-server doc -p 8001 -o",
+    "version": "cd src && node-git-version & cd .."
   },
   "main": "build/www.js",
   "dependencies": {

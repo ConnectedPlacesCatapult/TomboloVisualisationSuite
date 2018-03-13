@@ -271,6 +271,19 @@
       .mat-expansion-panel-body {
         padding: 0 $g 16px $g;
       }
+
+      &.map-layer-editor-panel .mat-expansion-panel-body {
+       padding: 0 0 16px 0;
+
+        .panel-group {
+          border-bottom: 1px solid rgba(228, 237, 237, 1);
+          padding: 0 $g 16px $g;
+
+          &:last-of-type {
+            border-bottom: none;
+          }
+        }
+      }
     }
 
     /* Basemap editor */
@@ -977,6 +990,35 @@
         font-style: italic;
       }
 
+    }
+  }
+
+  // Data attribute table on Public Datasets dialog
+  .attribute-table-title {
+    @include mat-typography-level-to-styles($typography, subheading-2);
+    margin-bottom: 6px;
+  }
+
+  .attribute-table {
+
+    @include mat-typography-level-to-styles($typography, body-1);
+
+    th, td {
+      padding: 0.2em 0.4em;
+    }
+
+    thead {
+      @include mat-typography-level-to-styles($typography, body-2);
+      th {
+        text-align: left;
+        background: #ddd;
+      }
+    }
+
+    tbody {
+      @include mat-typography-level-to-styles($typography, body-1);
+      tr:nth-child(even) {background: #ddd}
+      tr:nth-child(odd) {background: #eee}
     }
   }
 }

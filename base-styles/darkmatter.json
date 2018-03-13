@@ -17,6 +17,10 @@
         "building": 4,
         "highway_path": 4,
         "highway_minor": 3,
+        "aeroway-runway": 3,
+        "aeroway-area": 3,
+        "aeroway-runway-casing": 3,
+        "aeroway-taxiway": 3,
         "highway_major_casing": 2,
         "highway_major_inner": 2,
         "highway_major_subtle": 2,
@@ -27,28 +31,30 @@
         "highway_motorway_subtle": 1,
         "place_town": 1,
         "place_town-en": 1,
+        "place_city": 1,
+        "place_city-en": 1,
         "place_village": 1,
         "place_village-en": 1,
         "place_suburb": 1,
         "place_suburb-en": 1,
         "place_other-en": 1,
         "place_other": 1,
-        "railway_dashline": 1,
-        "railway": 1,
-        "railway_transit_dashline": 1,
-        "railway_transit": 1
+        "railway_dashline": 2,
+        "railway": 2,
+        "railway_transit_dashline": 2,
+        "railway_transit": 2
       }
     },
     "labelLayerStyle": {
       "paint": {
         "text-color": "hsl(195, 25%, 76%)",
         "text-halo-color": "hsla(228, 60%, 21%, 0.7)",
-        "text-halo-width": 0.7,
-        "text-halo-blur": 0.5,
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
         "icon-opacity": 0.7
       },
       "layout": {
-        "text-size": 13,
+        "text-size": 10,
         "text-transform": "uppercase",
         "text-font": [
           "Metropolis Regular"
@@ -107,8 +113,8 @@
       "url": "38080fa1-e5c3-487d-8347-3532d071c8a6/index.json"
     }
   },
-  "sprite": "https://maps.emu-analytics.net:4430/static/sprites/darkmatter",
-  "glyphs": "https://maps.emu-analytics.net:4430/static/fonts/{fontstack}/{range}.pbf",
+  "sprite": "sprites/darkmatter",
+  "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",

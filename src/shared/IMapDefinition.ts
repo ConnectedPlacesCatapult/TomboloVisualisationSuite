@@ -16,7 +16,8 @@ export interface IMapDefinition {
   recipe: string;
   basemapId: string;
   basemapDetailLevel: number;
-  tileBaseUrl: string;
+  tileUrl: string;
+  mapAssetsUrl: string;
   ownerId: string;
   filters: IMapFilter[];
   ui: object;

@@ -3,6 +3,8 @@ import {IMapDefinition} from './IMapDefinition';
 export interface IStyle {
   zoom: number;
   center: number[];
+  glyphs: string;
+  sprite: string;
   sources: object;
   layers: object[];
   metadata: IStyleMetadata;

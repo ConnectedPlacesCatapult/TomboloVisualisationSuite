@@ -15,7 +15,7 @@ import {NotificationService} from '../../dialogs/notification.service';
 const debug = Debug('tombolo:map-edit-panel');
 
 @Component({
-  selector: 'map-info',
+  selector: 'map-editor-panel',
   templateUrl: './edit-panel.html',
   styleUrls: ['./edit-panel.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +23,7 @@ const debug = Debug('tombolo:map-edit-panel');
 export class EditPanelComponent implements OnInit, DoCheck {
 
   @HostBinding('class.sidebar-component') sidebarComponentClass = true;
+  @HostBinding('class.map-editor-panel') mapEditorPanelClass = true;
 
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,

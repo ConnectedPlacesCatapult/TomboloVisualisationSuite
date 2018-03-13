@@ -29,7 +29,9 @@ export class StyleGenerator {
     style.zoom = this.mapDefinition.zoom || style.zoom;
     style.center = this.mapDefinition.center || style.center;
     style.sources = {...style['sources'], ...this.generateSources(this.mapDefinition)};
-    style.sources = this.expandTileSources(this.mapDefinition.tileBaseUrl, style.sources);
+    style.sources = this.expandTileSources(this.mapDefinition.tileUrl, style.sources);
+    style.glyphs = this.expandRelativeURL(this.mapDefinition.mapAssetsUrl, style.glyphs);
+    style.sprite = this.expandRelativeURL(this.mapDefinition.mapAssetsUrl, style.sprite);
 
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};
@@ -72,7 +74,7 @@ export class StyleGenerator {
     if (layer.layerType === 'fill') {
       return {
         'fill-color': this.colorRampForLayer(layer),
-        'fill-outline-color': 'white',
+        'fill-outline-color': {stops:[[8, 'rgba(255,255,255,0)'], [9, 'rgba(255,255,255,1)']]},
         'fill-opacity': ['interpolate', ['linear'], ['zoom'],
           dataset.minZoom, 0,
           dataset.minZoom + 0.5, layer.opacity || 1
@@ -274,17 +276,17 @@ export class StyleGenerator {
 
       // For vector source with tileJSON url
       if (source.hasOwnProperty('url')) {
-        source = {...source, url: this.expandRelativeTileURL(baseUrl, source['url'])};
+        source = {...source, url: this.expandRelativeURL(baseUrl, source['url'])};
       }
 
       // For vector sources with inline tiles url
       if (source.hasOwnProperty('tiles')) {
-        source = {...source, tiles: source['tiles'].map(tileUrl => this.expandRelativeTileURL(baseUrl, tileUrl))};
+        source = {...source, tiles: source['tiles'].map(tileUrl => this.expandRelativeURL(baseUrl, tileUrl))};
       }
 
       // For geojson sources
       if (source.hasOwnProperty('data')) {
-        source = {...source, data: this.expandRelativeTileURL(baseUrl, source['data'])};
+        source = {...source, data: this.expandRelativeURL(baseUrl, source['data'])};
       }
 
       accum[key] = source;
@@ -293,7 +295,7 @@ export class StyleGenerator {
     }, {});
   }
 
-  private expandRelativeTileURL(baseUrl, url: string): string {
+  private expandRelativeURL(baseUrl, url: string): string {
     return (url.startsWith('http')) ? url : baseUrl + url;
   }
 

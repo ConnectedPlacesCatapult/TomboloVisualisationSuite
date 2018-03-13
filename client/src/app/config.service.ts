@@ -17,6 +17,14 @@ export class AppConfig {
   nominatimUrl: string;
   defaultMap: string;
   poweredBy: string;
+  uploadEnabled: boolean;
+  saveEnabled: boolean;
+  createAccountEnabled: boolean;
+  version: {
+    tag: string,
+    hash: string,
+    timestamp: number
+  };
 }
 
 @Injectable()

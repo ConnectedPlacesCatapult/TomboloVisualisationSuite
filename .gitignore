@@ -46,3 +46,4 @@ local*.toml
 client-dist/
 docker-compose-local*.yml
 data/
+version.js
