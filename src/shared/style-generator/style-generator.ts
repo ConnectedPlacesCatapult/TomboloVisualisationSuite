@@ -74,7 +74,7 @@ export class StyleGenerator {
     if (layer.layerType === 'fill') {
       return {
         'fill-color': this.colorRampForLayer(layer),
-        'fill-outline-color': {stops:[[8, 'rgba(255,255,255,0)'], [9, 'rgba(255,255,255,1)']]},
+        'fill-outline-color': {stops: [[8, 'rgba(255,255,255,0)'], [9, 'rgba(255,255,255,1)']]},
         'fill-opacity': ['interpolate', ['linear'], ['zoom'],
           dataset.minZoom, 0,
           dataset.minZoom + 0.5, layer.opacity || 1
@@ -330,15 +330,18 @@ export class StyleGenerator {
 
     const colorStops = [...layer.palette.colorStops];
     if (layer.paletteInverted) colorStops.reverse();
-    const rampStops = dataAttribute.quantiles5.map((val, i) => [val, colorStops[i]]);
+    const rampStops = dataAttribute.quantiles5.reduce((accum, val, i) => {
+      accum.push(val);
+      accum.push(colorStops[i]);
+      return accum;
+    }, []);
+
     const defaultColor = colorStops[0];
 
-    // TODO - convert to new-style expression once I've figured out how to replicate the 'default' value for missing data
-    const ramp =  {
-      property: layer.colorAttribute,
-      stops: rampStops,
-      'default': layer.fixedColor || defaultColor
-    };
+    const ramp = ['case',
+      ['==', ['get', layer.colorAttribute], null], layer.fixedColor || defaultColor, // Null data
+      ['interpolate', ['linear'], ['get', layer.colorAttribute], ...rampStops]
+    ];
 
     return ramp;
   }
@@ -361,13 +364,17 @@ export class StyleGenerator {
     const radiusRange = layer.fixedSize - MIN_POINT_RADIUS;
     const radiusPerStop = radiusRange / 5;
 
-    const stops = dataAttribute.quantiles5.map((val, i) => [val, MIN_POINT_RADIUS + radiusPerStop * i]).reduce((a, b) => a.concat(b), []);
+    const stops = dataAttribute.quantiles5.reduce((accum, val, i) => {
+      accum.push(val);
+      accum.push(MIN_POINT_RADIUS + radiusPerStop * i);
+      return accum;
+    }, []);
 
-    return [
-      'interpolate',
-      ['linear'],
-      ['number', ['get', layer.sizeAttribute], layer.fixedSize],
-      ...stops
+    const ndSize = MIN_POINT_RADIUS;
+
+    return ['case',
+      ['==', ['get', layer.sizeAttribute], null], ndSize, // Null data
+      ['interpolate', ['linear'], ['get', layer.sizeAttribute], ...stops]
     ];
   }
 
