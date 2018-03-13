@@ -22,6 +22,7 @@ import 'rxjs/add/observable/forkJoin';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {APP_CONFIG, AppConfig} from '../config.service';
+import {Angulartics2} from "angulartics2";
 
 
 const debug = Debug('tombolo:map-editor');
@@ -56,6 +57,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               private authService: AuthService,
               private dialogsService: DialogsService,
               private matDialog: MatDialog,
+              private analytics: Angulartics2,
               private notificationService: NotificationService,
               @Inject(APP_CONFIG) private config: AppConfig) {}
 
@@ -291,6 +293,13 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
         this.notificationService.info('Map deleted!');
         this.mapService.notifyMapsUpdated();
         this.router.navigate(['/edit']);
+        this.analytics.eventTrack.next({
+          action: 'DeleteMap',
+          properties: {
+            category: 'Playground',
+            label: map.name
+          },
+        });
       });
   }
 
@@ -322,6 +331,13 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       .subscribe(() => {
         this.notificationService.info('Dataset deleted!');
         this.mapService.notifyDatasetsUpdated();
+        this.analytics.eventTrack.next({
+          action: 'DeleteDataset',
+          properties: {
+            category: 'Playground',
+            label: dataset.name
+          },
+        });
       });
   }
 

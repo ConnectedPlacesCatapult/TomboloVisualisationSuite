@@ -5,6 +5,7 @@ import * as Debug from 'debug';
 import {MapService} from '../../services/map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
 import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
+import {Angulartics2} from "angulartics2";
 
 const debug = Debug('tombolo:upload-page1');
 
@@ -46,7 +47,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
   private ingestPollTimer: any;
 
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService, private angulartics2: Angulartics2) {}
 
   ngOnInit() {
     this._subs.push(this.context.cancel$.subscribe(pageIndex => this.cancel(pageIndex)));
@@ -163,12 +164,23 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     if (error) {
       this.steps[this.currentStepIndex].status = 'error';
       this.errorMessage = error.toString();
+
+      this.angulartics2.eventTrack.next({
+        action: 'UploadDatasetFail',
+        properties: { category: 'UploadDataset', label: this.errorMessage }
+      });
     }
     else {
 
       this.steps.forEach(step => step.status = 'done');
       this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
       this.context.file = fileUpload;
+
+      this.angulartics2.eventTrack.next({
+        action: 'UploadDatasetSuccess',
+        properties: { category: 'UploadDataset', label: fileUpload['mimeType'] }
+      });
+
       this.context.setNextEnabled(0);
     }
   }

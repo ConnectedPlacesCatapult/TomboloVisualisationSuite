@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component, HostBinding, OnInit, DoCheck, ChangeDetectorRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, HostBinding, OnInit, DoCheck, ChangeDetectorRef
+} from '@angular/core';
 import * as Debug from 'debug';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {MapService} from '../services/map-service/map.service';
@@ -10,6 +12,8 @@ import {DialogsService} from '../dialogs/dialogs.service';
 import {DragulaService} from 'ng2-dragula';
 import {NotificationService} from '../dialogs/notification.service';
 import {IMapFilter} from '../../../../src/shared/IMapFilter';
+import {AuthService} from "../auth/auth.service";
+import {AppComponent} from "../app.component";
 
 const debug = Debug('tombolo:map-filters-panel');
 
@@ -26,6 +30,7 @@ export class MapFiltersPanelComponent implements OnInit, DoCheck {
   constructor(private mapService: MapService,
               private mapRegistry: MapRegistry,
               private dialogsService: DialogsService,
+              private activatedRoute: ActivatedRoute,
               private notificationService: NotificationService,
               private cd: ChangeDetectorRef) {}
 

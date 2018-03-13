@@ -9,6 +9,7 @@
             class="share-button"
             angulartics2On="click"
             angularticsCategory="ExportShare"
+            [angularticsLabel]="url"
             angularticsAction="ShareFacebook"><mat-icon fontSet="fa" fontIcon="fa-facebook-square" [style.color]="share.prop.facebook.color"></mat-icon></button>
     <button mat-icon-button shareButton="twitter"
             [sbUrl]="url"
@@ -17,6 +18,7 @@
             class="share-button"
             angulartics2On="click"
             angularticsCategory="ExportShare"
+            [angularticsLabel]="url"
             angularticsAction="ShareTwitter"><mat-icon fontSet="fa" fontIcon="fa-twitter-square" [style.color]="share.prop.twitter.color"></mat-icon></button>
     <button mat-icon-button shareButton="linkedin"
             [sbUrl]="url"
@@ -25,6 +27,7 @@
             class="share-button"
             angulartics2On="click"
             angularticsCategory="ExportShare"
+            [angularticsLabel]="url"
             angularticsAction="ShareLinkedin"><mat-icon fontSet="fa" fontIcon="fa-linkedin-square" [style.color]="share.prop.linkedin.color"></mat-icon></button>
     <button mat-icon-button shareButton="google"
             [sbUrl]="url"
@@ -33,10 +36,12 @@
             class="share-button"
             angulartics2On="click"
             angularticsCategory="ExportShare"
+            [angularticsLabel]="url"
             angularticsAction="ShareGooglePlus"><mat-icon fontSet="fa" fontIcon="fa-google-plus-square" [style.color]="share.prop.google.color"></mat-icon></button>
     <button mat-icon-button class="share-button" (click)="email()"
             angulartics2On="click"
             angularticsCategory="ExportShare"
+            [angularticsLabel]="url"
             angularticsAction="ShareEmail"><mat-icon fontSet="fa" fontIcon="fa-envelope-square" [style.color]="share.prop.email.color"></mat-icon></button>
    </div>
 
