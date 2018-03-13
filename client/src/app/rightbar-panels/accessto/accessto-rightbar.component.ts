@@ -60,7 +60,7 @@ export class AccesstoRightBarComponent implements OnInit {
     // Initial setting of name and description
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       if (map.mapLoaded) {
-        
+
         this.map = map;
         this.updateFormFromMap(map);
       }
