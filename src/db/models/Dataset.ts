@@ -173,6 +173,67 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
     });
   }
 
+  /**
+   * Adjust duplicate quantiles generated for sparse data e.g [0, 0, 0, 2, 3]. MapboxGl can't interpolate
+   * these so adjust to interpolate duplicates. e.g. [0, 0.666, 1.333, 2, 3]
+   *
+   * @param {number[]} quantiles
+   * @returns {number[]}
+   */
+  static adjustDuplicateQuantiles(quantiles: number[]): number[] {
+
+    let startIndex = -1;
+    let duplicatesFound = false;
+    let currentVal = -9999999999;
+    let results = [...quantiles];
+
+    for (let i = 0; i < quantiles.length; i++) {
+      if (quantiles[i] !== currentVal && !duplicatesFound) {
+        // Possibly starting a new run of duplicates
+        currentVal = results[i];
+        startIndex = i;
+      }
+      else if (quantiles[i] !== currentVal && duplicatesFound) {
+        // At end of a run of duplicates before end of quantiles
+        // Interpolate duplicate quantiles up to next value
+        //e.g [0, 0, 0, 0, 1, 2] -> [0, 0.25, 0.5, 0.75, 1, 2]
+        const stepPerQuantile = (quantiles[i] - quantiles[startIndex]) / (i - startIndex);
+        for (let j = startIndex; j < i; j++) {
+          results[j] = currentVal + stepPerQuantile * (j - startIndex);
+        }
+
+        // Carry on and look for another run
+        duplicatesFound = false;
+        currentVal = quantiles[i];
+        startIndex = i;
+      }
+      else if (duplicatesFound && i === quantiles.length - 1) {
+        // Terminal run of duplicates found
+        // Interpolate duplicate quantiles down to previous value
+        // e.g. [0, 1, 2, 2, 2] -> [0, 1, 1.333. 1.666, 2]
+        if (startIndex > 0) {
+          const numDuplicates = i - startIndex + 1;
+          const stepPerQuantile = (quantiles[i] - quantiles[startIndex - 1]) / numDuplicates;
+          for (let j = 0; j < numDuplicates; j++) {
+            results[j + startIndex] = quantiles[startIndex - 1] + stepPerQuantile * (j + 1);
+          }
+        }
+        else {
+          // Whole set of quantiles is a duplicate e.g. [0, 0, 0, 0, 0]
+          // Just set arbitrary values above initial value e.g. [0, 1, 2, 3, 4]
+          for (let j  = 1; j < quantiles.length; j++) {
+            results[j] = quantiles[0] + j;
+          }
+        }
+      }
+      else {
+        duplicatesFound = true;
+      }
+    }
+
+    return results;
+  }
+
   async calculateDataAttributeStats(): Promise<void> {
     // Calculating attribute stats is only supported for 'table' and 'sql' type datasets
     if (this.sourceType !== 'table' && this.sourceType !== 'sql') return;
@@ -226,8 +287,6 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
       return this.source;
   }
 
-
-
   private async updateNumericAttribute(attribute: DataAttribute): Promise<void> {
 
     attribute.isCategorical = false;
@@ -249,11 +308,11 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
 
     // Quintiles
     const quintiles = await this.sequelize.query(ntileSql, {type: sequelize.QueryTypes.SELECT, bind: [4]});
-    attribute.quantiles5 = [...quintiles.map(d => d.min), attribute.maxValue];
+    attribute.quantiles5 = Dataset.adjustDuplicateQuantiles([...quintiles.map(d => d.min), attribute.maxValue]);
 
     // Dectiles
     const dectiles = await this.sequelize.query(ntileSql, {type: sequelize.QueryTypes.SELECT, bind: [9]});
-    attribute.quantiles10 = [...dectiles.map(d => d.min), attribute.maxValue];
+    attribute.quantiles10 = Dataset.adjustDuplicateQuantiles([...dectiles.map(d => d.min), attribute.maxValue]);
 
     await attribute.save();
   }
