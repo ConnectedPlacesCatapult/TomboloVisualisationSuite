@@ -22,6 +22,7 @@ import 'rxjs/add/observable/forkJoin';
 import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {APP_CONFIG, AppConfig} from '../config.service';
+import {IStyle} from "../../../../src/shared/IStyle";
 
 
 const debug = Debug('tombolo:map-editor');
@@ -252,10 +253,60 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
   browsePublicDatasets() {
     const dialogRef = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px'});
+    const user = this.authService.getUserSync();
+    let dataset;
 
-    dialogRef.afterClosed().filter(res => res.result).subscribe(res => {
-      this.addDataLayerToMap(res['dataset']);
-    });
+      dialogRef.afterClosed()
+        .filter(res => res.result)
+        .filter(res => {
+          const isExistingMode = (res['mode'] === 'existing');
+          dataset = res['dataset'];
+          if (isExistingMode) this.addDataLayerToMap(dataset);
+          return !isExistingMode;
+        })
+        .filter(() => {
+          if (!user) {
+            this.dialogsService.information('Not logged in', 'You must be logged in to create a new map.')
+            return false;
+          }
+          return true;
+        })
+        .mergeMap(() => {
+          return this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
+        })
+        .mergeMap((map) => {
+          map.newMap(user.id);
+          return this.internalSaveMap(map);
+        })
+        .mergeMap((style) => {
+          const mapId = style['metadata']['mapDefinition']['id'];
+          // Navigate back to editor with the new map
+          this.router.navigate(['/', {
+            outlets: {
+              primary: ['edit', mapId],
+              loginBar: null,
+              rightBar: ['editpanel']
+            }
+          }]);
+          return this.mapService.loadMap(mapId);
+        })
+        .subscribe((map) => {
+          this.addDataLayerToMap(dataset);
+        });
+  }
+
+  private internalSaveMap(map: TomboloMapboxMap): Observable<IStyle> {
+    debug(`Saving map ${map.id} for user ${map.ownerId}`);
+
+    return this.mapService.saveMap(map)
+      .do(() => {
+        map.setModified(false);
+        this.notificationService.info('Map saved');
+        this.mapService.notifyMapsUpdated();
+      })
+      .catch(e => {
+        return Observable.throw(e);
+      });
   }
 
   /**
@@ -325,5 +376,4 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
         this.mapService.notifyDatasetsUpdated();
       });
   }
-
 }

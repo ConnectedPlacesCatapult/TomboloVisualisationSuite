@@ -643,6 +643,27 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     debug('After copy', this._mapDefinition);
   }
 
+  /**
+   * Turn this map into a new map with filters and data layers reset.
+   * @param {string} userId
+   */
+  newMap(userId: string) {
+
+    debug('Before new map', this._mapDefinition);
+
+    this._mapDefinition.id = uuid();
+    this._mapDefinition.name = this._mapDefinition.name + ' Copy';
+    this._mapDefinition.ownerId = userId;
+    this._mapDefinition.filters = [];
+
+    // Give each map layer a new identity
+    this.dataLayers.forEach((layer, index) => {
+      this.removeDataLayer(layer.layerId);
+    });
+
+    debug('After new map', this._mapDefinition);
+  }
+
   private regenerateLayerPaintStyle(layer: IMapLayer): void {
     this._regeneratePainStyle$.next(layer);
   }

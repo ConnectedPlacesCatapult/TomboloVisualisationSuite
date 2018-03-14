@@ -72,7 +72,11 @@ export class DatasetsDialog implements OnInit {
   }
 
   addToMap(): void {
-    this.dialogRef.close({result: true, dataset: this.selectedDataset});
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, mode: 'existing'});
+  }
+
+  addNewMap(): void {
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, mode: 'new'});
   }
 
   typeIconForGeometryType(geometryType: string): 'polygon' | 'line' | 'point' {
