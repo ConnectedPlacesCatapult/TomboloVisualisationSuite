@@ -35,9 +35,11 @@ export class TooltipRenderComponent {
   }
 
   formatValue(attribute: object): string | number {
+
+    console.log(attribute);
     const value = attribute['value'];
     const unit = attribute['unit'];
-    if (!value) return '<i>No Data</i>';
+    if (value === null || typeof value === 'undefined') return '<i>No Data</i>';
     if (typeof value === 'string') return value;
 
     let formattedValue = value.toPrecision(4);
