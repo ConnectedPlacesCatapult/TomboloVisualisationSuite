@@ -2,10 +2,6 @@
   <!-- Edit Button -->
   <button *ngIf="mode == 'view'" mat-icon-button disableRipple
           (click)="editMap()"
-          angulartics2On="click"
-          angularticsCategory="View"
-          angularticsAction="Edit"
-          [angularticsLabel]="map?.name"
           [disabled]="!editButtonEnabled()">
     <mat-icon svgIcon="edit"></mat-icon>Edit
   </button>
@@ -13,10 +9,6 @@
   <!-- Save Button -->
   <button *ngIf="mode == 'edit'" mat-icon-button disableRipple
           (click)="saveMap()"
-          angulartics2On="click"
-          angularticsCategory="Playground"
-          angularticsAction="SaveMap"
-          [angularticsLabel]="map?.name"
           [disabled]="!saveButtonEnabled()">
     <mat-icon svgIcon="save"></mat-icon>Save
   </button>
@@ -24,10 +16,6 @@
   <!-- Recipe Button -->
   <button mat-icon-button disableRipple
           [disabled]="!map"
-          angulartics2On="click"
-          angularticsCategory="View"
-          angularticsAction="ViewRecipe"
-          [angularticsLabel]="map?.name"
           (click)="showRecipeDialog()">
     <mat-icon svgIcon="info"></mat-icon>Recipe
   </button>
@@ -35,10 +23,6 @@
   <!-- Export Button -->
   <button mat-icon-button disableRipple
           [disabled]="!map"
-          angulartics2On="click"
-          angularticsCategory="View"
-          angularticsAction="GoToExportMap"
-          [angularticsLabel]="map?.name"
           [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]">
     <mat-icon svgIcon="export"></mat-icon>Export
   </button>
@@ -46,10 +30,6 @@
   <!-- Share Button -->
   <button mat-icon-button disableRipple
           (click)="postBookmark()"
-          angulartics2On="click"
-          angularticsCategory="View"
-          angularticsAction="ShareMap"
-          [angularticsLabel]="map?.name"
           [disabled]="!shareButtonEnabled()">
     <mat-icon svgIcon="share"></mat-icon>Share
   </button>

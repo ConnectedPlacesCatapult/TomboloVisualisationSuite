@@ -104,7 +104,7 @@ export class MapControlsComponent implements OnInit {
   editMap(): void {
     let route;
 
-    if (this.map.id) {
+    if (this.map && this.map.id) {
       route = ['/', {outlets: {
         primary: ['edit', this.map.id],
         loginBar: null,
