@@ -9,7 +9,8 @@
     <button mat-button class="wizard-button" (click)="cancel()"
             angulartics2On="click"
             angularticsCategory="UploadDataset"
-            angularticsAction="CancelUpload">Cancel</button>
+            angularticsAction="CancelUpload"
+            angularticsLabel="0">Cancel</button>
   </mat-step>
   <mat-step label="Dataset Details" editable="false">
     <upload-page2 [context]="context"></upload-page2>
@@ -21,7 +22,8 @@
     <button mat-button class="wizard-button" (click)="cancel()"
             angulartics2On="click"
             angularticsCategory="UploadDataset"
-            angularticsAction="CancelUpload">Cancel</button>
+            angularticsAction="CancelUpload"
+            angularticsLabel="1">Cancel</button>
   </mat-step>
   <mat-step label="Data Attribute Details" editable="false">
     <upload-page3 [context]="context"></upload-page3>
@@ -33,7 +35,8 @@
     <button mat-button class="wizard-button" (click)="cancel()"
             angulartics2On="click"
             angularticsCategory="UploadDataset"
-            angularticsAction="CancelUpload">Cancel</button>
+            angularticsAction="CancelUpload"
+            angularticsLabel="2">Cancel</button>
   </mat-step>
   <mat-step label="Finish" editable="false">
     <upload-page4 [context]="context"></upload-page4>
