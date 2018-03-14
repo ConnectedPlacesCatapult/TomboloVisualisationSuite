@@ -57,6 +57,15 @@ export class SignupDialogComponent implements OnInit {
     // Check password matches confirmation
     if (this.signupForm.get('password').value !== this.signupForm.get('confirmPassword').value) {
       this.errorMessage = 'Passwords do not match';
+
+      this.analytics.eventTrack.next({
+        action: 'SignUpFail',
+        properties: {
+          category: 'Account',
+          label: this.errorMessage
+        }
+      });
+
       return;
     }
 

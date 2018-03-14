@@ -2,6 +2,15 @@
 
   <mat-tab-group>
     <mat-tab label="Map Editor">
+      <ng-template mat-tab-label>
+        <span
+          angulartics2On="click"
+          angularticsCategory="Playground"
+          angularticsAction="MapEditorTab"
+          [angularticsLabel]="map?.name">
+            Map Editor
+        </span>
+      </ng-template>
       <ng-container *ngIf="map && palettes && basemaps">
 
         <map-metadata-editor [map]="map"></map-metadata-editor>
@@ -36,7 +45,16 @@
 
       </ng-container>
     </mat-tab>
-    <mat-tab label="Map Filters">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+          angulartics2On="click"
+          angularticsCategory="Playground"
+          angularticsAction="MapFiltersTab"
+          [angularticsLabel]="map?.name">
+            Map Filters
+        </span>
+      </ng-template>
       <map-filters></map-filters>
     </mat-tab>
   </mat-tab-group>

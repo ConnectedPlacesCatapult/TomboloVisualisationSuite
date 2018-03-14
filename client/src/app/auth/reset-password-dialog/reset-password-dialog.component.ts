@@ -55,7 +55,7 @@ export class ResetPasswordDialogComponent implements OnInit {
         this.passwordReset = true;
         this.showProgress = false;
         this.analytics.eventTrack.next({
-          action: 'PasswordReset',
+          action: 'ResetPassword',
           properties: {
             category: 'Account',
             label: this.resetPasswordForm.get('email').value
@@ -66,7 +66,7 @@ export class ResetPasswordDialogComponent implements OnInit {
         this.errorMessage = 'Invalid email or password';
         this.showProgress = false;
         this.analytics.eventTrack.next({
-          action: 'PasswordResetFail',
+          action: 'ResetPasswordFail',
           properties: {
             category: 'Account',
             label: e.message

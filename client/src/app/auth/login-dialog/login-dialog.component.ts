@@ -24,8 +24,8 @@ export class LoginDialogComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private analytics: Angulartics2,
     private dialogsService: DialogsService,
+    private angulartics2: Angulartics2,
     @Inject(APP_CONFIG) public config: AppConfig) {}
 
   loginForm: FormGroup;
@@ -63,23 +63,23 @@ export class LoginDialogComponent implements OnInit {
   login() {
     this.authService.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
       .then(user => {
-        this.router.navigate([{outlets: {'loginBox': null}}]);
-        this.analytics.eventTrack.next({
+        this.angulartics2.eventTrack.next({
           action: 'Login',
           properties: {
             category: 'Account',
             label: this.loginForm.get('email').value
-          },
+          }
         });
+        this.router.navigate([{outlets: {'loginBox': null}}]);
       })
       .catch(e => {
         this.errorMessage = e.message;
-        this.analytics.eventTrack.next({
+        this.angulartics2.eventTrack.next({
           action: 'LoginFail',
           properties: {
             category: 'Account',
             label: this.loginForm.get('email').value
-          },
+          }
         });
       });
   }
