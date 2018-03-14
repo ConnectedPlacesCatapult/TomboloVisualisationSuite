@@ -23,8 +23,8 @@
              [routerLinkActiveOptions]="{exact: false}"
              angulartics2On="click"
              angularticsCategory="Playground"
-             angularticsAction="Edit map"
-             [angularticsLabel]="map.name">
+             angularticsAction="ViewMap"
+            [angularticsLabel]="map.name">
             {{map.name}}</a>
           <button mat-icon-button class="compressed" (click)="deleteMap(map)">
             <mat-icon svgIcon="trash"></mat-icon>
@@ -48,7 +48,11 @@
           <a matLine>
             {{ds.name}}
           </a>
-          <button mat-icon-button class="compressed" (click)="addDataLayerToMap(ds)">
+          <button mat-icon-button class="compressed" (click)="addDataLayerToMap(ds)"
+                  angulartics2On="click"
+                  angularticsCategory="Playground"
+                  angularticsAction="AddDataset"
+                  [angularticsLabel]="ds.name">
             <mat-icon svgIcon="add"></mat-icon>
           </button>
           <button mat-icon-button class="compressed" (click)="deleteDataset(ds)">
@@ -67,7 +71,11 @@
 
   <hr>
 
-  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground">Public Datasets...</button>
+  <button mat-raised-button (click)="browsePublicDatasets()" class="button-playground"
+          angulartics2On="click"
+          angularticsCategory="View"
+          angularticsAction="GoToPublicDatasets">
+    Public Datasets...</button>
 </div>
 
 <div class="sidebar-footer">
