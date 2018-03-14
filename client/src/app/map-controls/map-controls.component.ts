@@ -98,7 +98,8 @@ export class MapControlsComponent implements OnInit {
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
       if (this.map.isPrivate) {
-        this.dialogsService.information('Private Map', 'You are attempting to share a private map. If you would like to share this map, you can set it to public in the Tombolo Playground.')
+        this.dialogsService.information('Private Map', `You are attempting to share a private map.<p>
+                                        If you would like to share this map, you can mark it as 'public' in the Playground.`)
       } else {
         this.dialogsService.share('Share your Map', res['shortUrl']);
       }
