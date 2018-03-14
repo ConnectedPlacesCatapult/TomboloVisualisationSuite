@@ -49,7 +49,6 @@ export class MapControlsComponent implements OnInit {
 
     // Initial setting of map
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.mode = (this.router.routerState.snapshot.root.firstChild.url[0].path === 'edit') ? 'edit' : 'view';
 
       this._subs.push(map.modified$().subscribe(modified => {
         this.mapModified = modified;
@@ -73,6 +72,12 @@ export class MapControlsComponent implements OnInit {
       this.map.setBasemapDetail(this.basemapDetailSliderValue, false);
       this.updateURLforBasemapDetail();
     }));
+
+    // Extract mode from route
+    this._subs.push(this.router.events.filter(event => event instanceof NavigationEnd)
+      .subscribe((event: NavigationEnd) => {
+        this.mode = (this.router.routerState.snapshot.root.firstChild.url[0].path === 'edit') ? 'edit' : 'view';
+      }));
 
     this.activatedRoute.queryParams.subscribe(params => {
       if (params.basemapDetail) {
@@ -126,11 +131,11 @@ export class MapControlsComponent implements OnInit {
   }
 
   editButtonEnabled(): boolean {
-    return this.mode === 'view' && this.map && this.map.id;
+    return this.mode === 'view' && typeof this.map !== 'undefined';
   }
 
   shareButtonEnabled(): boolean {
-    return this.map && this.map.id && this.mode === 'view';
+    return this.mode === 'view' && typeof this.map !== 'undefined';
   }
 
   saveMap() {
