@@ -47,6 +47,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   mapClass: typeof EmuMapboxMap = TomboloMapboxMap;
   showHover = true;
   minZoomWarning: boolean = false;
+  popup: MapboxPopup;
 
   private _subs: Subscription[] = [];
   private _mapLoaded = false;
@@ -73,12 +74,14 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.rightBarOpen = routeChildren.findIndex(child => child.outlet === 'rightBar') > -1;
       }));
 
-    this._subs.push(this.activatedRoute.queryParams.subscribe(params => {
-      //this.positionMapFromURLParams(params);
-    }));
-
     this._subs.push(this.mapService.mapLoading$().subscribe(() => {
       this._mapLoaded = false;
+
+      // Remove open popup if any
+      if (this.popup) {
+        this.popup.remove();
+        this.popup = null;
+      }
     }));
 
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
@@ -89,11 +92,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     this._subs.push(this.tooltipRenderService.tooltipUpdated().subscribe(tooltipData => {
       const popupContent = this.getTooltipInnerHtml(tooltipData);
       this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-        const popup = new MapboxPopup()
+        this.popup = new MapboxPopup()
           .setLngLat(tooltipData['lngLat'])
           .setHTML(`<div>${popupContent}</div>`)
           .addTo(map);
-        popup.on('close', () => this.tooltipRenderService.componentInstance.destroy() );
+        this.popup.on('close', () => {
+          this.popup = null;
+          this.tooltipRenderService.componentInstance.destroy();
+        });
       });
     }));
   }

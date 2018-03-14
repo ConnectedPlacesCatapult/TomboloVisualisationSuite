@@ -13,7 +13,6 @@ import {Palette} from '../../db/models/Palette';
 import * as sequelize from 'sequelize';
 import {FileUploadBase} from '../../shared/fileupload-base';
 import {StyleGenerator} from '../../shared/style-generator/style-generator';
-import {IMapDefinition} from '../../shared/IMapDefinition';
 
 const exec = require('child_process').exec;
 

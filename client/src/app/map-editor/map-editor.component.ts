@@ -229,6 +229,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
         // Cancel all uploads
         this.uploadInput.next({type: 'cancelAll'});
         this.fileUploadInput.nativeElement.value = null;
+        this.mapService.notifyDatasetsUpdated();
       })
       .filter(d => !!d).subscribe((context: UploadDialogContext) => {
       if (context.openInMap) {

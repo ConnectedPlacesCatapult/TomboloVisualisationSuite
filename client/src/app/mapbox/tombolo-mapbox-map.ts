@@ -88,6 +88,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._metadata = this.getStyle().metadata;
     this._mapDefinition = this._metadata.mapDefinition;
     this._mapLoaded = true;
+    this.setModified(false);
 
     // TODO baseURL
     this._styleGenerator = new StyleGenerator(this._mapDefinition);
