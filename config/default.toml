@@ -64,7 +64,7 @@ from = "tombolo@emu-analytics.net"
 basePath = "./email-templates"
 
 [smtp]
-host = 'smtp.mailgun.org'
+host = 'mail.server.net'
 port = 587
 secure = false
 
