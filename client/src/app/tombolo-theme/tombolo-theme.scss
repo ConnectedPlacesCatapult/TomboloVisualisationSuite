@@ -563,9 +563,9 @@
         margin-bottom: $g / 2;
       }
 
-      .error {
+      .error, .message {
         @include mat-typography-level-to-styles($typography, body-1);
-        color: mat-color($warn);
+
         .mat-icon {
           position: relative;
           top: 4px;
@@ -574,6 +574,10 @@
           height: 18px;
         }
         margin-bottom: 1em;
+      }
+
+      .error {
+        color: mat-color($warn);
       }
     }
 

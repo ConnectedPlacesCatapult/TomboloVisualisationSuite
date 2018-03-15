@@ -35,7 +35,10 @@ export class ResetPasswordDialogComponent implements OnInit {
       email: new FormControl('', Validators.required)
     });
 
-    this._subs.push(this.resetPasswordForm.valueChanges.subscribe(() => this.errorMessage = null));
+    this._subs.push(this.resetPasswordForm.valueChanges.subscribe(() => {
+      this.passwordReset = false;
+      this.errorMessage = null;
+    }));
   }
 
   ngOnDestroy() {
@@ -47,6 +50,8 @@ export class ResetPasswordDialogComponent implements OnInit {
   }
 
   resetPassword() {
+
+    this.passwordReset = false;
 
     const email = this.resetPasswordForm.get('email').value;
     this.showProgress = true;
