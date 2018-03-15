@@ -6,17 +6,19 @@ import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {OgrAttributeBase} from '../../../../../src/shared/ogrfileinfo-base';
+import {IDBAttribute} from '../../../../../src/shared/IDBAttribute';
 
 const debug = Debug('tombolo:upload-page2');
 
 
-export class AttributeDataSource extends DataSource<OgrAttributeBase> {
-  constructor(private staticData: OgrAttributeBase[]) {
+export class AttributeDataSource extends DataSource<IDBAttribute> {
+
+  constructor(private attrs: IDBAttribute[]) {
     super();
   }
 
-  connect(): Observable<OgrAttributeBase[]> {
-    return Observable.of(this.staticData);
+  connect(): Observable<IDBAttribute[]> {
+    return Observable.of(this.attrs);
   }
 
   disconnect() {}
@@ -44,7 +46,7 @@ export class UploadPage3Component implements OnInit, OnDestroy {
 
     this._subs.push(this.context.enter$.subscribe(page => {
       if (page === 2) {
-        this.datasource =  new AttributeDataSource(this.context.file.ogrInfo.attributes);
+        this.datasource =  new AttributeDataSource(this.context.file.dbAttributes.filter(attr => attr.field !== 'wkb_geometry'));
       }
     }));
 

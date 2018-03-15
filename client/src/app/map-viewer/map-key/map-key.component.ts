@@ -5,6 +5,7 @@ import {IMapLayer} from '../../../../../src/shared/IMapLayer';
 import * as Debug from 'debug';
 import {ITomboloDatasetAttribute} from '../../../../../src/shared/ITomboloDatasetAttribute';
 import {MIN_POINT_RADIUS} from '../../../../../src/shared/style-generator/style-generator';
+import * as d3format from 'd3-format';
 
 const debug = Debug('tombolo:map-key');
 
@@ -64,7 +65,9 @@ export class MapKeyComponent implements DoCheck {
         itemData.paletteInverted = layer.paletteInverted;
         itemData.ndColor = layer.fixedColor;
         itemData.mode = (layer.layerType === 'circle') ? 'circle' : 'square';
-        itemData.values = this.formatQuantiles(dataAttribute.quantiles5);
+        itemData.values = dataAttribute.isCategorical?
+          this.formatCategories(dataAttribute.categories)
+          : this.formatQuantiles(dataAttribute.quantiles5);
         items.push(itemData);
       }
 
@@ -83,7 +86,9 @@ export class MapKeyComponent implements DoCheck {
         itemData.title = this.formatTitleForAttribute(dataAttribute);
         itemData.ndColor = layer.palette.colorStops[2];
         itemData.mode = (layer.layerType === 'circle') ? 'circle' : 'square';
-        itemData.values = this.formatQuantiles(dataAttribute.quantiles5);
+        itemData.values = dataAttribute.isCategorical?
+          this.formatCategories(dataAttribute.categories)
+          : this.formatQuantiles(dataAttribute.quantiles5);
         itemData.sizes = radiusStops;
         items.push(itemData);
       }
@@ -136,19 +141,14 @@ export class MapKeyComponent implements DoCheck {
 
   private formatQuantiles(quantiles: number[]): string[] {
     return quantiles.map(q => {
-      let precision;
-
-      if (q > 100) {
-        precision = 3;
-      }
-      else if (q >= 1) {
-        precision = 2;
-      }
-      else {
-        precision = 1;
-      }
-
-      return q.toPrecision(precision);
+      return d3format.format(.3)(q);
     });
+  }
+
+  private formatCategories(categories: string[]): string[] {
+    // TODO - work out what to do here - map n categories to 5 labels
+    let categoryValues = [];
+    categoryValues =  ['', '', '', '', ''];
+    return categoryValues;
   }
 }

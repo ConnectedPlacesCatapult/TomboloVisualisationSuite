@@ -112,12 +112,14 @@ export class UploadPage4Component implements OnInit, OnDestroy {
 
   private finalizeUpload() {
 
-    this.context.file.ogrInfo.attributes.forEach(attr => {
-      // Default name to id if user hasn't entered a name
-      if (!attr.name) attr.name = attr.id;
+    debug('Finalizeing upload', this.context.file.dbAttributes);
+
+    this.context.file.dbAttributes.forEach(attr => {
+      // Default name to field if user hasn't entered a name
+      if (!attr.name) attr.name = attr.field;
     });
 
-    this.mapService.finalizeIngest(this.context.file.id, this.context.file.ogrInfo).subscribe(fileUpload => {
+    this.mapService.finalizeIngest(this.context.file).subscribe(fileUpload => {
       this.setStep(1);
     });
   }

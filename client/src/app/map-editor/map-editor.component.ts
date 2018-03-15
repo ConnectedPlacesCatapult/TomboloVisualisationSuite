@@ -285,7 +285,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   deleteMap(map: ITomboloMap) {
     this.dialogsService.confirm(
       'Delete Map',
-      `Are you sure you want to delete the map '${map.name}'.<p>This cannot be undone!`)
+      `Are you sure you want to delete the map:<p><b>${map.name}</b>?<p>This cannot be undone!`)
       .filter(ok => ok)
       .mergeMap(() => {
         return this.mapService.deleteMap(map.id);
@@ -320,7 +320,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
                         Are you sure you want to continue?`;
         }
         else {
-          message = `Are you sure you want to delete the dataset '${dataset.name}'?.<p>This cannot be undone!`;
+          message = `Are you sure you want to delete the dataset<p><b>${dataset.name}</b>?<p>This cannot be undone!`;
         }
 
         return this.dialogsService.confirm('Delete Dataset', message);

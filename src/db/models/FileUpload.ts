@@ -4,14 +4,15 @@ import {DATATABLE_SUFFIX, OgrFileInfo} from '../../lib/file-ingester/file-ingest
 import {Dataset} from './Dataset';
 import {TomboloMap} from './TomboloMap';
 import {OgrAttributeBase} from '../../shared/ogrfileinfo-base';
-import {FileUploadBase} from '../../shared/fileupload-base';
+import {IFileUpload} from '../../shared/IFileUpload';
+import {IDBAttribute} from '../../shared/IDBAttribute';
 
 @Table({
   tableName: 'file_uploads',
   timestamps: true,
   version: true
 })
-export class FileUpload extends Model<FileUpload> implements FileUploadBase {
+export class FileUpload extends Model<FileUpload> implements IFileUpload {
 
   @Column({
     type: DataType.TEXT,
@@ -24,6 +25,21 @@ export class FileUpload extends Model<FileUpload> implements FileUploadBase {
     field: 'original_name'
   })
   originalName: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  name: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  description: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  attribution: string;
 
   @Column({
     type: DataType.TEXT,
@@ -51,6 +67,12 @@ export class FileUpload extends Model<FileUpload> implements FileUploadBase {
     field: 'ogr_info'
   })
   ogrInfo: OgrFileInfo;
+
+  @Column({
+    type: DataType.JSON,
+    field: 'db_attributes'
+  })
+  dbAttributes: IDBAttribute[];
 
   @Column({
     type: DataType.TEXT,
@@ -99,8 +121,8 @@ export class FileUpload extends Model<FileUpload> implements FileUploadBase {
     return this.sequelize.getQueryInterface().quoteIdentifier(column, true);
   }
 
-  attributeType(attrId: string): string | null {
-    const attr = this.ogrInfo.attributes.find(attr => attr.id === attrId);
+  attributeType(field: string): string | null {
+    const attr = this.dbAttributes.find(attr => attr.field === field);
     return attr ? attr.type : null;
   }
 }

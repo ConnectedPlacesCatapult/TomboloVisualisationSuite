@@ -5,6 +5,8 @@
 import {Component, Input} from "@angular/core";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
+import * as moment from 'moment';
+import * as d3format from 'd3-format';
 
 export interface AttributeRow {
   name: string,
@@ -38,14 +40,26 @@ export class TooltipRenderComponent {
     const value = attribute['value'];
     const unit = attribute['unit'];
     if (value === null || typeof value === 'undefined') return '<i>No Data</i>';
-    if (typeof value === 'string') return value;
 
-    let formattedValue = value.toPrecision(4);
-    if (unit) {
-      formattedValue = formattedValue + ' ' + unit;
+
+    switch (attribute['type']) {
+      case 'string':
+        return value;
+
+      case 'number':
+        let formattedValue = d3format.format(.5)(value);
+        if (unit) formattedValue = formattedValue + ' ' + unit;
+        return formattedValue;
+
+      case 'date':
+        return moment(value).format('DD/MM/YYYY');
+
+      case 'datetime':
+        return moment(value).format('DD/MM/YYYY HH:mm:ss');
+
+      default:
+        return value;
     }
-
-    return formattedValue;
   }
 }
 

@@ -11,8 +11,10 @@ import {BaseMap} from '../../db/models/BaseMap';
 import {TomboloMapLayer} from '../../db/models/TomboloMapLayer';
 import {Palette} from '../../db/models/Palette';
 import * as sequelize from 'sequelize';
-import {FileUploadBase} from '../../shared/fileupload-base';
+import {IFileUpload} from '../../shared/IFileUpload';
 import {StyleGenerator} from '../../shared/style-generator/style-generator';
+import {DB} from '../../db/index';
+import {IDBAttribute} from '../../shared/IDBAttribute';
 
 const exec = require('child_process').exec;
 
@@ -53,13 +55,14 @@ export interface OgrAttribute {
  */
 function ServiceFactory() {
   let logger = Container.get(LoggerService);
-  return new FileIngester(logger, config.get('db'));
+  let db = Container.get(DB);
+  return new FileIngester(logger, db, config.get('db'));
 }
 
 @Service({factory: ServiceFactory})
 export class FileIngester {
 
-  constructor(private logger: Logger, private dbConfig: object) {}
+  constructor(private logger: Logger, private db: DB, private dbConfig: object) {}
 
   async processFile(file: FileUpload): Promise<OgrFileInfo> {
 
@@ -83,7 +86,8 @@ export class FileIngester {
       await file.update({status: 'ingesting', ogrInfo: fileInfo});
       await this.ingestFile(file);
 
-      await file.update({status: 'done'});
+      file.status = 'done';
+      await file.save();
 
       return fileInfo;
     }
@@ -103,7 +107,7 @@ export class FileIngester {
    *
    * @param {string} path
    */
-  validateFile(file: FileUploadBase): Promise<OgrFileInfo> {
+  validateFile(file: IFileUpload): Promise<OgrFileInfo> {
 
     if (!file) return Promise.reject(new Error('file required'));
 
@@ -168,7 +172,7 @@ export class FileIngester {
     });
   }
 
-  ingestFile(file: FileUploadBase): Promise<void> {
+  ingestFile(file: FileUpload): Promise<void> {
 
     if (!file) return Promise.reject(Error('file required'));
 
@@ -192,47 +196,33 @@ export class FileIngester {
           reject(new Error(stdout));
         }
 
-        // ogr2ogr gives no output if successful
-        resolve();
+        // Capture attribute type info from newly created table
+        this.db.sequelize.getQueryInterface().describeTable(file.tableName()).then((results) => {
+          file.dbAttributes = Object.keys(results).map(key => ({...results[key], field: key}));
+          resolve();
+        })
+          .catch(e => {
+            this.logger.error(e);
+          });
       });
     });
   }
 
-  async finalizeUpload(file: FileUpload, newOgrInfo: OgrFileInfo): Promise<void> {
+  async finalizeUpload(file: FileUpload, newFile: IFileUpload): Promise<void> {
 
-    // Change column types - update all columns whose type has been changed *and* also
-    // all integer columns to fix any integer columns that were imported as 'bigint'
-    await Promise.all(newOgrInfo.attributes
-      .filter(attr => attr.type === 'integer' || attr.type !== file.attributeType(attr.id))
+    // Change column types - update all columns whose type has been changed
+    await Promise.all(newFile.dbAttributes.filter(attr => attr.type !== file.attributeType(attr.field))
       .map(attr => {
-
-        let dataType;
-        switch (attr.type) {
-          case 'string':
-            dataType = 'VARCHAR';
-            break;
-          case 'real':
-            dataType = 'DOUBLE PRECISION';
-            break;
-          case 'integer':
-            dataType = 'INTEGER';
-            break;
-          case 'datetime':
-            dataType = 'TIMESTAMP WITH TIMEZONE';
-            break;
-          default:
-            throw new Error(`Unsupported field type: ${attr.type}`);
-        }
-
         const columnTypeSql = `
           ALTER TABLE ${file.sqlSafeTableName()} 
-          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.id)} SET DATA TYPE ${dataType} USING ${file.sqlSafeAttributeColumn(attr.id)}::${dataType};`;
+          ALTER COLUMN ${file.sqlSafeAttributeColumn(attr.field)} SET DATA TYPE ${attr.type} 
+          USING ${file.sqlSafeAttributeColumn(attr.field)}::${attr.type};`;
         return file.sequelize.query(columnTypeSql);
       }));
 
     // Remove unwanted columns
-    await Promise.all(newOgrInfo.attributes.filter(attr => attr.removed).map(attr => {
-      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.id)};`;
+    await Promise.all(newFile.dbAttributes.filter(attr => attr.removed).map(attr => {
+      const dropColumnSql = `ALTER TABLE ${file.sqlSafeTableName()} DROP COLUMN ${file.sqlSafeAttributeColumn(attr.field)};`;
       return file.sequelize.query(dropColumnSql);
     }));
 
@@ -247,9 +237,9 @@ export class FileIngester {
 
     // Create dataset
     const dataset = await Dataset.create<Dataset>({
-      name: file.ogrInfo.name,
-      description: file.ogrInfo.description,
-      attribution: file.ogrInfo.attribution,
+      name: file.name,
+      description: file.description,
+      attribution: file.attribution,
       sourceType: 'table',
       source: file.tableName(),
       geometryColumn: 'wkb_geometry',
@@ -266,16 +256,16 @@ export class FileIngester {
 
     // Create data attributes
 
-    this.logger.info('OGR Attributes', file.ogrInfo.attributes);
+    this.logger.info('DB Attributes', file.dbAttributes);
 
-    await Promise.all(file.ogrInfo.attributes.filter(attr => !attr.removed).map((attr, index) => {
+    await Promise.all(file.dbAttributes.filter(attr => !attr.removed && attr.field !== 'wkb_geometry').map((attr, index) => {
 
       // Convert attr type to javascript type
-      const datasetType = (attr.type === 'real' || attr.type === 'integer') ? 'number' : attr.type;
+      const datasetType = this.datasetTypeForDbType(attr.type);
 
       return dataset.$create('dataAttribute', {
         datasetId: dataset.id,
-        field: attr.id,
+        field: attr.field,
         type: datasetType,
         name: attr.name,
         description: attr.description,
@@ -363,5 +353,20 @@ export class FileIngester {
   private convertOgrType(type: string): string {
     if (type === 'integer64') type = 'integer';
     return type;
+  }
+
+  private datasetTypeForDbType(type: string): 'string' | 'number' | 'date' | 'datetime' {
+    switch (type) {
+      case 'CHARACTER VARYING': return 'string';
+      case 'INTEGER': return 'number';
+      case 'BIGINT': return 'string'; // bigints need to be handled as strings
+      case 'DOUBLE PRECISION': return 'number';
+      case 'DATE': return 'date';
+      case 'TIMESTAMP WITH TIME ZONE': return 'datetime';
+
+      default:
+        this.logger.warn(`Unrecognized DB type '${type}'`);
+        return 'string';
+    }
   }
 }

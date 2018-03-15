@@ -3,6 +3,7 @@ import {IMapDefinition} from '../IMapDefinition';
 import {ILabelLayerStyleMetadata, IStyle, IStyleMetadata} from '../IStyle';
 import {IMapLayer} from '../IMapLayer';
 import {ITomboloDataset} from '../ITomboloDataset';
+import * as d3scale from 'd3-scale';
 
 import * as uuid from 'uuid/v4';
 
@@ -323,27 +324,54 @@ export class StyleGenerator {
       throw new Error(`Data attribute '${layer.colorAttribute} not found on dataset`);
     }
 
-    if (!dataAttribute.quantiles5) {
-      // Missing quantiles
-      return 'black';
-    }
-
     const colorStops = [...layer.palette.colorStops];
     if (layer.paletteInverted) colorStops.reverse();
-    const rampStops = dataAttribute.quantiles5.reduce((accum, val, i) => {
-      accum.push(val);
-      accum.push(colorStops[i]);
-      return accum;
-    }, []);
-
     const defaultColor = colorStops[0];
 
-    const ramp = ['case',
-      ['==', ['get', layer.colorAttribute], null], layer.fixedColor || defaultColor, // Null data
-      ['interpolate', ['linear'], ['get', layer.colorAttribute], ...rampStops]
-    ];
+    if (dataAttribute.isCategorical) {
+      // Categorical data - d3 scale is used to interpolate color stops and map values to colors
+      //
 
-    return ramp;
+      const numCategories = dataAttribute.categories.length;
+
+      // Reduce from category index to number between 0 and 4 (number of color stops)
+      const reductionScale = d3scale.scaleLinear()
+        .domain([0, numCategories])
+        .range([0, 4]);
+
+      // Map 0 - 4 to a color from the interpolated palette
+      const colorScale = d3scale.scaleLinear()
+        .domain([0, 1, 2, 3, 4])
+        .range(colorStops);
+
+
+      let ramp: any[] = ['match', ['get', layer.colorAttribute]];
+
+      for (let i = 0; i < numCategories; i++) {
+        ramp.push(dataAttribute.categories[i]);
+        ramp.push(colorScale(reductionScale(i)));
+      }
+
+      ramp.push(defaultColor);
+
+      return ramp;
+    }
+    else {
+      // Continuous numeric data - use a mapboxgl linear interpolation from quantiles to color stops
+      //
+      const rampStops = dataAttribute.quantiles5.reduce((accum, val, i) => {
+        accum.push(val);
+        accum.push(colorStops[i]);
+        return accum;
+      }, []);
+
+      const ramp = ['case',
+        ['==', ['get', layer.colorAttribute], null], layer.fixedColor || defaultColor, // Null data
+        ['interpolate', ['linear'], ['get', layer.colorAttribute], ...rampStops]
+      ];
+
+      return ramp;
+    }
   }
 
   private radiusRampForLayer(layer: IMapLayer): any {
@@ -361,21 +389,47 @@ export class StyleGenerator {
       throw new Error(`Data attribute '${layer.sizeAttribute} not found on dataset`);
     }
 
-    const radiusRange = layer.fixedSize - MIN_POINT_RADIUS;
-    const radiusPerStop = radiusRange / 5;
 
-    const stops = dataAttribute.quantiles5.reduce((accum, val, i) => {
-      accum.push(val);
-      accum.push(MIN_POINT_RADIUS + radiusPerStop * i);
-      return accum;
-    }, []);
 
-    const ndSize = MIN_POINT_RADIUS;
+    if (dataAttribute.isCategorical) {
+      // Categorical data - d3 scale is used to map category to size
 
-    return ['case',
-      ['==', ['get', layer.sizeAttribute], null], ndSize, // Null data
-      ['interpolate', ['linear'], ['get', layer.sizeAttribute], ...stops]
-    ];
+      const numCategories = dataAttribute.categories.length;
+
+      // D3 scale to convert category  index into size
+      const sizeScale = d3scale.scaleLinear()
+        .domain([0, numCategories])
+        .range([MIN_POINT_RADIUS, layer.fixedSize]);
+
+      let ramp: any[] = ['match', ['get', layer.sizeAttribute]];
+
+      for (let i = 0; i < numCategories; i++) {
+        ramp.push(dataAttribute.categories[i]);
+        ramp.push(sizeScale(i));
+      }
+
+      ramp.push(MIN_POINT_RADIUS);
+
+      return ramp;
+    }
+    else {
+
+      const radiusRange = layer.fixedSize - MIN_POINT_RADIUS;
+      const radiusPerStop = radiusRange / 5;
+
+      const stops = dataAttribute.quantiles5.reduce((accum, val, i) => {
+        accum.push(val);
+        accum.push(MIN_POINT_RADIUS + radiusPerStop * i);
+        return accum;
+      }, []);
+
+      const ndSize = MIN_POINT_RADIUS;
+
+      return ['case',
+        ['==', ['get', layer.sizeAttribute], null], ndSize, // Null data
+        ['interpolate', ['linear'], ['get', layer.sizeAttribute], ...stops]
+      ];
+    }
   }
 
   private layerTypeForGeometryType(geometryType: string): 'circle' | 'line' | 'fill' {

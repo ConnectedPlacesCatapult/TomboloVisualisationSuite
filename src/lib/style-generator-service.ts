@@ -76,7 +76,7 @@ export class StyleGeneratorService {
   private datasetsForMap(map: TomboloMap): ITomboloDataset[] {
 
     // Reduce datasets from all map layers to remove duplicates
-    const reducedDatasets: {[key: string]: ITomboloDataset} =  map.layers.reduce((accum, layer) => {
+    const reducedDatasets: { [key: string]: ITomboloDataset } = map.layers.reduce((accum, layer) => {
       const ds = layer.dataset;
       accum[ds.id] = {
         id: ds.id,
@@ -87,17 +87,18 @@ export class StyleGeneratorService {
         maxZoom: ds.maxZoom,
         dataAttributes: layer.dataset.dataAttributes
           .sort((a, b) => a.order - b.order).map(attr => ({
-          field: attr.field,
-          name: attr.name,
-          description: attr.description,
-          unit: attr.unit,
-          minValue: attr.minValue,
-          maxValue: attr.maxValue,
-          quantiles5: attr.quantiles5,
-          quantiles10: attr.quantiles10,
-          type: attr.type,
-          categories: attr.categories
-        }))
+            field: attr.field,
+            name: attr.name,
+            description: attr.description,
+            unit: attr.unit,
+            minValue: attr.minValue,
+            maxValue: attr.maxValue,
+            quantiles5: attr.quantiles5,
+            quantiles10: attr.quantiles10,
+            type: attr.type,
+            categories: attr.categories,
+            isCategorical: attr.isCategorical
+          }))
       };
 
       return accum;
