@@ -221,13 +221,6 @@ export class MapControlsComponent implements OnInit {
 
     return this.mapService.saveMap(map)
       .do(() => {
-        // I've moved these two lines to mapService.save to ensure they're always called and you don't have to remember
-        // to do them whenever you're saving a map.
-
-        // map.setModified(false);
-        // this.mapService.notifyMapsUpdated();
-
-        // These two lines are specific to map-controls so stay here
         this.notificationService.info('Map saved');
         this._saving = false;
       })

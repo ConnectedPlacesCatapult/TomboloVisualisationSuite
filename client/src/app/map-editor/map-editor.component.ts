@@ -276,9 +276,6 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               this.mapService.loadMap(this.config.defaultMap).then(map => {
 
                 // If user is logged in then make copy and add layer
-                //
-                // If the user is not logged in then its OK to let them edit the default map anyway.
-                // If they later manage to log in  then the copy will happen at the point of save.
                 const user = this.authService.getUserSync();
                 if (user) map.copyMap(user.id);
 
@@ -290,8 +287,6 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
                 map.defaultZoom = map.getZoom();
                 map.defaultCenter = map.getCenter().toArray();
 
-                // internalAddDataLayerToMap is actually asynchronous so we need to wait until it has finished before
-                // doing anything else
                 this.internalAddDataLayerToMap(res.dataset, map).subscribe(() => {
                   if (user) this.saveAndOpenNewMap(map);
                 });
@@ -378,11 +373,12 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   /**
    * Add a new data layer to the map using the specified dataset
    *
+   * This is asynchronous!
+   *
    * @param {ITomboloDataset} dataset
    */
   private internalAddDataLayerToMap(dataset: ITomboloDataset, map: TomboloMapboxMap): Observable<void> {
 
-    debug('in add layer');
     // Note: to add a data layer we need a clean basemap to regenerate the style, a palette and
     // the full dataset object with nested data attributes
     return Observable.forkJoin(
