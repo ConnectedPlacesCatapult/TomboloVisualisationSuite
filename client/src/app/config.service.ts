@@ -19,6 +19,7 @@ export class AppConfig {
   poweredBy: string;
   uploadEnabled: boolean;
   saveEnabled: boolean;
+  socialLoginEnabled: boolean;
   createAccountEnabled: boolean;
   version: {
     tag: string,
