@@ -18,7 +18,6 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/publishReplay';
 import {IPalette} from '../../../../../src/shared/IPalette';
 import {IStyle} from '../../../../../src/shared/IStyle';
-import {DialogsService} from "../../dialogs/dialogs.service";
 
 const debug = Debug('tombolo:MapService');
 
@@ -37,8 +36,7 @@ export class MapService {
   constructor(
     private http: HttpClient,
     private notificationService: NotificationService,
-    private mapRegistry: MapRegistry) {
-  }
+    private mapRegistry: MapRegistry) {}
 
   private _mapLoaded$ = new Subject<TomboloMapboxMap>();
   private _mapLoading$ = new Subject<void>();
@@ -88,9 +86,9 @@ export class MapService {
     this._mapLoading$.next();
 
     return Promise.all([
-          this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),
-          this.http.get<IStyle>(`/maps/${mapId}/style.json`).toPromise()
-        ])
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map'),
+      this.http.get<IStyle>(`/maps/${mapId}/style.json`).toPromise()
+    ])
       .then(([map, style]) => {
         map.beginLoad();
         return this.setStyleAndWait(map, style);
@@ -101,9 +99,7 @@ export class MapService {
         this._mapLoaded$.next(map);
         return map;
       })
-      .catch(e => {
-        this.handleError(e);
-      });
+      .catch(e => this.handleError(e));
   }
 
   saveMap(map: TomboloMapboxMap): Observable<IStyle> {
@@ -278,7 +274,6 @@ export class MapService {
    * @param e Error instance
    */
   private handleError(e): Promise<any> {
-
     if (e instanceof HttpErrorResponse && e.error.error && e.error.error.name === 'SequelizeOptimisticLockError') {
       e = new OptimisticLockingError(e.error.message, e.error.error);
     }
