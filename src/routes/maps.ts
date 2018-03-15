@@ -29,7 +29,7 @@ router.get('/', async (req, res, next) => {
 
     if (req.query.userId) {
 
-      if (!req.user ||  (req.user.id != req.query.userId && !req.user.hasRole('editor'))) {
+      if (!req.user ||  (req.user.id !== req.query.userId && !req.user.hasRole('editor'))) {
         return next({status: 401, message: 'Not authorized'});
       }
 

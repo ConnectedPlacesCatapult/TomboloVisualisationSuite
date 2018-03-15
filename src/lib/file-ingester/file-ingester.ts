@@ -337,7 +337,7 @@ export class FileIngester {
 
   private interpretOgInfo(ogInfo) {
     if (ogInfo.search('with the following drivers') !== -1) {
-      return 'The datasource is not in a supported format.';
+      return 'The file is not in a supported format. You can upload geoJSON or zipped shapefiles.';
     }
     return ogInfo;
   }

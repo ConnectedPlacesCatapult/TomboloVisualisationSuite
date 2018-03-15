@@ -18,7 +18,7 @@ const router = express.Router();
  * Get client config
  */
 router.get('/', (req, res) => {
-  res.send({...config.get('client'), version});
+  res.send({...config.get('client'), maxUploadSize: config.get('fileUpload.maxFileSize'), version});
 });
 
 export default router;
