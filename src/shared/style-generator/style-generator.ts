@@ -332,7 +332,8 @@ export class StyleGenerator {
       // Categorical data - d3 scale is used to interpolate color stops and map values to colors
       //
 
-      const numCategories = dataAttribute.categories.length;
+      const filteredCategories = dataAttribute.categories.filter(cat => cat !== null);
+      const numCategories = filteredCategories.length;
 
       // Reduce from category index to number between 0 and 4 (number of color stops)
       const reductionScale = d3scale.scaleLinear()
@@ -345,14 +346,16 @@ export class StyleGenerator {
         .range(colorStops);
 
 
-      let ramp: any[] = ['match', ['get', layer.colorAttribute]];
+      let ramp: any[] = ['match', ['to-string', ['get', layer.colorAttribute]], 'null', layer.fixedColor || defaultColor];
 
       for (let i = 0; i < numCategories; i++) {
-        ramp.push(dataAttribute.categories[i]);
+        ramp.push(filteredCategories[i]);
         ramp.push(colorScale(reductionScale(i)));
       }
 
       ramp.push(defaultColor);
+
+      console.log(ramp);
 
       return ramp;
     }
@@ -389,22 +392,21 @@ export class StyleGenerator {
       throw new Error(`Data attribute '${layer.sizeAttribute} not found on dataset`);
     }
 
-
-
     if (dataAttribute.isCategorical) {
       // Categorical data - d3 scale is used to map category to size
 
-      const numCategories = dataAttribute.categories.length;
+      const filteredCategories = dataAttribute.categories.filter(cat => cat !== null);
+      const numCategories = filteredCategories.length;
 
       // D3 scale to convert category  index into size
       const sizeScale = d3scale.scaleLinear()
         .domain([0, numCategories])
         .range([MIN_POINT_RADIUS, layer.fixedSize]);
 
-      let ramp: any[] = ['match', ['get', layer.sizeAttribute]];
+      let ramp: any[] = ['match', ['to-string', ['get', layer.sizeAttribute]], 'null', MIN_POINT_RADIUS];
 
       for (let i = 0; i < numCategories; i++) {
-        ramp.push(dataAttribute.categories[i]);
+        ramp.push(filteredCategories[i]);
         ramp.push(sizeScale(i));
       }
 
