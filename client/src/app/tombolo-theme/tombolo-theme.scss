@@ -85,8 +85,11 @@
       margin: $g/2 $g;
       width: $sidebar-left-width - $g * 2;
       height: $g * 2;
-      color: mat-color($accent, 300);
-      text-transform: uppercase;
+      .mat-button-wrapper {
+        font-weight: bold;
+        text-transform: uppercase;
+        color: mat-color($accent, 300);
+      }
     }
 
     .button-small {
