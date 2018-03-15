@@ -103,7 +103,11 @@ export class MapService {
   }
 
   saveMap(map: TomboloMapboxMap): Observable<IStyle> {
-    return this.http.put<IStyle>(`/maps/${map.id}`, map.mapDefinition);
+    return this.http.put<IStyle>(`/maps/${map.id}`, map.mapDefinition)
+      .do(() => {
+        map.setModified(false);
+        this.notifyMapsUpdated();
+      });
   }
 
   /**
@@ -220,7 +224,7 @@ export class MapService {
    * @returns {Observable<void>}
    */
   deleteMap(mapId: string): Observable<void> {
-    return this.http.delete<void>(`/maps/${mapId}`);
+    return this.http.delete<void>(`/maps/${mapId}`).do(() => this.notifyMapsUpdated());
   }
 
   /**
@@ -230,7 +234,8 @@ export class MapService {
    * @returns {Observable<void>}
    */
   deleteDataset(datasetId: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`);
+    return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`)
+      .do(() => this.notifyDatasetsUpdated());
   }
 
   pollIngest(uploadID: string): Observable<FileUploadBase> {

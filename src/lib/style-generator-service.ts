@@ -85,6 +85,7 @@ export class StyleGeneratorService {
         geometryType: ds.geometryType,
         minZoom: ds.minZoom,
         maxZoom: ds.maxZoom,
+        extent: ds.extent,
         dataAttributes: layer.dataset.dataAttributes
           .sort((a, b) => a.order - b.order).map(attr => ({
           field: attr.field,

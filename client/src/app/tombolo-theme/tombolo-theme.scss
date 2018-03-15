@@ -1021,4 +1021,11 @@
       tr:nth-child(odd) {background: #eee}
     }
   }
+
+  // Dialog styling
+  information-dialog, confirm-dialog {
+    p {
+      @include mat-typography-level-to-styles($typography, body-1);
+    }
+  }
 }

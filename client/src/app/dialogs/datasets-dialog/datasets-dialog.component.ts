@@ -14,6 +14,20 @@ import {ITomboloDatasetAttribute} from '../../../../../src/shared/ITomboloDatase
 
 const debug = Debug('tombolo:datasets-dialog');
 
+// DialogRef.close passes back an untyped 'any'. As the result gets more complicated
+// it's a good idea to define an interface so the client of the dialog can get the benefits of type safety/code
+// completion
+export interface DatasetsDialogResult {
+  result: boolean,
+  dataset?: ITomboloDataset,
+  // Try to avoid using strings as flags unless they are typed and there are more than two options
+  // Use boolean if possible as it's self-documenting
+  createNewMap?: boolean
+
+  // Alternative - if you have more than two options - define a restricted string type that can only take certain values:
+  // mode: 'existing' | 'new'
+}
+
 @Component({
   selector: 'datasets-dialog',
   templateUrl: './datasets-dialog.html',
@@ -28,7 +42,9 @@ export class DatasetsDialog implements OnInit {
   selectedGroup: IDatasetGroup;
   selectedDataset: ITomboloDataset;
 
-  constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
+  // Notice the MatDialogRef has a second type parameter - this defines the result type and enforces
+  // type safety using DatasetDialogResult defined above
+  constructor(public dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>,
               private mapService: MapService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               @Inject(APP_CONFIG) private config: AppConfig) {
@@ -68,15 +84,20 @@ export class DatasetsDialog implements OnInit {
   }
 
   close(): void {
+    // This is OK as I defined dataset and createMap as optional
     this.dialogRef.close({result: false});
   }
 
   addToMap(): void {
-    this.dialogRef.close({result: true, dataset: this.selectedDataset, mode: 'existing'});
+    // Type is checked here because dialogRef.close is parameterized to take a DatasetsDialogResult
+    // Try misspelling one of the properties and the compiler will complain
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, createNewMap: false});
   }
 
   addNewMap(): void {
-    this.dialogRef.close({result: true, dataset: this.selectedDataset, mode: 'new'});
+    // Type is checked here because dialogRef.close is parameterized to take a DatasetsDialogResult
+    // Try misspelling one of the properties and the compiler will complain
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, createNewMap: true});
   }
 
   typeIconForGeometryType(geometryType: string): 'polygon' | 'line' | 'point' {
