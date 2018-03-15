@@ -16,7 +16,11 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import 'variables.scss';
 @import 'app/tombolo-theme/tombolo-theme';
 
-@include mat-core();
+$ptsans-typography: mat-typography-config(
+  $font-family: '"PT Sans", "Helvetica Neue", sans-serif'
+);
+
+@include mat-core($ptsans-typography);
 
 $app-primary: mat-palette($tombolo-darkblue);
 $app-accent:  mat-palette($tombolo-cyan);
@@ -24,16 +28,17 @@ $app-warn:    mat-palette($mat-red);
 $dark-theme:  mat-dark-theme($app-primary, $app-accent, $app-warn);
 $light-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 
+
 // Apply material theme to base components
 @include angular-material-theme($light-theme);
 
 // Apply tombolo theme
-@include tombolo-theme($light-theme);
+@include tombolo-theme($light-theme, $ptsans-typography);
 
 // Apply dark theme variant to left sidebar
 .sidebar-left {
   @include angular-material-theme($dark-theme);
-  @include tombolo-theme($dark-theme);
+  @include tombolo-theme($dark-theme, $ptsans-typography);
 }
 
 html {
@@ -44,7 +49,7 @@ html {
 
 body {
 
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: 'PT Sans', 'Helvetica Neue', sans-serif;
 
   // Helps fonts on OSX looks more consistent with other systems
   // Isn't currently in button styles due to performance concerns
