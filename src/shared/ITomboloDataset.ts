@@ -9,4 +9,5 @@ export interface ITomboloDataset {
   dataAttributes: any[];
   minZoom: number;
   maxZoom: number;
+  extent: number[];
 }

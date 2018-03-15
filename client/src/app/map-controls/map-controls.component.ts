@@ -161,46 +161,49 @@ export class MapControlsComponent implements OnInit {
         });
     }
     else {
-      this.map.defaultCenter = [this.map.getCenter().lng, this.map.getCenter().lat];
-      this.map.defaultZoom = this.map.getZoom();
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
 
-      if (user.id !== this.map.ownerId && user.hasRole('editor')) {
-        // Warn editor before saving a map that they don't own
-        this.dialogsService
-          .confirm('Saving a Curated Map', `
-                  You are about to save a map that you don't own.<p>
-                  Are you sure you want to continue?`, 'Save')
-          .filter(ok => ok)
-          .mergeMap(() => this.internalSaveMap(this.map))
-          .subscribe();
-      }
-      else if (user.id === this.map.ownerId) {
-        // Save own map
-        this.internalSaveMap(this.map).subscribe();
-      }
-      else {
-        // User does not own the map - it needs to be copied before saving
-        this.dialogsService
-          .confirm('Save as Copy', `
-                  You are editing a shared map.<p>
-                  A copy wil be made and saved under your personal account.`, 'Save as Copy')
-          .filter(ok => ok)
-          .mergeMap(() => {
-            // Copy and save map
-            this.map.copyMap(user.id);
-            return this.internalSaveMap(this.map);
-          })
-          .subscribe(() => {
-            // Navigate back to editor with the new copied map
-            this.router.navigate(['/', {
-              outlets: {
-                primary: ['edit', this.map.id],
-                loginBar: null,
-                rightBar: ['editpanel']
-              }
-            }]);
-          });
-      }
+        map.defaultCenter = [map.getCenter().lng, map.getCenter().lat];
+        map.defaultZoom = map.getZoom();
+
+        if (user.id !== map.ownerId && user.hasRole('editor')) {
+          // Warn editor before saving a map that they don't own
+          this.dialogsService
+            .confirm('Saving a Curated Map', `
+                    You are about to save a map that you don't own.<p>
+                    Are you sure you want to continue?`, 'Save')
+            .filter(ok => ok)
+            .mergeMap(() => this.internalSaveMap(map))
+            .subscribe();
+        }
+        else if (user.id === map.ownerId) {
+          // Save own map
+          this.internalSaveMap(map).subscribe();
+        }
+        else {
+          // User does not own the map - it needs to be copied before saving
+          this.dialogsService
+            .confirm('Save as Copy', `
+                    You are editing a shared map.<p>
+                    A copy will be made and saved under your personal account.`, 'Save as Copy')
+            .filter(ok => ok)
+            .mergeMap(() => {
+              // Copy and save map
+              map.copyMap(user.id);
+              return this.internalSaveMap(map);
+            })
+            .subscribe(() => {
+              // Navigate back to editor with the new copied map
+              this.router.navigate(['/', {
+                outlets: {
+                  primary: ['edit', map.id],
+                  loginBar: null,
+                  rightBar: ['editpanel']
+                }
+              }]);
+            });
+        }
+      });
     }
   }
 
@@ -218,9 +221,14 @@ export class MapControlsComponent implements OnInit {
 
     return this.mapService.saveMap(map)
       .do(() => {
-        map.setModified(false);
+        // I've moved these two lines to mapService.save to ensure they're always called and you don't have to remember
+        // to do them whenever you're saving a map.
+
+        // map.setModified(false);
+        // this.mapService.notifyMapsUpdated();
+
+        // These two lines are specific to map-controls so stay here
         this.notificationService.info('Map saved');
-        this.mapService.notifyMapsUpdated();
         this._saving = false;
       })
       .catch(e => {

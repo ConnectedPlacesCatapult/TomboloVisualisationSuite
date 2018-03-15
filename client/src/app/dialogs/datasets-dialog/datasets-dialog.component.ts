@@ -11,8 +11,27 @@ import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
 
 import * as Debug from 'debug';
 import {ITomboloDatasetAttribute} from '../../../../../src/shared/ITomboloDatasetAttribute';
+import {DialogsService} from "../dialogs.service";
 
 const debug = Debug('tombolo:datasets-dialog');
+
+// DialogRef.close passes back an untyped 'any'. As the result gets more complicated
+// it's a good idea to define an interface so the client of the dialog can get the benefits of type safety/code
+// completion
+export interface DatasetsDialogResult {
+  result: boolean,
+  dataset?: ITomboloDataset,
+  // Try to avoid using strings as flags unless they are typed and there are more than two options
+  // Use boolean if possible as it's self-documenting
+  createNewMap?: boolean
+
+  // Alternative - if you have more than two options - define a restricted string type that can only take certain values:
+  // mode: 'existing' | 'new'
+}
+
+export interface DatasetsDialogData {
+  mapModified: boolean
+}
 
 @Component({
   selector: 'datasets-dialog',
@@ -27,11 +46,16 @@ export class DatasetsDialog implements OnInit {
   datasets: ITomboloDataset[];
   selectedGroup: IDatasetGroup;
   selectedDataset: ITomboloDataset;
+  mapModified: boolean;
 
-  constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
+  // Notice the MatDialogRef has a second type parameter - this defines the result type and enforces
+  // type safety using DatasetDialogResult defined above
+  constructor(public dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>,
               private mapService: MapService,
-              @Inject(MAT_DIALOG_DATA) public data: any,
+              private dialogsService: DialogsService,
+              @Inject(MAT_DIALOG_DATA) public data: DatasetsDialogData,
               @Inject(APP_CONFIG) private config: AppConfig) {
+                this.mapModified = data.mapModified;
   }
 
   ngOnInit() {
@@ -68,11 +92,31 @@ export class DatasetsDialog implements OnInit {
   }
 
   close(): void {
+    // This is OK as I defined dataset and createMap as optional
     this.dialogRef.close({result: false});
   }
 
   addToMap(): void {
-    this.dialogRef.close({result: true, dataset: this.selectedDataset});
+    // Type is checked here because dialogRef.close is parameterized to take a DatasetsDialogResult
+    // Try misspelling one of the properties and the compiler will complain
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, createNewMap: false});
+  }
+
+  addNewMap(): void {
+    // Type is checked here because dialogRef.close is parameterized to take a DatasetsDialogResult
+    // Try misspelling one of the properties and the compiler will complain
+
+    const dialogResult = {result: true, dataset: this.selectedDataset, createNewMap: true};
+
+    if (this.mapModified) {
+      this.dialogsService.confirm('Unsaved Changes', 'You have unsaved changes, are you sure you want to navigate away?')
+        .filter(ok => ok)
+        .subscribe(() => {
+          this.dialogRef.close(dialogResult);
+        });
+    } else {
+      this.dialogRef.close(dialogResult);
+    }
   }
 
   typeIconForGeometryType(geometryType: string): 'polygon' | 'line' | 'point' {
