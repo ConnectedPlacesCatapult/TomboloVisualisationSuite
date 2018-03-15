@@ -17,6 +17,7 @@ import {ITomboloDataset} from '../../../../src/shared/ITomboloDataset';
 import {DialogsService} from '../dialogs/dialogs.service';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/observable/fromPromise';
 import {NotificationService} from '../dialogs/notification.service';
 import 'rxjs/add/observable/forkJoin';
 import {MapRegistry} from '../mapbox/map-registry.service';
@@ -24,7 +25,6 @@ import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {APP_CONFIG, AppConfig} from '../config.service';
 import {LngLatBounds as MapboxLngLatBounds} from 'mapbox-gl';
 import {Angulartics2} from "angulartics2";
-
 
 const debug = Debug('tombolo:map-editor');
 
@@ -262,7 +262,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
 
   browsePublicDatasets() {
     const dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>
-      = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px'});
+      = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px', data: {mapModified: this.mapModified}});
 
     // no chaining of observable operators so no need to capture dataset in outer scope
     // let dataset;
@@ -330,11 +330,16 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       `Are you sure you want to delete the map '${map.name}'.<p>This cannot be undone!`)
       .filter(ok => ok)
       .mergeMap(() => {
-        return this.mapService.deleteMap(map.id);
+        return Observable.forkJoin(
+          Observable.fromPromise(this.mapRegistry.getMap<TomboloMapboxMap>('main-map')),
+          this.mapService.deleteMap(map.id)
+        );
       })
-      .subscribe(() => {
+      .subscribe(([mainMap]) => {
         this.notificationService.info('Map deleted!');
+        mainMap.setModified(false);
         this.router.navigate(['/edit']);
+
         this.analytics.eventTrack.next({
           action: 'DeleteMap',
           properties: {
