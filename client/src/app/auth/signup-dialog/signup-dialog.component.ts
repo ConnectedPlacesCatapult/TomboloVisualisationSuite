@@ -31,6 +31,8 @@ export class SignupDialogComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      acceptToC: new FormControl(false, Validators.requiredTrue),
       email: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       confirmPassword: new FormControl('', Validators.required),

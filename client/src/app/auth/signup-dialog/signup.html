@@ -19,6 +19,9 @@
 
 <form [formGroup]="signupForm">
   <mat-form-field class="full-width">
+    <input matInput placeholder="Name" formControlName="name" autofocus>
+  </mat-form-field>
+  <mat-form-field class="full-width">
     <input matInput placeholder="Email address" formControlName="email" autofocus>
   </mat-form-field>
   <mat-form-field class="full-width">
@@ -30,11 +33,11 @@
 
   <div class="error" *ngIf="errorMessage"><mat-icon svgIcon="info"></mat-icon>{{errorMessage}}</div>
 
-  <p class="mat-body"><mat-checkbox formControlName="newsletters"></mat-checkbox>Yes, I want to receive Tombolo newsletters</p>
+  <p class="mat-body"><mat-checkbox formControlName="acceptToC">I agree to the <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">terms & conditions</a></mat-checkbox></p>
+
+  <p class="mat-body"><mat-checkbox formControlName="newsletters">Yes, I want to receive Tombolo newsletters</mat-checkbox></p>
 
   <button mat-raised-button (click)="signup()" [disabled]="!signupForm.valid" class="full-width">Sign Up</button>
 
   <mat-progress-bar mode="indeterminate" color="accent" *ngIf="showProgress"></mat-progress-bar>
 </form>
-
-<p  class="mat-caption top-margin">By clicking signing up, you accept our <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">Membership Agreement</a>.</p>
