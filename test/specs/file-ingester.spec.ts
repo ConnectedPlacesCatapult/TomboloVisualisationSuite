@@ -3,7 +3,7 @@ import * as config from 'config';
 import {Logger} from '../../src/lib/logger';
 import {Container} from 'typedi';
 import {DB} from '../../src/db/index';
-import {FileUploadBase} from '../../src/shared/fileupload-base';
+import {IFileUpload} from '../../src/shared/IFileUpload';
 import * as sequelize from 'sequelize';
 import {FileUpload} from '../../src/db/models/FileUpload';
 
@@ -43,7 +43,7 @@ describe('File Ingester', () => {
 
     it('should validate a geojson file', async () => {
 
-      const file: FileUploadBase = {
+      const file: IFileUpload = {
         path: 'test/fixtures/geojson1.json'
       };
 
@@ -62,7 +62,7 @@ describe('File Ingester', () => {
 
     it('should reject an unsupported file', async (done) => {
 
-      const file: FileUploadBase = {
+      const file: IFileUpload = {
         path: 'test/fixtures/not_spacial.txt'
       };
 
@@ -84,7 +84,7 @@ describe('File Ingester', () => {
 
     it('should ingest a geojson file', async () => {
 
-      const file: FileUploadBase = {
+      const file: IFileUpload = {
         id: 'geojson1',
         path: 'test/fixtures/geojson1.json'
       };
@@ -105,7 +105,7 @@ describe('File Ingester', () => {
 
     it('should handle colons in attribute names', async () => {
 
-      const file: FileUploadBase = {
+      const file: IFileUpload = {
         id: 'colon_in_attributes',
         path: 'test/fixtures/colon_in_attributes.json'
       };

@@ -11,6 +11,7 @@ export interface ITomboloDatasetAttribute {
   quantiles10: number[] | null;
   type: 'number' | 'string' | 'datetime';
   categories: string[] | null;
+  isCategorical: boolean;
 
   sqlSafeField?: () => any;
 }
