@@ -24,7 +24,8 @@ import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {APP_CONFIG, AppConfig} from '../config.service';
 import {LngLatBounds as MapboxLngLatBounds} from 'mapbox-gl';
-import {Angulartics2} from "angulartics2";
+import {Angulartics2} from 'angulartics2';
+import {EditorDeactivateGuard} from './unsaved-changes-guard';
 
 const debug = Debug('tombolo:map-editor');
 
@@ -45,7 +46,6 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
-  mapModified = false;
 
   @ViewChild('fileUploadInput') fileUploadInput;
 
@@ -61,18 +61,13 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               private matDialog: MatDialog,
               private analytics: Angulartics2,
               private notificationService: NotificationService,
+              private editorDeactivatorGuard: EditorDeactivateGuard,
               @Inject(APP_CONFIG) private config: AppConfig) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
 
       const mapId = params.mapID || null;
-
-      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-        this._subs.push(map.modified$().subscribe(modified => {
-          this.mapModified = modified;
-        }));
-      });
 
       if (mapId === null) {
         // Redirect to default map
@@ -261,67 +256,53 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   browsePublicDatasets() {
-    const dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>
-      = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px', data: {mapModified: this.mapModified}});
-
-    // no chaining of observable operators so no need to capture dataset in outer scope
-    // let dataset;
+    const dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult> =
+      this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px'});
 
       dialogRef.afterClosed()
         .filter(res => res.result)
         .subscribe(res => {
 
           if (res.createNewMap) {
-            // Load the default map - guaranteed to be clean
-            this.mapService.loadMap(this.config.defaultMap).then(map => {
 
-              // If user is logged in then make copy and add layer
-              //
-              // If the user is not logged in then its OK to let them edit the default map anyway.
-              // If they later manage to log in  then the copy will happen at the point of save.
-              const user = this.authService.getUserSync();
-              if (user) map.copyMap(user.id);
+            this.editorDeactivatorGuard.canDeactivate().then(canDeactivate => {
 
-              // Change name to match what you get when you create a map by uploading data
-              map.name = `Map of ${res.dataset.name}`;
 
-              // Zoom in on the data and set default zoom and center
-              map.fitBounds(new MapboxLngLatBounds(res.dataset.extent), {animate: false});
-              map.defaultZoom = map.getZoom();
-              map.defaultCenter = map.getCenter().toArray();
+              debug('Can deactivate', canDeactivate);
+              if (!canDeactivate) return;
 
-              // addDataLayerToMap is actually asynchronous so we need to wait until it has finished before
-              // doing anything else
-              this.addDataLayerToMap(res.dataset, map).subscribe(() => {
-                if (user) this.saveAndOpenNewMap(map);
+
+              // Load the default map - guaranteed to be clean
+              this.mapService.loadMap(this.config.defaultMap).then(map => {
+
+                // If user is logged in then make copy and add layer
+                //
+                // If the user is not logged in then its OK to let them edit the default map anyway.
+                // If they later manage to log in  then the copy will happen at the point of save.
+                const user = this.authService.getUserSync();
+                if (user) map.copyMap(user.id);
+
+                // Change name to match what you get when you create a map by uploading data
+                map.name = `Map of ${res.dataset.name}`;
+
+                // Zoom in on the data and set default zoom and center
+                map.fitBounds(new MapboxLngLatBounds(res.dataset.extent), {animate: false});
+                map.defaultZoom = map.getZoom();
+                map.defaultCenter = map.getCenter().toArray();
+
+                // internalAddDataLayerToMap is actually asynchronous so we need to wait until it has finished before
+                // doing anything else
+                this.internalAddDataLayerToMap(res.dataset, map).subscribe(() => {
+                  if (user) this.saveAndOpenNewMap(map);
+                });
               });
             });
           }
           else {
             // Add to current map
-            this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
-              .then(map => this.addDataLayerToMap(res.dataset, map).subscribe());
+            this.addDataLayerToMap(res.dataset);
           }
         });
-  }
-
-  /**
-   * Add a new data layer to the map using the specified dataset
-   *
-   * @param {ITomboloDataset} dataset
-   */
-  addDataLayerToMap(dataset: ITomboloDataset, map: TomboloMapboxMap): Observable<void> {
-
-    // Note: to add a data layer we need a clean basemap to regenerate the style, a palette and
-    // the full dataset object with nested data attributes
-    return Observable.forkJoin(
-      this.mapService.loadBasemaps(),
-      this.mapService.loadPalettes(),
-      this.mapService.loadDataset(dataset.id))
-      .map(([basemaps, palettes, ds]) => {
-        const basemap = basemaps.find(b => b.id === map.basemapId);
-        map.addDataLayer(ds, basemap, palettes[0]);
-      });
   }
 
   deleteMap(map: ITomboloMap) {
@@ -348,6 +329,11 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           },
         });
       });
+  }
+
+  addDataLayerToMap(dataset: ITomboloDataset) {
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
+      .then(map => this.internalAddDataLayerToMap(dataset, map).subscribe());
   }
 
   deleteDataset(dataset: ITomboloDataset) {
@@ -386,6 +372,26 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
             label: dataset.name
           },
         });
+      });
+  }
+
+  /**
+   * Add a new data layer to the map using the specified dataset
+   *
+   * @param {ITomboloDataset} dataset
+   */
+  private internalAddDataLayerToMap(dataset: ITomboloDataset, map: TomboloMapboxMap): Observable<void> {
+
+    debug('in add layer');
+    // Note: to add a data layer we need a clean basemap to regenerate the style, a palette and
+    // the full dataset object with nested data attributes
+    return Observable.forkJoin(
+      this.mapService.loadBasemaps(),
+      this.mapService.loadPalettes(),
+      this.mapService.loadDataset(dataset.id))
+      .map(([basemaps, palettes, ds]) => {
+        const basemap = basemaps.find(b => b.id === map.basemapId);
+        map.addDataLayer(ds, basemap, palettes[0]);
       });
   }
 

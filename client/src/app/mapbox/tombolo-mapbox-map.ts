@@ -69,6 +69,10 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     return this._modified$.asObservable();
   }
 
+  get modified(): boolean {
+    return this._modified;
+  }
+
   setModified(modified = true): void {
     this._modified = modified;
     this._modified$.next(modified);
