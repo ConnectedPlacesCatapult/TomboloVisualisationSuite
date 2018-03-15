@@ -82,6 +82,10 @@ router.get('/:datasetId', async (req, res, next) => {
       return next({status: 404, message: 'Dataset not found'});
     }
 
+    if (dataset.isPrivate && (!req.user || (dataset.ownerId !== req.user.id && !req.user.hasRole('editor')))) {
+      return next({status: 401, message: 'Not authorized'});
+    }
+
     res.json(dataset);
   }
   catch (e) {
@@ -102,7 +106,7 @@ router.delete('/:datasetId', isAuthenticated, async (req, res, next) => {
       return next({status: 404, message: 'Dataset not found'});
     }
 
-    if (ds.ownerId !== req.user.id) {
+    if (ds.ownerId !== req.user.id && !req.user.hasRole('editor')) {
       return next({status: 401, message: 'Not authorized'});
     }
 
@@ -125,8 +129,19 @@ router.delete('/:datasetId', isAuthenticated, async (req, res, next) => {
 /**
  * Load maps that are referencing the specified dataset
  */
-router.get('/:datasetId/maps', async (req, res, next) => {
+router.get('/:datasetId/maps', isAuthenticated, async (req, res, next) => {
   try {
+
+    const ds = await Dataset.findById<Dataset>(req.params.datasetId);
+
+    if (!ds) {
+      return next({status: 404, message: 'Dataset not found'});
+    }
+
+    if (ds.ownerId !== req.user.id && !req.user.hasRole('editor')) {
+      return next({status: 401, message: 'Not authorized'});
+    }
+
     const maps = await TomboloMap.findAll<TomboloMap>({
       include: [{
         model: TomboloMapLayer,

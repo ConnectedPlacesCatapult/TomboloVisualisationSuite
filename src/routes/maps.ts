@@ -28,6 +28,11 @@ router.get('/', async (req, res, next) => {
     let where: object;
 
     if (req.query.userId) {
+
+      if (!req.user ||  (req.user.id != req.query.userId && !req.user.hasRole('editor'))) {
+        return next({status: 401, message: 'Not authorized'});
+      }
+
       // Get user's maps
       where = {
         ownerId: req.query.userId
@@ -59,6 +64,13 @@ router.put('/:mapId', isAuthenticated, async (req, res, next) => {
   try {
     const mapDefinition = req.body as IMapDefinition;
 
+    console.log('map', mapDefinition.id);
+    console.log('user', req.user.id);
+
+    if (mapDefinition.ownerId !== req.user.id && !req.user.hasRole('editor')) {
+      return next({status: 401, message: 'Not authorized'});
+    }
+
     await TomboloMap.saveMap(mapDefinition);
 
     // Generate style from updated map and respond
@@ -82,7 +94,7 @@ router.delete('/:mapId', isAuthenticated, async (req, res, next) => {
       return next({status: 404, message: 'Map not found'});
     }
 
-    if (map.ownerId !== req.user.id) {
+    if (map.ownerId !== req.user.id && !req.user.hasRole('editor')) {
       return next({status: 401, message: 'Not authorized'});
     }
 
@@ -139,8 +151,13 @@ router.get('/grouped', async (req, res, next) => {
  * Get a map style
  */
 router.get('/:mapId/style.json', async (req, res, next) => {
+
   try {
     const map = await TomboloMap.scope('full').findById<TomboloMap>(req.params.mapId);
+
+    if (map.isPrivate && (!req.user || map.ownerId !== req.user.id)) {
+      return next({status: 401, message: 'Not authorized'});
+    }
 
     if (!map) {
       return next({status: 404, message: 'Map not found'});
