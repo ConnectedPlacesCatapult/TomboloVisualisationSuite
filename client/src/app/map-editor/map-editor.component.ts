@@ -44,6 +44,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
+  mapModified = false;
 
   @ViewChild('fileUploadInput') fileUploadInput;
 
@@ -65,6 +66,12 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     this.activatedRoute.params.subscribe(params => {
 
       const mapId = params.mapID || null;
+
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+        this._subs.push(map.modified$().subscribe(modified => {
+          this.mapModified = modified;
+        }));
+      });
 
       if (mapId === null) {
         // Redirect to default map

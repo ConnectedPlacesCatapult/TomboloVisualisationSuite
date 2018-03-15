@@ -52,6 +52,7 @@ export class EditPanelComponent implements OnInit, DoCheck {
     // Initial setting of map
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
       debug('initial settting of map', map.mapLoaded);
+
       if (map.mapLoaded) {
         this.map = map;
         this.layers = map.dataLayers;
