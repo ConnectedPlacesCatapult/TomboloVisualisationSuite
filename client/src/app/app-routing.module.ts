@@ -21,6 +21,7 @@ import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
 import {AccesstoRightBarComponent} from './rightbar-panels/accessto/accessto-rightbar.component';
 import {EditorDeactivateGuard} from "./map-editor/unsaved-changes-guard";
+import {PrivacyPolicyComponent} from './rightbar-panels/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   {
@@ -73,6 +74,11 @@ const routes: Routes = [
   {
     path: 'termsandconditions',
     component: TermsAndConditionsComponent,
+    outlet: 'rightBar'
+  },
+  {
+    path: 'privacypolicy',
+    component: PrivacyPolicyComponent,
     outlet: 'rightBar'
   },
   {

@@ -69,7 +69,8 @@ import {FilterEditorComponent} from './map-filters/filter-editor/filter-editor.c
 import {AccesstoRightBarComponent} from './rightbar-panels/accessto/accessto-rightbar.component';
 import {MapKeyItemComponent} from './map-viewer/map-key/map-key-item/map-key-item.component';
 import {MapKeyComponent} from './map-viewer/map-key/map-key.component';
-import {EditorDeactivateGuard} from "./map-editor/unsaved-changes-guard";
+import {EditorDeactivateGuard} from './map-editor/unsaved-changes-guard';
+import {PrivacyPolicyComponent} from './rightbar-panels/privacy-policy/privacy-policy.component';
 
 
 // APP_INITIALIZER function to load server-defined app config at startup
@@ -123,7 +124,8 @@ export function AppConfigFactory(configService: ConfigService) {
     FilterEditorComponent,
     AccesstoRightBarComponent,
     MapKeyItemComponent,
-    MapKeyComponent
+    MapKeyComponent,
+    PrivacyPolicyComponent
   ],
   imports: [
     BrowserModule,

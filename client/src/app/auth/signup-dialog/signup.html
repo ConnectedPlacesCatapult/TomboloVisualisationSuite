@@ -35,11 +35,14 @@
 
   <div class="error" *ngIf="errorMessage"><mat-icon svgIcon="info"></mat-icon>{{errorMessage}}</div>
 
-  <p class="mat-body"><mat-checkbox formControlName="acceptToC">I agree to the <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">terms & conditions</a></mat-checkbox></p>
+  <p class="mat-body"><mat-checkbox formControlName="acceptToC">I agree to the <a [routerLink]="['/', {outlets: {'rightBar': 'termsandconditions'}}]">Terms & Conditions</a>.</mat-checkbox></p>
 
   <p class="mat-body"><mat-checkbox formControlName="newsletters">Yes, I want to receive Tombolo newsletters</mat-checkbox></p>
 
   <button mat-raised-button (click)="signup()" [disabled]="!signupForm.valid" class="full-width">Sign Up</button>
 
   <mat-progress-bar mode="indeterminate" color="accent" *ngIf="showProgress"></mat-progress-bar>
+
+  <p  class="mat-caption top-margin">View our <a [routerLink]="['/', {outlets: {'rightBar': 'privacypolicy'}}]">Privacy and Cookies Policy</a>.</p>
+
 </form>
