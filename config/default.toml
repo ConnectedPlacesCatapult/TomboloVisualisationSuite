@@ -57,6 +57,7 @@ defaultMap = "950db2c7-1a3b-448d-9b21-444a0ec7b5e0"
 poweredBy = "Powered by Tombolo and Emu Analytics"
 uploadEnabled = true
 saveEnabled = true
+socialLoginEnabled = false
 createAccountEnabled = true
 
 [emailTemplates]
@@ -64,7 +65,7 @@ from = "tombolo@emu-analytics.net"
 basePath = "./email-templates"
 
 [smtp]
-host = 'smtp.mailgun.org'
+host = 'mail.server.net'
 port = 587
 secure = false
 

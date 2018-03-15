@@ -1,7 +1,13 @@
 <ng-container *ngIf="map">
 
     <h2><span class="title">Filters</span>
-      <button mat-icon-button  disableRipple (click)="addFilter()">Add a filter<mat-icon svgIcon="add"></mat-icon></button>
+      <button mat-icon-button
+              disableRipple
+              (click)="addFilter()"
+              angulartics2On="click"
+              angularticsCategory="Filter"
+              angularticsAction="AddFilter"
+              [angularticsLabel]="map?.name">Add a filter<mat-icon svgIcon="add"></mat-icon></button>
     </h2>
     <mat-accordion multi="true" displayMode="flat">
       <!-- Map filters -->

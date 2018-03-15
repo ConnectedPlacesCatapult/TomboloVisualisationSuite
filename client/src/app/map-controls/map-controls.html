@@ -15,14 +15,14 @@
 
   <!-- Recipe Button -->
   <button mat-icon-button disableRipple
-          [disabled]="!mapId"
+          [disabled]="!map"
           (click)="showRecipeDialog()">
     <mat-icon svgIcon="info"></mat-icon>Recipe
   </button>
 
   <!-- Export Button -->
   <button mat-icon-button disableRipple
-          [disabled]="!mapId"
+          [disabled]="!map"
           [routerLink]="['/', {outlets: {'rightBar': ['mapexport']}}]">
     <mat-icon svgIcon="export"></mat-icon>Export
   </button>

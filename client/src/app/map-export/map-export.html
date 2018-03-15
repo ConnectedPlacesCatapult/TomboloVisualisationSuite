@@ -37,15 +37,17 @@
     </mat-select>
   </mat-form-field>
 
-  <div class="buttons">
+  <div class="buttons" *ngIf="map">
     <button mat-button (click)="routeBack()"
             angulartics2On="click"
-            angularticsCategory="ExportShare"
-            angularticsAction="CancelExportMap">Cancel</button>
+            angularticsCategory="View"
+            angularticsAction="CancelExportMap"
+            [angularticsLabel]="map.name">Cancel</button>
     <button mat-button (click)="exportMap()" [disabled]="!exportForm.valid || !map || exporting"
             angulartics2On="click"
-            angularticsCategory="ExportShare"
-            angularticsAction="DownloadMap">Export Map</button>
+            angularticsCategory="View"
+            angularticsAction="ExportMap"
+            [angularticsLabel]="map.name">Export Map</button>
   </div>
 
   <div *ngIf="exporting" class="spinner-wrapper">

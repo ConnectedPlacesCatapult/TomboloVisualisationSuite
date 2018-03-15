@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, OnInit} from '@angular/core';
 import * as Debug from 'debug';
 
 import {ActivatedRoute, Router} from '@angular/router';
@@ -6,6 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 import {Angulartics2} from 'angulartics2';
+import {APP_CONFIG, AppConfig} from '../../config.service';
 
 const debug = Debug('tombolo:signup-dialog');
 
@@ -21,7 +22,8 @@ export class SignupDialogComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private analytics: Angulartics2) {}
+    private analytics: Angulartics2,
+    @Inject(APP_CONFIG) public config: AppConfig) {}
 
   signupForm: FormGroup;
   errorMessage: string;
@@ -31,6 +33,8 @@ export class SignupDialogComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      acceptToC: new FormControl(false, Validators.requiredTrue),
       email: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       confirmPassword: new FormControl('', Validators.required),
@@ -57,6 +61,15 @@ export class SignupDialogComponent implements OnInit {
     // Check password matches confirmation
     if (this.signupForm.get('password').value !== this.signupForm.get('confirmPassword').value) {
       this.errorMessage = 'Passwords do not match';
+
+      this.analytics.eventTrack.next({
+        action: 'SignUpFail',
+        properties: {
+          category: 'Account',
+          label: this.errorMessage
+        }
+      });
+
       return;
     }
 

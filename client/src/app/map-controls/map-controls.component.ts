@@ -25,7 +25,7 @@ const debug = Debug('tombolo:maps-demo');
 export class MapControlsComponent implements OnInit {
 
   basemapDetailSliderValue = 4;
-  mapId = null;
+  map: TomboloMapboxMap;
   mode: 'edit' | 'view' = 'view';
   mapModified = false;
 
@@ -47,22 +47,36 @@ export class MapControlsComponent implements OnInit {
 
   ngOnInit() {
 
-    // Ensure basemap detail is applied whenever a map is loaded
-    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
-      map.setBasemapDetail(this.basemapDetailSliderValue, false);
-      this.updateURLforBasemapDetail();
+    // Initial setting of map
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
 
-      // Subscribe to map-modified notification
       this._subs.push(map.modified$().subscribe(modified => {
         this.mapModified = modified;
       }));
+
+      if (map.mapLoaded) {
+        this.map = map;
+      }
+    });
+
+    // Update name and description when map is loading
+    this._subs.push(this.mapService.mapLoading$().subscribe(map => {
+      this.map = null;
     }));
 
-    // Extract mode and mapId from route
+    // Update map when map is loaded
+    this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
+      this.map = map;
+
+      // Ensure basemap detail is applied whenever a map is loaded
+      this.map.setBasemapDetail(this.basemapDetailSliderValue, false);
+      this.updateURLforBasemapDetail();
+    }));
+
+    // Extract mode from route
     this._subs.push(this.router.events.filter(event => event instanceof NavigationEnd)
       .subscribe((event: NavigationEnd) => {
-        this.mapId = this.router.routerState.snapshot.root.firstChild.params['mapID'];
-        this.mode = (this.router.routerState.snapshot.root.firstChild.url[0].path === 'edit')? 'edit' : 'view';
+        this.mode = (this.router.routerState.snapshot.root.firstChild.url[0].path === 'edit') ? 'edit' : 'view';
       }));
 
     this.activatedRoute.queryParams.subscribe(params => {
@@ -77,47 +91,44 @@ export class MapControlsComponent implements OnInit {
   }
 
   basemapSliderChanged(event) {
-
-    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      map.setBasemapDetail(event.value);
-      this.updateURLforBasemapDetail();
-    });
+    this.map.setBasemapDetail(event.value);
+    this.updateURLforBasemapDetail();
   }
 
   postBookmark(): void {
     this.bookmarkService.postBookmark(this.location.path()).subscribe(res => {
-      this.dialogsService.share('Share your Map', res['shortUrl']);
+      if (this.map.isPrivate) {
+        this.dialogsService.information('Private Map', `You are attempting to share a private map.<p>
+                                        If you would like to share this map, you can mark it as 'public' in the Playground.`)
+      } else {
+        this.dialogsService.share('Share your Map', res['shortUrl']);
+      }
     });
   }
 
   editMap(): void {
-    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+    let route;
 
-      let route;
+    if (this.map && this.map.id) {
+      route = ['/', {outlets: {
+        primary: ['edit', this.map.id],
+        loginBar: null,
+        rightBar: ['editpanel']}}]
+    }
+    else {
+      route = ['/', {outlets: {
+        primary: ['edit'],
+        loginBar: null,
+        rightBar: ['editinfo']}}]
+    }
 
-      if (map.id) {
-        route = ['/', {outlets: {
-          primary: ['edit', map.id],
-          loginBar: null,
-          rightBar: ['editpanel']}}]
-      }
-      else {
-        route = ['/', {outlets: {
-          primary: ['edit'],
-          loginBar: null,
-          rightBar: ['editinfo']}}]
-      }
-
-      this.router.navigate(route,{
-        queryParamsHandling: 'merge'
-      });
+    this.router.navigate(route,{
+      queryParamsHandling: 'merge'
     });
   }
 
   showRecipeDialog(): void {
-    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
-      this.dialogsService.recipe(map.recipe);
-    });
+    this.dialogsService.recipe(this.map.recipe);
   }
 
   saveButtonEnabled(): boolean {
@@ -125,11 +136,11 @@ export class MapControlsComponent implements OnInit {
   }
 
   editButtonEnabled(): boolean {
-    return this.mode === 'view' && this.mapId;
+    return this.mode === 'view' && typeof this.map !== 'undefined';
   }
 
   shareButtonEnabled(): boolean {
-    return this.mapId && this.mode === 'view';
+    return this.mode === 'view' && typeof this.map !== 'undefined';
   }
 
   saveMap() {

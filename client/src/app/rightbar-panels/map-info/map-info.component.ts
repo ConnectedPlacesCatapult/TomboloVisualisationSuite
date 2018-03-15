@@ -4,6 +4,7 @@ import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
 import {MapService} from '../../services/map-service/map.service';
 import {Subscription} from 'rxjs/Subscription';
 import {MapRegistry} from '../../mapbox/map-registry.service';
+import {AuthService} from "../../auth/auth.service";
 
 const debug = Debug('tombolo:map-info');
 

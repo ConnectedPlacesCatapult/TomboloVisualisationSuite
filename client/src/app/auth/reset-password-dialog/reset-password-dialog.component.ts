@@ -35,7 +35,10 @@ export class ResetPasswordDialogComponent implements OnInit {
       email: new FormControl('', Validators.required)
     });
 
-    this._subs.push(this.resetPasswordForm.valueChanges.subscribe(() => this.errorMessage = null));
+    this._subs.push(this.resetPasswordForm.valueChanges.subscribe(() => {
+      this.passwordReset = false;
+      this.errorMessage = null;
+    }));
   }
 
   ngOnDestroy() {
@@ -48,6 +51,8 @@ export class ResetPasswordDialogComponent implements OnInit {
 
   resetPassword() {
 
+    this.passwordReset = false;
+
     const email = this.resetPasswordForm.get('email').value;
     this.showProgress = true;
     this.authService.resetPassword(email)
@@ -55,7 +60,7 @@ export class ResetPasswordDialogComponent implements OnInit {
         this.passwordReset = true;
         this.showProgress = false;
         this.analytics.eventTrack.next({
-          action: 'PasswordReset',
+          action: 'ResetPassword',
           properties: {
             category: 'Account',
             label: this.resetPasswordForm.get('email').value
@@ -66,7 +71,7 @@ export class ResetPasswordDialogComponent implements OnInit {
         this.errorMessage = 'Invalid email or password';
         this.showProgress = false;
         this.analytics.eventTrack.next({
-          action: 'PasswordResetFail',
+          action: 'ResetPasswordFail',
           properties: {
             category: 'Account',
             label: e.message

@@ -1,10 +1,28 @@
 <div class="sidebar-content with-tabs">
 
   <mat-tab-group>
-    <mat-tab label="Map Information">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+           angulartics2On="click"
+           angularticsCategory="View"
+           angularticsAction="MapInformationTab"
+           [angularticsLabel]="map?.name">
+            Map Information
+        </span>
+      </ng-template>
       <div *ngIf="map?.description" class="with-padding" Markdown [data]="map?.description"></div>
     </mat-tab>
-    <mat-tab label="Map Filters">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+          angulartics2On="click"
+          angularticsCategory="View"
+          angularticsAction="MapFiltersTab"
+          [angularticsLabel]="map?.name">
+            Map Filters
+        </span>
+      </ng-template>
       <map-filters></map-filters>
     </mat-tab>
   </mat-tab-group>

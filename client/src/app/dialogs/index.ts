@@ -13,6 +13,8 @@ import {CodeMirrorComponent} from "./recipe-dialog/codemirror.component";
 import {FormsModule} from "@angular/forms";
 import {DatasetsDialog} from "./datasets-dialog/datasets-dialog.component";
 import {MarkdownModule} from "ngx-md";
+import {CustomGoogleTagManager} from "../analytics/custom-google-tag-manager";
+import {Angulartics2Module} from "angulartics2";
 
 @NgModule({
   imports: [
@@ -20,7 +22,8 @@ import {MarkdownModule} from "ngx-md";
     FlexLayoutModule,
     MaterialModule,
     ShareModule.forRoot(),
-    MarkdownModule.forRoot()
+    MarkdownModule.forRoot(),
+    Angulartics2Module.forRoot([CustomGoogleTagManager])
   ],
   exports: [
     ConfirmDialog,

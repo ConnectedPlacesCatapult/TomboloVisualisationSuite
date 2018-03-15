@@ -21,6 +21,7 @@ import {EditPanelComponent} from './map-editor/edit-panel/edit-panel.component';
 import {EditInfoComponent} from './rightbar-panels/edit-intro/edit-info.component';
 import {MapFiltersPanelComponent} from './map-filters/map-filters-panel.component';
 import {AccesstoRightBarComponent} from './rightbar-panels/accessto/accessto-rightbar.component';
+import {EditorDeactivateGuard} from "./map-editor/unsaved-changes-guard";
 
 const routes: Routes = [
   {
@@ -33,7 +34,8 @@ const routes: Routes = [
   },
   {
     path: 'edit/:mapID',
-    component: MapEditorComponent
+    component: MapEditorComponent,
+    canDeactivate: [EditorDeactivateGuard]
   },
   {
     path: 'edit',

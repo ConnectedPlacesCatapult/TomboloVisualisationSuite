@@ -23,6 +23,7 @@ import {MapRegistry} from '../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../mapbox/tombolo-mapbox-map';
 import {APP_CONFIG, AppConfig} from '../config.service';
 import {LngLatBounds as MapboxLngLatBounds} from 'mapbox-gl';
+import {Angulartics2} from "angulartics2";
 
 
 const debug = Debug('tombolo:map-editor');
@@ -44,6 +45,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   uploadInput = new EventEmitter<UploadInput>();
   uploadOutput = new Subject<UploadOutput>();
   dragOver: boolean;
+  mapModified = false;
 
   @ViewChild('fileUploadInput') fileUploadInput;
 
@@ -57,6 +59,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               private authService: AuthService,
               private dialogsService: DialogsService,
               private matDialog: MatDialog,
+              private analytics: Angulartics2,
               private notificationService: NotificationService,
               @Inject(APP_CONFIG) private config: AppConfig) {}
 
@@ -64,6 +67,12 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     this.activatedRoute.params.subscribe(params => {
 
       const mapId = params.mapID || null;
+
+      this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(map => {
+        this._subs.push(map.modified$().subscribe(modified => {
+          this.mapModified = modified;
+        }));
+      });
 
       if (mapId === null) {
         // Redirect to default map
@@ -251,57 +260,6 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
     this.uploadInput.emit(event);
   }
 
-
-  /*
-
-  Approach of resetting the current map to a clean state is dangerous. You didn't reset everything and in future if we need
-  to add anything to mapDefinition to support new features then we'll need to remember that we also have to change a completely
-  unrelated bit of code in newMap.
-
-  Better approach is to start from the default map, which is guaranteed to be clean. The id of the default map is in the
-  app config - config.defaultMap.
-
-  - General principle: don't build fragility into the system by making bits of code dependent on each other when they
-  don't need to be.
-
-  - General principle: think through the implications of your chosen approach before starting coding.
-
-  Also, your version only allows you to view a public dataset if you are logged in. This goes against the conventions in the
-  app where you only need to be logged in to upload or save.
-
-  Never use strings as flags (e.g. 'existing', 'new') unless they are typed (e.g. mode: 'new' | 'existing'). If you
-  misspell them the compiler won't catch the error and you don't get code completion.
-
-  Use a boolean instead if you can - it's self documenting and you don't need to remember the possible values.
-
-  Alternatively use enums.
-
-  If you're using object['property'] a lot then something is wrong. Use typed interfaces instead. Same reason, you
-  can misspell the property name and the compiler won't help you.
-
-  - General principle: use typed interfaces, method params, return types etc wherever you can. Help the compiler stop
-    you making typos.
-
-  - General principle: write every method as if someone else is going to use it (even if they're not). Help them
-    out by using clear names and type information, and don't make them have to go through the method body to work out
-    how to use the method.
-
-  If you find yourself copying a large block of code from somewhere else in the codebase it's also a sign that something
-  is wrong. If that block has to be changed, it now has to be done in two places. Is there a reason why it has to be copied
-  or would it be better to refactor?
-
-  I noticed that there were a couple of things that I'd done that were better to be centralised - resetting the map modified flag
-  on save and calling notifyMaps/DatasetsUpdated. I moved them into mapService so whoever is calling saveMap, deleteDataset etc
-  doesn't have to remember to call them.
-
-  - General principle: leave the code in a better state than you found it when making a change (even if it is just adding a
-  comment to clarify something or fixing the formatting). Code rots over time and you have to make a positive effort every time
-  you make a change to stop that.
-
-  - Final principle: if you break a rule then always have a good reason and document why you are doing it.
-
-   */
-
   browsePublicDatasets() {
     const dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>
       = this.matDialog.open<DatasetsDialog>(DatasetsDialog, {width: '800px'});
@@ -345,74 +303,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
               .then(map => this.addDataLayerToMap(res.dataset, map).subscribe());
           }
         });
-
-
-  /*
-        .filter(res => {
-          const isExistingMode = (res['mode'] === 'existing');
-          dataset = res['dataset'];
-          if (isExistingMode) this.addDataLayerToMap(dataset);
-          return !isExistingMode;
-        })
-        .filter(() => {
-          if (!user) {
-            this.dialogsService.information('Not logged in', 'You must be logged in to create a new map.')
-            return false;
-          }
-          return true;
-        })
-        .mergeMap(() => {
-
-          ***** getMap returns a promise but you're treating it as an observable by returning it in a
-          * chain of observable operators. It works, which is surprising, but is a bit odd.
-
-          return this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
-        })
-        .mergeMap((map) => {
-          map.newMap(user.id);
-          return this.internalSaveMap(map);
-        })
-        .mergeMap((style) => {
-
-          ****** This smells - you get map id by doing map.id
-
-          const mapId = style['metadata']['mapDefinition']['id'];
-          // Navigate back to editor with the new map
-          this.router.navigate(['/', {
-            outlets: {
-              primary: ['edit', mapId],
-              loginBar: null,
-              rightBar: ['editpanel']
-            }
-          }]);
-          return this.mapService.loadMap(mapId);
-        })
-        .subscribe((map) => {
-          this.addDataLayerToMap(dataset);
-        });
-    */
   }
-
-  // This method is not needed any more. And you copy'n'pasted it from map-controls
-  // It's code smell to have the exact same code in more than one part of the codebase.
-  // If we need to modify what happens when you save then we have to remember to do it in
-  // two places if you copy it
-
-  /*
-  private internalSaveMap(map: TomboloMapboxMap): Observable<IStyle> {
-    debug(`Saving map ${map.id} for user ${map.ownerId}`);
-
-    return this.mapService.saveMap(map)
-      .do(() => {
-        map.setModified(false);
-        this.notificationService.info('Map saved');
-        this.mapService.notifyMapsUpdated();
-      })
-      .catch(e => {
-        return Observable.throw(e);
-      });
-  }
-  */
 
   /**
    * Add a new data layer to the map using the specified dataset
@@ -444,6 +335,13 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       .subscribe(() => {
         this.notificationService.info('Map deleted!');
         this.router.navigate(['/edit']);
+        this.analytics.eventTrack.next({
+          action: 'DeleteMap',
+          properties: {
+            category: 'Playground',
+            label: map.name
+          },
+        });
       });
   }
 
@@ -474,6 +372,15 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       })
       .subscribe(() => {
         this.notificationService.info('Dataset deleted!');
+
+        this.mapService.notifyDatasetsUpdated();
+        this.analytics.eventTrack.next({
+          action: 'DeleteDataset',
+          properties: {
+            category: 'Playground',
+            label: dataset.name
+          },
+        });
       });
   }
 

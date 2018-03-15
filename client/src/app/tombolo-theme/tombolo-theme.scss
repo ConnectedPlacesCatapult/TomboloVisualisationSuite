@@ -555,6 +555,7 @@
 
       // Push checkbox text away from box
       .mat-checkbox {
+        @include mat-typography-level-to-styles($typography, body-1);
         margin-right: 0.5em;
       }
 
@@ -563,9 +564,18 @@
         margin-bottom: $g / 2;
       }
 
-      .error {
+      // Wrap checkbox labels on signup form
+      .mat-checkbox-layout {
+        white-space: normal !important;
+
+        .mat-checkbox-label {
+          line-height: normal !important;
+        }
+      }
+
+      .error, .message {
         @include mat-typography-level-to-styles($typography, body-1);
-        color: mat-color($warn);
+
         .mat-icon {
           position: relative;
           top: 4px;
@@ -574,6 +584,10 @@
           height: 18px;
         }
         margin-bottom: 1em;
+      }
+
+      .error {
+        color: mat-color($warn);
       }
     }
 

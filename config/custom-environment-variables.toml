@@ -17,6 +17,11 @@ authEndpoint = "AUTH_ENDPOINT"
 [server]
 baseUrl = "SERVER_BASE_URL"
 
+[smtp]
+host = "SMTP_HOST"
+port = "SMTP_PORT"
+secure = "SMTP_SECURE"
+
 [smtp.auth]
 user = "SMTP_USER"
 pass = "SMTP_PASSWORD"

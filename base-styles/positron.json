@@ -49,51 +49,19 @@
     },
     "labelLayerStyle": {
       "paint": {
-        "text-color": "rgb(117, 129, 145)",
+        "text-color": "black",
         "text-halo-color": "rgb(242,243,240)",
-        "text-halo-width": 1,
-        "text-halo-blur": 1,
-        "icon-opacity": 0.7
+        "text-halo-width": 2,
+        "text-halo-blur": 1
       },
       "layout": {
-        "text-size": 10,
-        "icon-image": {
-          "base": 1,
-          "stops": [
-            [
-              0,
-              "circle-11"
-            ],
-            [
-              8,
-              ""
-            ]
-          ]
-        },
+        "text-size": 12,
         "text-transform": "uppercase",
         "text-font": [
-          "Metropolis Regular"
+          "Metropolis Bold"
         ],
-        "text-justify": "left",
-        "visibility": "visible",
-        "text-offset": [
-          0.5,
-          0.2
-        ],
-        "icon-size": 0.4,
-        "text-anchor": {
-          "base": 1,
-          "stops": [
-            [
-              0,
-              "left"
-            ],
-            [
-              8,
-              "center"
-            ]
-          ]
-        }
+        "text-justify": "center",
+        "visibility": "visible"
       }
     }
   },
