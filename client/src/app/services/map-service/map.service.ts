@@ -108,7 +108,8 @@ export class MapService {
       .do(() => {
         map.setModified(false);
         this.notifyMapsUpdated();
-      });
+      })
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -117,7 +118,8 @@ export class MapService {
    * @returns {Promise<IMapGroup[]>}
    */
   loadMapGroups(): Observable<IMapGroup[]> {
-    return this.http.get<IMapGroup[]>('/maps/grouped');
+    return this.http.get<IMapGroup[]>('/maps/grouped')
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -126,7 +128,8 @@ export class MapService {
    * @returns {Promise<IDatasetGroup[]>}
    */
   loadDatasetGroups(): Observable<IDatasetGroup[]> {
-    return this.http.get<IDatasetGroup[]>(`${environment.apiEndpoint}/datasets/groups`);
+    return this.http.get<IDatasetGroup[]>(`${environment.apiEndpoint}/datasets/groups`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -135,7 +138,8 @@ export class MapService {
    * @returns {Promise<IDataset[]>}
    */
   loadDatasetsInGroup(groupId: string): Observable<IDatasetGroup> {
-    return this.http.get<IDatasetGroup>(`${environment.apiEndpoint}/datasets/groups/${groupId}`);
+    return this.http.get<IDatasetGroup>(`${environment.apiEndpoint}/datasets/groups/${groupId}`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -144,7 +148,8 @@ export class MapService {
    * @returns {Promise<IDataset[]>}
    */
   loadDataset(datasetId: string): Observable<ITomboloDataset> {
-    return this.http.get<ITomboloDataset>(`${environment.apiEndpoint}/datasets/${datasetId}`);
+    return this.http.get<ITomboloDataset>(`${environment.apiEndpoint}/datasets/${datasetId}`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -157,7 +162,8 @@ export class MapService {
     if (!this._basemaps$) {
       this._basemaps$ = this.http.get<IBasemap[]>(`${environment.apiEndpoint}/basemaps`)
         .publishReplay(1)
-        .refCount();
+        .refCount()
+        .catch(e => this.handleError(e));
     }
 
     return this._basemaps$;
@@ -173,7 +179,8 @@ export class MapService {
     if (!this._palettes$) {
       this._palettes$ = this.http.get<IPalette[]>(`${environment.apiEndpoint}/palettes`)
         .publishReplay(1)
-        .refCount();
+        .refCount()
+        .catch(e => this.handleError(e));
     }
 
     return this._palettes$;
@@ -185,7 +192,8 @@ export class MapService {
    * @returns {Promise<IDataset[]>}
    */
   findDatasetsByQuery(query: string): Observable<ITomboloDataset[]> {
-    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?query=${query}`);
+    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?query=${query}`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -194,7 +202,8 @@ export class MapService {
    * @returns {Promise<ITomboloMap[]>}
    */
   loadUserMaps(userId: string): Observable<ITomboloMap[]> {
-    return this.http.get<ITomboloMap[]>(`/maps?userId=${userId}`);
+    return this.http.get<ITomboloMap[]>(`/maps?userId=${userId}`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -203,7 +212,8 @@ export class MapService {
    * @returns {Promise<IMapGroup[]>}
    */
   loadUserDatasets(userId: string): Observable<ITomboloDataset[]> {
-    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?userId=${userId}`);
+    return this.http.get<ITomboloDataset[]>(`${environment.apiEndpoint}/datasets?userId=${userId}`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -215,7 +225,8 @@ export class MapService {
    * @returns {Observable<ITomboloMap[]>}
    */
   loadMapsForDataset(datsetId: string): Observable<ITomboloMap[]> {
-    return this.http.get<ITomboloMap[]>(`${environment.apiEndpoint}/datasets/${datsetId}/maps`);
+    return this.http.get<ITomboloMap[]>(`${environment.apiEndpoint}/datasets/${datsetId}/maps`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -225,7 +236,8 @@ export class MapService {
    * @returns {Observable<void>}
    */
   deleteMap(mapId: string): Observable<void> {
-    return this.http.delete<void>(`/maps/${mapId}`).do(() => this.notifyMapsUpdated());
+    return this.http.delete<void>(`/maps/${mapId}`).do(() => this.notifyMapsUpdated())
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -236,23 +248,28 @@ export class MapService {
    */
   deleteDataset(datasetId: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`)
-      .do(() => this.notifyDatasetsUpdated());
+      .do(() => this.notifyDatasetsUpdated())
+      .catch(e => this.handleError(e));
   }
 
   pollIngest(uploadID: string): Observable<IFileUpload> {
-    return this.http.get<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+    return this.http.get<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`)
+      .catch(e => this.handleError(e));
   }
 
   finalizeIngest(uploadFile: IFileUpload): Observable<IFileUpload> {
-    return this.http.post<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadFile.id}`, uploadFile);
+    return this.http.post<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadFile.id}`, uploadFile)
+      .catch(e => this.handleError(e));
   }
 
   createDataset(uploadID: string): Observable<any> {
-    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/dataset`);
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/dataset`)
+      .catch(e => this.handleError(e));
   }
 
   createMapForUpload(uploadID: string): Observable<any> {
-    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/map`);
+    return this.http.get<Object>(`${environment.apiEndpoint}/uploads/${uploadID}/map`)
+      .catch(e => this.handleError(e));
   }
 
   /**
@@ -284,9 +301,12 @@ export class MapService {
       e = new OptimisticLockingError(e.error.message, e.error.error);
     }
 
-    if (!environment.production) {
-      this.notificationService.error(e);
+    if (e instanceof HttpErrorResponse && e.status === 401) {
+      e = new Error('You are not authorized to perform that action.');
     }
+
+    this.notificationService.error(e);
+
     return Promise.reject(e);
   }
 }
