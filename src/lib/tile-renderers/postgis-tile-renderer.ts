@@ -4,6 +4,7 @@ import * as LRU from 'lru-cache';
 import * as SphericalMercator from '@mapbox/sphericalmercator';
 import * as Handlebars from 'handlebars';
 import * as mapnik from 'mapnik';
+import * as moment from 'moment';
 
 import {startTimer} from '../utils';
 
@@ -219,6 +220,12 @@ export class PostgisTileRenderer implements TileRenderer {
 
       let geom = feature['geometry'];
       if (!geom) throw new Error('No geometry field on feature');
+
+      Object.keys(feature).forEach(key => {
+        if (feature[key] instanceof Date) {
+          feature[key] = moment(feature[key]).valueOf();
+        }
+      });
 
       let geojsonFeature = {
         type: 'Feature',

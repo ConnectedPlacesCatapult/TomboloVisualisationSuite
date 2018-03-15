@@ -243,6 +243,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       name: attribute.name,
       description: attribute.description,
       id: attribute.field,
+      type: attribute.type,
       value: properties[attribute.field],
       unit: attribute.unit
     }));

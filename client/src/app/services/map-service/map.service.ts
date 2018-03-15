@@ -7,7 +7,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NotificationService} from '../../dialogs/notification.service';
 import {MapRegistry} from '../../mapbox/map-registry.service';
 import {TomboloMapboxMap} from '../../mapbox/tombolo-mapbox-map';
-import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
+import {IFileUpload} from '../../../../../src/shared/IFileUpload';
 import {OgrFileInfoBase} from '../../../../../src/shared/ogrfileinfo-base';
 import {IMapGroup} from '../../../../../src/shared/IMapGroup';
 import {ITomboloMap} from '../../../../../src/shared/ITomboloMap';
@@ -18,6 +18,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/publishReplay';
 import {IPalette} from '../../../../../src/shared/IPalette';
 import {IStyle} from '../../../../../src/shared/IStyle';
+import {IDBAttribute} from '../../../../../src/shared/IDBAttribute';
 
 const debug = Debug('tombolo:MapService');
 
@@ -103,7 +104,11 @@ export class MapService {
   }
 
   saveMap(map: TomboloMapboxMap): Observable<IStyle> {
-    return this.http.put<IStyle>(`/maps/${map.id}`, map.mapDefinition);
+    return this.http.put<IStyle>(`/maps/${map.id}`, map.mapDefinition)
+      .do(() => {
+        map.setModified(false);
+        this.notifyMapsUpdated();
+      });
   }
 
   /**
@@ -220,7 +225,7 @@ export class MapService {
    * @returns {Observable<void>}
    */
   deleteMap(mapId: string): Observable<void> {
-    return this.http.delete<void>(`/maps/${mapId}`);
+    return this.http.delete<void>(`/maps/${mapId}`).do(() => this.notifyMapsUpdated());
   }
 
   /**
@@ -230,15 +235,16 @@ export class MapService {
    * @returns {Observable<void>}
    */
   deleteDataset(datasetId: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`);
+    return this.http.delete<void>(`${environment.apiEndpoint}/datasets/${datasetId}`)
+      .do(() => this.notifyDatasetsUpdated());
   }
 
-  pollIngest(uploadID: string): Observable<FileUploadBase> {
-    return this.http.get<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`);
+  pollIngest(uploadID: string): Observable<IFileUpload> {
+    return this.http.get<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadID}`);
   }
 
-  finalizeIngest(uploadID: string, ogrInfo: OgrFileInfoBase): Observable<FileUploadBase> {
-    return this.http.post<FileUploadBase>(`${environment.apiEndpoint}/uploads/${uploadID}`, ogrInfo);
+  finalizeIngest(uploadFile: IFileUpload): Observable<IFileUpload> {
+    return this.http.post<IFileUpload>(`${environment.apiEndpoint}/uploads/${uploadFile.id}`, uploadFile);
   }
 
   createDataset(uploadID: string): Observable<any> {

@@ -3,17 +3,19 @@
 <mat-table [dataSource]="datasource">
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+    <mat-cell *matCellDef="let element"> {{element.field}} </mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
     <mat-cell *matCellDef="let element"> <mat-select [(value)]="element.type">
       <mat-option>None</mat-option>
-      <mat-option value="string">Text</mat-option>
-      <mat-option value="real">Float</mat-option>
-      <mat-option value="integer">Integer</mat-option>
-      <mat-option value="datetime">Date/Time</mat-option>
+      <mat-option value="CHARACTER VARYING">Text</mat-option>
+      <mat-option value="DOUBLE PRECISION">Float</mat-option>
+      <mat-option value="INTEGER">Integer</mat-option>
+      <mat-option value="BIGINT">Integer64</mat-option>
+      <mat-option value="DATE">Date</mat-option>
+      <mat-option value="TIMESTAMP WITH TIME ZONE">Date/Time</mat-option>
     </mat-select></mat-cell>
   </ng-container>
 

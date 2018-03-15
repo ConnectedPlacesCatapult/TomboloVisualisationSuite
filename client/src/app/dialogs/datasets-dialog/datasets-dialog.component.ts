@@ -11,8 +11,23 @@ import {IDatasetGroup} from '../../../../../src/shared/IDatasetGroup';
 
 import * as Debug from 'debug';
 import {ITomboloDatasetAttribute} from '../../../../../src/shared/ITomboloDatasetAttribute';
+import {DialogsService} from "../dialogs.service";
 
 const debug = Debug('tombolo:datasets-dialog');
+
+// DialogRef.close passes back an untyped 'any'. As the result gets more complicated
+// it's a good idea to define an interface so the client of the dialog can get the benefits of type safety/code
+// completion
+export interface DatasetsDialogResult {
+  result: boolean,
+  dataset?: ITomboloDataset,
+  // Try to avoid using strings as flags unless they are typed and there are more than two options
+  // Use boolean if possible as it's self-documenting
+  createNewMap?: boolean
+
+  // Alternative - if you have more than two options - define a restricted string type that can only take certain values:
+  // mode: 'existing' | 'new'
+}
 
 @Component({
   selector: 'datasets-dialog',
@@ -28,11 +43,9 @@ export class DatasetsDialog implements OnInit {
   selectedGroup: IDatasetGroup;
   selectedDataset: ITomboloDataset;
 
-  constructor(public dialogRef: MatDialogRef<DatasetsDialog>,
+  constructor(public dialogRef: MatDialogRef<DatasetsDialog, DatasetsDialogResult>,
               private mapService: MapService,
-              @Inject(MAT_DIALOG_DATA) public data: any,
-              @Inject(APP_CONFIG) private config: AppConfig) {
-  }
+              @Inject(APP_CONFIG) private config: AppConfig) {}
 
   ngOnInit() {
     this.getGroups();
@@ -72,7 +85,11 @@ export class DatasetsDialog implements OnInit {
   }
 
   addToMap(): void {
-    this.dialogRef.close({result: true, dataset: this.selectedDataset});
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, createNewMap: false});
+  }
+
+  addNewMap(): void {
+    this.dialogRef.close({result: true, dataset: this.selectedDataset, createNewMap: true});
   }
 
   typeIconForGeometryType(geometryType: string): 'polygon' | 'line' | 'point' {

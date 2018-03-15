@@ -19,6 +19,7 @@ import {Dataset} from '../../db/models/Dataset';
 import {TomboloMap} from '../../db/models/TomboloMap';
 import {DataAttribute} from '../../db/models/DataAttribute';
 import {isAuthenticated} from '../../lib/utils';
+import {IFileUpload} from '../../shared/IFileUpload';
 
 const logger = Container.get(LoggerService);
 const fileUploader = Container.get(FileIngester);
@@ -87,10 +88,10 @@ router.post('/:uploadId', isAuthenticated, async (req, res, next) => {
       return next({status: 404, message: 'Upload not found'});
     }
 
-    await fileUploader.finalizeUpload(fileUpload, req.body);
+    const updatedFile: IFileUpload = req.body;
+    await fileUploader.finalizeUpload(fileUpload, updatedFile);
 
-    fileUpload.ogrInfo = req.body;
-    fileUpload = await fileUpload.save();
+    fileUpload = await fileUpload.update(updatedFile, {fields: ['name', 'description', 'attribution', 'dbAttributes']});
 
     res.json(fileUpload);
   }

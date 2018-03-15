@@ -4,7 +4,7 @@ import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
 import {MapService} from '../../services/map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
-import {FileUploadBase} from '../../../../../src/shared/fileupload-base';
+import {IFileUpload} from '../../../../../src/shared/IFileUpload';
 import {Angulartics2} from "angulartics2";
 
 const debug = Debug('tombolo:upload-page1');
@@ -159,7 +159,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     });
   }
 
-  private finish(error: any, fileUpload?: FileUploadBase) {
+  private finish(error: any, fileUpload?: IFileUpload) {
 
     if (error) {
       this.steps[this.currentStepIndex].status = 'error';

@@ -12,7 +12,7 @@ import {ITomboloDatasetAttribute} from '../../shared/ITomboloDatasetAttribute';
 
 type SourceType = 'table' | 'sql' | 'tilelive';
 
-const CATEGORY_MAX_COUNT = 7;
+const CATEGORY_MAX_COUNT = 30;
 
 @Table({
   tableName: 'datasets',
