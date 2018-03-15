@@ -92,4 +92,8 @@ export class User extends Model<User> implements IUser {
       roles: this.roles
     };
   }
+
+  hasRole(role: 'editor' | 'admin'): boolean {
+    return this.roles.indexOf(role) > -1;
+  }
 }

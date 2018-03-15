@@ -21,6 +21,7 @@ export class AppConfig {
   saveEnabled: boolean;
   socialLoginEnabled: boolean;
   createAccountEnabled: boolean;
+  maxUploadSize: number;
   version: {
     tag: string,
     hash: string,

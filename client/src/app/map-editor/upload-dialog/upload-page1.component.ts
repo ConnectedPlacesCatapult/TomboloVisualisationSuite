@@ -1,4 +1,4 @@
-import {Component, HostBinding, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostBinding, Inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {UploadOutput} from 'ngx-uploader';
 import {Subscription} from 'rxjs/Subscription';
 import * as Debug from 'debug';
@@ -6,6 +6,7 @@ import {MapService} from '../../services/map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
 import {IFileUpload} from '../../../../../src/shared/IFileUpload';
 import {Angulartics2} from "angulartics2";
+import {APP_CONFIG, AppConfig} from '../../config.service';
 
 const debug = Debug('tombolo:upload-page1');
 
@@ -47,7 +48,9 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
   private ingestPollTimer: any;
 
-  constructor(private mapService: MapService, private angulartics2: Angulartics2) {}
+  constructor(private mapService: MapService,
+              private angulartics2: Angulartics2,
+              @Inject(APP_CONFIG) private config: AppConfig) {}
 
   ngOnInit() {
     this._subs.push(this.context.cancel$.subscribe(pageIndex => this.cancel(pageIndex)));
@@ -110,9 +113,17 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   }
 
   private handleUploadEvent(event: UploadOutput): void {
+    debug('upload event', event);
     if (event.file.response && event.file.response.success === false) {
-      debug(event.file.response.message);
-      this.finish(event.file.response);
+      let err = event.file.response;
+
+      // File too large
+      if (err.error.code === 'LIMIT_FILE_SIZE') {
+        const size = this.config.maxUploadSize / 1024 / 1024;
+        err.message = `The file is too large. You can upload a maximum of ${size}MB.`;
+      }
+
+      this.finish(err);
     }
     else if (event.type === 'start') {
       debug('starting upload');
@@ -154,7 +165,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
       }
       else {
         // error
-        this.finish(fileUpload.error);
+        this.finish({message: fileUpload.error});
       }
     });
   }
@@ -163,7 +174,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
     if (error) {
       this.steps[this.currentStepIndex].status = 'error';
-      this.errorMessage = error.toString();
+      this.errorMessage = error.message || error.toString();
 
       this.angulartics2.eventTrack.next({
         action: 'UploadDatasetFail',
@@ -178,7 +189,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
       this.angulartics2.eventTrack.next({
         action: 'UploadDatasetSuccess',
-        properties: { category: 'UploadDataset', label: fileUpload['mimeType'] }
+        properties: { category: 'UploadDataset', label: fileUpload.mimeType}
       });
 
       this.context.setNextEnabled(0);

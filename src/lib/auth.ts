@@ -98,13 +98,11 @@ export class AuthService {
     }, this.twitterCallback.bind(this)));
 
     passport.serializeUser((user: User, done) => {
-      this.logger.debug('Serializing user');
       done(null, user.id);
     });
 
     passport.deserializeUser((id: string, done) => {
-      this.logger.debug('Deserializing user');
-      User.findById(id)
+      User.findById<User>(id)
         .then(user => done(null, user))
         .catch(e => done(e));
     });
