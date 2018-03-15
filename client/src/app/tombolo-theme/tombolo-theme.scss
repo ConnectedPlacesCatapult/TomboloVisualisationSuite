@@ -555,12 +555,22 @@
 
       // Push checkbox text away from box
       .mat-checkbox {
+        @include mat-typography-level-to-styles($typography, body-1);
         margin-right: 0.5em;
       }
 
       // Spacing for raised buttons
       .mat-raised-button {
         margin-bottom: $g / 2;
+      }
+
+      // Wrap checkbox labels on signup form
+      .mat-checkbox-layout {
+        white-space: normal !important;
+
+        .mat-checkbox-label {
+          line-height: normal !important;
+        }
       }
 
       .error, .message {

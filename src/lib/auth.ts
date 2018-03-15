@@ -145,6 +145,7 @@ export class AuthService {
         emailVerified: false
       }, {
         fields: [
+          'name',
           'email',
           'password',
           'firstName',
