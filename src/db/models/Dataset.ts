@@ -163,7 +163,7 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
     const sqlSafeQuery = queryInterface.escape(query);
 
     const fullTextQuery =
-      `to_tsvector('english', name || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ${sqlSafeQuery})`;
+      `to_tsvector('english', name || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ${sqlSafeQuery}) and is_private=false`;
 
     return Dataset.findAll<Dataset>({
       where: {
