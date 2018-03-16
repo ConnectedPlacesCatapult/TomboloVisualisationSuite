@@ -31,11 +31,15 @@ export class UploadPage1Component implements OnInit, OnDestroy {
       status: 'pending'
     },
     {
-      text: 'Validating dataset',
+      text: 'Validating data format',
       status: 'pending'
     },
     {
       text: 'Processing dataset',
+      status: 'pending'
+    },
+    {
+      text: 'Upload done!',
       status: 'pending'
     }
   ];
@@ -67,13 +71,13 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   iconForStep(step: SubStep) {
     switch (step.status) {
       case 'pending':
-        return 'fa-circle';
+        return 'tick-inactive';
       case 'inprogress':
-        return 'fa-play-circle';
+        return 'tick-inactive';
       case 'done':
-        return 'fa-check-circle';
+        return 'tick-active';
       case 'error':
-        return 'fa-times-circle';
+        return 'info';
     }
   }
 
@@ -108,6 +112,12 @@ export class UploadPage1Component implements OnInit, OnDestroy {
         this.progressMode = 'indeterminate';
         this.progressValue = 0;
         this.startIngestPolling();
+        break;
+
+      case 3:
+        // Done
+        this.progressMode = 'determinate';
+        this.progressValue = 0;
         break;
     }
   }
@@ -196,7 +206,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     else {
 
       this.steps.forEach(step => step.status = 'done');
-      this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
+      this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p>`;
       this.context.file = fileUpload;
 
       this.angulartics2.eventTrack.next({

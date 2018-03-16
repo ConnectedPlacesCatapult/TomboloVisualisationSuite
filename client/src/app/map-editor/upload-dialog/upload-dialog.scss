@@ -20,49 +20,20 @@ $typography: mat-typography-config();
 }
 
 mat-table {
-  height: 300px;
+  height: 270px;
   overflow-y: auto;
 }
 
 .wizard-button {
   float: right;
+  margin: 1em 0 0.2em 1em;
 }
 
-ul.substeps {
-
-  list-style: none;
-
-  @include mat-typography-level-to-styles($typography, title);
-
-  li.pending {
-    color: darkgray;
-  }
-
-  li.inprogress {
-    color: mat-color($mat-blue, 500);
-  }
-
-  li.done {
-    color: mat-color($mat-green, 500);
-  }
-
-  li.error {
-    color: mat-color($mat-red, 500);
-  }
-}
 
 upload-page2 /deep/ .mat-form-field {
   margin-bottom: 1em;
 }
 
-mat-progress-bar, div.message {
-  margin-top: 3em;
-  margin-bottom: 3em;
-}
-
-div.message {
-  @include mat-typography-level-to-styles($typography, body-2);
-}
 
 .full-width {
   width: 100%;

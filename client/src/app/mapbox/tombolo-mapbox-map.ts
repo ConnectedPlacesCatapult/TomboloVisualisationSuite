@@ -433,7 +433,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
 
     this._mapDefinition.basemapId = basemap.id;
     this._metadata = basemap.style.metadata;
-    
+
     this._regenerateMap$.next(basemap);
 
     this.setModified();

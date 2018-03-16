@@ -60,13 +60,13 @@ export class UploadPage4Component implements OnInit, OnDestroy {
   iconForStep(step: SubStep) {
     switch (step.status) {
       case 'pending':
-        return 'fa-circle';
+        return 'tick-inactive';
       case 'inprogress':
-        return 'fa-play-circle';
+        return 'tick-inactive';
       case 'done':
-        return 'fa-check-circle';
+        return 'tick-active';
       case 'error':
-        return 'fa-times-circle';
+        return 'info';
     }
   }
 
@@ -105,7 +105,7 @@ export class UploadPage4Component implements OnInit, OnDestroy {
     }
     else {
       this.steps.forEach(step => step.status = 'done');
-      this.successMessage = `<p>Congratulations! Your dataset is now ready for use.</p><p>Click 'OK' to continue.</p> `;
+      this.successMessage = `<p>Congratulations! Your dataset is now ready for use.</p> `;
       this.context.setNextEnabled(3);
     }
   }

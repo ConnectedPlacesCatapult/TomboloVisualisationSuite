@@ -38,6 +38,8 @@ export  const ICONS = [
   'share',
   'signup',
   'social-isolation',
+  'tick-active',
+  'tick-inactive',
   'transport',
   'trash',
   'user',
