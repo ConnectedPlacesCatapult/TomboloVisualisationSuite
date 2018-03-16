@@ -85,8 +85,11 @@
       margin: $g/2 $g;
       width: $sidebar-left-width - $g * 2;
       height: $g * 2;
-      color: mat-color($accent, 300);
-      text-transform: uppercase;
+      .mat-button-wrapper {
+        font-weight: bold;
+        text-transform: uppercase;
+        color: mat-color($accent, 300);
+      }
     }
 
     .button-small {
@@ -1055,6 +1058,71 @@
   information-dialog, confirm-dialog {
     p {
       @include mat-typography-level-to-styles($typography, body-1);
+    }
+  }
+
+  // Wizard
+  .wizard-page-component {
+
+    p {
+      @include mat-typography-level-to-styles($typography, subheading-2);
+      margin: $g 0;
+    }
+
+    .substeps {
+
+      @include mat-typography-level-to-styles($typography, subheading-2);
+
+      list-style: none;
+      padding: 0;
+
+      li {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $g / 2 0;
+
+        .step-text.pending {
+          color: #C0D2D2;
+        }
+
+        .mat-progress-bar {
+          flex: 1 1;
+          margin: 0 $g;
+        }
+
+        .mat-icon {
+          width: 30px;
+          height: 30px;
+        }
+
+        &.error .mat-icon {
+          color: mat-color($warn);
+        }
+
+        &:first-child:before {
+          position: absolute;
+          top: 0;
+          right: 40px;
+          left: 0;
+          display: block;
+          content: '';
+          background: #E3ECEC;
+          height: 1px;
+        }
+
+        &:after {
+          position: absolute;
+          bottom: 0;
+          right: 40px;
+          left: 0;
+          display: block;
+          content: '';
+          background: #E3ECEC;
+          height: 1px;
+        }
+      }
     }
   }
 }

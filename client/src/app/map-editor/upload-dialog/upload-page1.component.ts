@@ -5,7 +5,7 @@ import * as Debug from 'debug';
 import {MapService} from '../../services/map-service/map.service';
 import {SubStep, UploadDialogContext} from './upload-dialog.component';
 import {IFileUpload} from '../../../../../src/shared/IFileUpload';
-import {Angulartics2} from "angulartics2";
+import {Angulartics2} from 'angulartics2';
 import {APP_CONFIG, AppConfig} from '../../config.service';
 
 const debug = Debug('tombolo:upload-page1');
@@ -31,11 +31,15 @@ export class UploadPage1Component implements OnInit, OnDestroy {
       status: 'pending'
     },
     {
-      text: 'Validating dataset',
+      text: 'Validating data format',
       status: 'pending'
     },
     {
       text: 'Processing dataset',
+      status: 'pending'
+    },
+    {
+      text: 'Upload done!',
       status: 'pending'
     }
   ];
@@ -67,13 +71,13 @@ export class UploadPage1Component implements OnInit, OnDestroy {
   iconForStep(step: SubStep) {
     switch (step.status) {
       case 'pending':
-        return 'fa-circle';
+        return 'tick-inactive';
       case 'inprogress':
-        return 'fa-play-circle';
+        return 'tick-inactive';
       case 'done':
-        return 'fa-check-circle';
+        return 'tick-active';
       case 'error':
-        return 'fa-times-circle';
+        return 'info';
     }
   }
 
@@ -109,34 +113,52 @@ export class UploadPage1Component implements OnInit, OnDestroy {
         this.progressValue = 0;
         this.startIngestPolling();
         break;
+
+      case 3:
+        // Done
+        this.progressMode = 'determinate';
+        this.progressValue = 0;
+        break;
     }
   }
 
   private handleUploadEvent(event: UploadOutput): void {
-    debug('upload event', event);
-    if (event.file.response && event.file.response.success === false) {
-      let err = event.file.response;
 
-      // File too large
-      if (err.error.code === 'LIMIT_FILE_SIZE') {
-        const size = this.config.maxUploadSize / 1024 / 1024;
-        err.message = `The file is too large. You can upload a maximum of ${size}MB.`;
-      }
-
-      this.finish(err);
-    }
-    else if (event.type === 'start') {
+    if (event.type === 'start') {
       debug('starting upload');
       this.progressValue = event.file.progress.data.percentage;
     }
     else if (event.type === 'uploading') {
-      debug('uploading');
       this.progressValue = event.file.progress.data.percentage;
     }
     else if (event.type === 'done') {
-      debug('finshed upload');
-      this.uploadID = event.file.response['id'];
-      this.setStep(1);
+
+      const size = this.config.maxUploadSize / 1024 / 1024;
+      const fileTooLargeMessage = `The file is too large. You can upload a maximum of ${size}MB.`;
+
+      if (event.file.responseStatus === 200) {
+        // Success
+
+        this.uploadID = event.file.response['id'];
+        this.setStep(1);
+      }
+      else if (event.file.responseStatus === 500) {
+        // Server error
+        let err = event.file.response;
+
+        debug('File upload error', err);
+
+        // Improve the 'File too large' error message with size limits
+        if (err.error.code === 'LIMIT_FILE_SIZE') {
+          err.message = fileTooLargeMessage;
+        }
+        this.finish(err);
+      }
+      else if (event.file.responseStatus === 0) {
+        // Connection dropped - NGINX probably blocked a large file
+        debug('File upload error', event.file.response);
+        this.finish({message: fileTooLargeMessage});
+      }
     }
     else if (event.type === 'rejected') {
       debug('rejected');
@@ -184,7 +206,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
     else {
 
       this.steps.forEach(step => step.status = 'done');
-      this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p><p>Click 'Next' to continue.</p>`;
+      this.successMessage = `<p>Your dataset has been uploaded successfully. ${fileUpload.ogrInfo.featureCount} features were found.</p>`;
       this.context.file = fileUpload;
 
       this.angulartics2.eventTrack.next({
