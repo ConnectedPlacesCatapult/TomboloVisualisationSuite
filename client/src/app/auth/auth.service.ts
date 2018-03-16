@@ -8,6 +8,7 @@ import {environment} from '../../environments/environment';
 import {NotificationService} from '../dialogs/notification.service';
 import {IUser} from '../../../../src/shared/IUser';
 import {Router} from '@angular/router';
+import {IUsageReport} from '../../../../src/shared/IUsage';
 
 const debug = Debug('tombolo:AuthService');
 
@@ -161,6 +162,19 @@ export class AuthService {
           return Promise.resolve(null);
         }
 
+        return this.handleError(e)
+      })
+      .toPromise();
+  }
+
+  loadUsage(): Promise<IUsageReport> {
+    return this.http.get<IUsageReport>(`${environment.apiEndpoint}/auth/me/usage`)
+      .map(results => {
+        debug(`Loaded usage:`, results);
+
+        return results;
+      })
+      .catch(e => {
         return this.handleError(e)
       })
       .toPromise();

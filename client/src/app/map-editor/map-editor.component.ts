@@ -137,7 +137,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           outlets: {
             primary: ['view', map.id],
             loginBar: null,
-            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : map.rightBarRoute]
+            rightBar: [map.id === this.config.defaultMap ? 'appinfo' : map.rightBarRoute || 'mapinfo']
           }
         }]
       }
@@ -150,6 +150,8 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
           }
         }]
       }
+
+      debug(route);
 
       this.router.navigate(route, {
         queryParamsHandling: 'merge'

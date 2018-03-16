@@ -6,6 +6,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 import {Angulartics2} from 'angulartics2';
+import {IUsageReport} from '../../../../../src/shared/IUsage';
+import { humanizeBytes} from 'ngx-uploader';
 
 const debug = Debug('tombolo:password-reset-dialog');
 
@@ -25,6 +27,7 @@ export class MyAccountDialogComponent implements OnInit {
 
   private _subs: Subscription[] = [];
   profileForm: FormGroup;
+  usage: IUsageReport;
 
   ngOnInit() {
     this.profileForm = new FormGroup({
@@ -33,8 +36,13 @@ export class MyAccountDialogComponent implements OnInit {
       password: new FormControl('12345', Validators.required)
     });
 
-    this.authService.loadUser().then(user => {
-      this.profileForm.patchValue({name: user.name, email: user.email})
+    Promise.all([
+      this.authService.loadUser(),
+      this.authService.loadUsage()])
+      .then(([user, usage]) => {
+      this.profileForm.patchValue({name: user.name, email: user.email});
+
+      this.usage = usage;
     });
   }
 
@@ -50,4 +58,7 @@ export class MyAccountDialogComponent implements OnInit {
     this.router.navigate(['/', {outlets:{loginBox:['resetpassword']}}]);
   }
 
+  storageUseText() {
+    return humanizeBytes(this.usage.used.totalStorage) + ' of ' + humanizeBytes(this.usage.limit.totalStorage);
+  }
 }
