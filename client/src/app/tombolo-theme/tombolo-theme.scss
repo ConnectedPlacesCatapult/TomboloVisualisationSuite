@@ -1125,4 +1125,30 @@
       }
     }
   }
+
+  .auth-panel-component {
+
+    h4 {
+      margin-bottom: $g / 2;
+    }
+
+    .usage {
+      padding-bottom: $g / 2;
+      p {
+        @include mat-typography-level-to-styles($typography, body-1);
+        display: flex;
+
+        margin: 0;
+        margin-bottom: $g / 4;
+        margin-top: $g;
+
+        .quota {
+          flex: 1 1
+        }
+        .usage-summary {
+          @include mat-typography-level-to-styles($typography, caption);
+        }
+      }
+    }
+  }
 }

@@ -61,7 +61,6 @@ export class DatasetsDialog implements OnInit {
     this.selectedDataset = null;
 
     this.mapService.loadDatasetsInGroup(group.id).subscribe(group => {
-      debug(group);
       this.datasets = group.datasets;
     });
   }

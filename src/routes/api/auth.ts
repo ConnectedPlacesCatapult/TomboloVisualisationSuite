@@ -26,6 +26,21 @@ router.get('/me', (req, res) => {
   res.json(req.user.clientSafeUser);
 });
 
+router.get('/me/usage', async (req, res, next) => {
+
+  try {
+    if (!req.user) return res.status(404).send('Not logged in');
+
+    const usage = await req.user.calculateUsage();
+
+    res.json(usage);
+  }
+  catch (e) {
+    logger.error(e);
+    next(e);
+  }
+});
+
 // Signup route
 router.post('/signup', async (req, res, next) => {
 

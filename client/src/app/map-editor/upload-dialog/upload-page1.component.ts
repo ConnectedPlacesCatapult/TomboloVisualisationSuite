@@ -124,6 +124,8 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
   private handleUploadEvent(event: UploadOutput): void {
 
+    console.log(event);
+
     if (event.type === 'start') {
       debug('starting upload');
       this.progressValue = event.file.progress.data.percentage;
@@ -152,6 +154,15 @@ export class UploadPage1Component implements OnInit, OnDestroy {
         if (err.error.code === 'LIMIT_FILE_SIZE') {
           err.message = fileTooLargeMessage;
         }
+        this.finish(err);
+      }
+      else if (event.file.responseStatus === 401) {
+        // Server error
+        let err = event.file.response;
+
+        debug('File upload error', err);
+        err.message = 'You have exceeded your quota for uploading data.';
+
         this.finish(err);
       }
       else if (event.file.responseStatus === 0) {

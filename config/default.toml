@@ -72,3 +72,8 @@ secure = false
 [smtp.auth]
 user = 'postmaster@server.net'
 pass ='changethis!'
+
+[quota]
+maps = 50
+datasets = 10
+totalStorage = 104857600 # 100 MB

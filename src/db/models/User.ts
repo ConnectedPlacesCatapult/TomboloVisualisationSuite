@@ -2,6 +2,8 @@ import {Column, DataType, HasMany, Model, Table, Unique} from 'sequelize-typescr
 import {Dataset} from './Dataset';
 import * as sequelize from 'sequelize';
 import {IUser} from '../../shared/IUser';
+import {IUsageReport} from '../../shared/IUsage';
+import * as config from 'config';
 
 @Table({
   tableName: 'users',
@@ -95,5 +97,35 @@ export class User extends Model<User> implements IUser {
 
   hasRole(role: 'editor' | 'admin'): boolean {
     return this.roles.indexOf(role) > -1;
+  }
+
+  async calculateUsage(): Promise<IUsageReport> {
+
+    try {
+      const countMapsSql = `select count(1) as c from maps where owner_id = '${this.id}';`;
+      const countMapResult = await this.sequelize.query(countMapsSql, {type: sequelize.QueryTypes.SELECT});
+      const countMaps = +countMapResult[0]['c'];
+
+      const datasetsSql = `select count(1) as c, sum(db_bytes) as b from datasets where owner_id = '${this.id}';`;
+      const datasetsResult = await this.sequelize.query(datasetsSql, {type: sequelize.QueryTypes.SELECT});
+      const countDatasets = +datasetsResult[0]['c'];
+      const totalStorage = +datasetsResult[0]['b'];
+
+      return {
+        used: {
+          maps: countMaps,
+          datasets: countDatasets,
+          totalStorage: totalStorage
+        },
+        limit: {
+          maps: config.get('quota.maps'),
+          datasets: config.get('quota.datasets'),
+          totalStorage: config.get('quota.totalStorage')
+        }
+      };
+    }
+    catch (e) {
+      return Promise.reject(e);
+    }
   }
 }

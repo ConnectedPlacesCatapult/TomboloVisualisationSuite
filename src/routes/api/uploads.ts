@@ -58,6 +58,15 @@ router.post('/', isAuthenticated, upload.single('file'), async (req, res, next) 
  try {
     const file = req.file;
 
+    const usage = await req.user.calculateUsage();
+
+    console.log(usage);
+   console.log(file.size);
+
+    if (usage.used.datasets >= usage.limit.datasets || usage.used.totalStorage + file.size > usage.limit.totalStorage) {
+      return next({status: 401, message: 'Quota exceeded'});
+    }
+
     const fileUpload = await FileUpload.create<FileUpload>({
       id: file.filename,
       mimeType: file.mimetype,

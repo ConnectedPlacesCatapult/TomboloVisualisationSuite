@@ -22,5 +22,27 @@
 </form>
 
 <h4 class="mat-body-2">Usage Details</h4>
+
 <hr>
+
+<div class="usage" *ngIf="usage">
+  <div>
+    <p><span class="quota">Maps created</span><span class="usage-summary">{{usage.used.maps + ' of ' + usage.limit.maps}}</span></p>
+    <mat-progress-bar color="accent" class="full-width" [value]="usage.used.maps / usage.limit.maps * 100"></mat-progress-bar>
+  </div>
+
+  <div>
+    <p><span class="quota">Datasets uploaded</span><span class="usage-summary">{{usage.used.datasets + ' of ' + usage.limit.datasets}}</span></p>
+    <mat-progress-bar color="accent" class="full-width" [value]="usage.used.datasets / usage.limit.datasets * 100"></mat-progress-bar>
+  </div>
+
+  <div>
+    <p><span class="quota">Storage space</span><span class="usage-summary">{{storageUseText()}}</span></p>
+  <mat-progress-bar color="accent" class="full-width" [value]="usage.used.totalStorage / usage.limit.totalStorage * 100"></mat-progress-bar>
+
+  </div>
+</div>
+
+
+
 
