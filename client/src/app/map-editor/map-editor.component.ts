@@ -144,7 +144,7 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
       else {
         route = ['/', {
           outlets: {
-            primary: ['edit'],
+            primary: ['view'],
             loginBar: null,
             rightBar: ['appinfo']
           }
@@ -303,32 +303,48 @@ export class MapEditorComponent implements OnInit, OnDestroy  {
   }
 
   deleteMap(map: ITomboloMap) {
-    this.dialogsService.confirm(
-      'Delete Map',
-      `Are you sure you want to delete the map:<p><b>${map.name}</b>?<p>This cannot be undone!`)
-      .filter(ok => ok)
-      .mergeMap(() => {
-        return Observable.forkJoin(
-          Observable.fromPromise(this.mapRegistry.getMap<TomboloMapboxMap>('main-map')),
-          this.mapService.deleteMap(map.id)
-        );
-      })
-      .subscribe(([mainMap]) => {
-        this.notificationService.info('Map deleted!');
-        mainMap.setModified(false);
-        this.router.navigate(['/edit']);
+    this.mapRegistry.getMap<TomboloMapboxMap>('main-map').then(mainMap => {
 
-        this.analytics.eventTrack.next({
-          action: 'DeleteMap',
-          properties: {
-            category: 'Playground',
-            label: map.name
-          },
+      const currentMapId = mainMap.id;
+
+      this.dialogsService.confirm(
+        'Delete Map',
+        `Are you sure you want to delete the map<p><b>${map.name}</b>?<p>This cannot be undone!`)
+        .filter(ok => ok)
+        .mergeMap(() => {
+          return this.mapService.deleteMap(map.id);
+        })
+        .subscribe(() => {
+          this.notificationService.info('Map deleted!');
+
+          this.analytics.eventTrack.next({
+            action: 'DeleteMap',
+            properties: {
+              category: 'Playground',
+              label: map.name
+            },
+          });
+
+          if (map.id === currentMapId) {
+            // Just deleted the map that was being viewed so navigate to default edit route
+            mainMap.setModified(false);
+            this.router.navigate(['/', {
+              outlets: {
+                primary: ['edit'],
+                loginBar: null,
+                rightBar: ['editinfo']
+              }
+            }]);
+          }
         });
-      });
+    });
   }
 
   addDataLayerToMap(dataset: ITomboloDataset) {
+
+    // Ensure map editor is showing
+    this.router.navigate(['/', {outlets: {rightBar: ['editpanel']}}]);
+
     this.mapRegistry.getMap<TomboloMapboxMap>('main-map')
       .then(map => this.internalAddDataLayerToMap(dataset, map).subscribe());
   }
