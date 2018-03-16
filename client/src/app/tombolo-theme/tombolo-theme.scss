@@ -208,8 +208,9 @@
 
     /* Tombolo branding */
     h1.app-header {
-      height: $g * 4;
+      height: $g * 5;
       background-image: url(/assets/images/app_logo.svg);
+      background-size: 183px 62px;
       background-repeat: no-repeat;
       background-position: center;
     }
