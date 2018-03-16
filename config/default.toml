@@ -48,9 +48,9 @@ consumerKey = "QWEAgUk3nlZjxNkCrk9Zg5ilZ"
 consumerSecret = "NBNSxKBIu12QHXZDGvMViM5YdsioAUtW5wrpehzFdS9p71Cyv6"
 
 [client]
-socialMediaTitle = "My Tombolo Map"
-socialMediaDescription = "Check out this amazing map I built with Tombolo!"
-socialMediaTags = "tombolo, emuanalytics"
+socialMediaTitle = "My City Data Explorer Map"
+socialMediaDescription = "Check out this amazing map I built with City Data Explorer!"
+socialMediaTags = "city data explorer, tombolo, emuanalytics"
 googleAnalyticsUserId = "UA-79725616-5"
 nominatimUrl = "https://nominatim.openstreetmap.org"
 defaultMap = "950db2c7-1a3b-448d-9b21-444a0ec7b5e0"
