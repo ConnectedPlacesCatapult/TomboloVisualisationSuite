@@ -432,6 +432,8 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     debug(`Setting basemap ${basemap.id}`);
 
     this._mapDefinition.basemapId = basemap.id;
+    this._metadata = basemap.style.metadata;
+    
     this._regenerateMap$.next(basemap);
 
     this.setModified();
@@ -629,6 +631,7 @@ export class TomboloMapboxMap extends EmuMapboxMap {
     this._mapDefinition.id = uuid();
     this._mapDefinition.name = this._mapDefinition.name + ' Copy';
     this._mapDefinition.ownerId = userId;
+    this._mapDefinition.ui = {};
 
     // Give each map layer a new identity
     this.dataLayers.forEach((layer, index) => {
