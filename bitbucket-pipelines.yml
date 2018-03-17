@@ -43,10 +43,12 @@ pipelines:
 
               # Server build
               - yarn
+              - npm run version
               - npm run build
 
               # Client build
               - cd client
+              - yarn global add node-sass
               - yarn global add @angular/cli
               - yarn
               - npm run build
