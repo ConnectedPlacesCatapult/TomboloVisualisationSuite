@@ -143,7 +143,6 @@ export function AppConfigFactory(configService: ConfigService) {
     DragulaModule,
     Angulartics2Module.forRoot([CustomGoogleTagManager], {
       pageTracking: {
-        clearIds: true,
         clearQueryParams: true
       }
     }),
