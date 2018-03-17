@@ -1,13 +1,19 @@
 
-import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from 'sequelize-typescript';
+import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Scopes, Table} from 'sequelize-typescript';
 import {Dataset} from './Dataset';
+import {ITomboloDatasetAttribute} from '../../shared/ITomboloDatasetAttribute';
 
 @Table({
   tableName: 'data_attributes',
   timestamps: true,
   version: true
 })
-export class DataAttribute extends Model<DataAttribute> {
+@Scopes({
+  default: {
+    order: [['order', 'ASC']]
+  }
+})
+export class DataAttribute extends Model<DataAttribute> implements ITomboloDatasetAttribute {
 
   @ForeignKey(() => Dataset)
   @Column({
@@ -23,7 +29,6 @@ export class DataAttribute extends Model<DataAttribute> {
   })
   field: string;
 
-
   @Column({
     type: DataType.TEXT,
     field: 'field_sql'
@@ -34,11 +39,10 @@ export class DataAttribute extends Model<DataAttribute> {
     type: DataType.TEXT,
     allowNull: false
   })
-  type: string;
+  type: 'number' | 'string' | 'datetime';
 
   @Column({
-    type: DataType.TEXT,
-    allowNull: false
+    type: DataType.TEXT
   })
   name: string;
 
@@ -46,6 +50,11 @@ export class DataAttribute extends Model<DataAttribute> {
     type: DataType.TEXT
   })
   description: string;
+
+  @Column({
+    type: DataType.TEXT
+  })
+  unit: string;
 
   @Column({
     type: DataType.DOUBLE,
@@ -74,7 +83,7 @@ export class DataAttribute extends Model<DataAttribute> {
   @Column({
     type: DataType.ARRAY(DataType.TEXT),
   })
-  categories: string;
+  categories: string[];
 
   @Column({
     type: DataType.BOOLEAN,
@@ -90,7 +99,10 @@ export class DataAttribute extends Model<DataAttribute> {
   })
   isLog: boolean;
 
-  @BelongsTo(() => Dataset)
+  @Column(DataType.INTEGER)
+  order: number;
+
+  @BelongsTo(() => Dataset, {onDelete: 'CASCADE'})
   dataset: Dataset;
 
   // Instance methods
@@ -100,7 +112,7 @@ export class DataAttribute extends Model<DataAttribute> {
       return this.fieldSql;
     }
     else {
-      return `"${this.field}"`;
+      return this.sequelize.getQueryInterface().quoteIdentifier(this.field, true);
     }
   }
 }

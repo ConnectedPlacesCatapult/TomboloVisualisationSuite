@@ -19,7 +19,12 @@ import {
   MatTooltipModule,
   MatSelectModule,
   MatTableModule,
-  MatProgressBarModule
+  MatProgressBarModule,
+  MatSliderModule,
+  MatStepperModule,
+  MatExpansionModule,
+  MatAutocompleteModule,
+  MatButtonToggleModule
 } from '@angular/material';
 
 const materialModules = [
@@ -40,7 +45,12 @@ const materialModules = [
   MatTooltipModule,
   MatSelectModule,
   MatTableModule,
-  CdkTableModule
+  CdkTableModule,
+  MatSliderModule,
+  MatStepperModule,
+  MatExpansionModule,
+  MatAutocompleteModule,
+  MatButtonToggleModule
 ];
 
 @NgModule({

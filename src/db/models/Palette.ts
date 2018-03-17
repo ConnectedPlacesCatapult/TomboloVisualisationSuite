@@ -20,7 +20,27 @@ export class Palette extends Model<Palette> {
     type: DataType.ARRAY(DataType.TEXT),
     field: 'color_stops'
   })
-  colorStops: string;
+  colorStops: string[];
 
+  @Column({
+    type: DataType.BOOLEAN,
+    field: 'is_default'
+  })
+  isDefault: boolean;
+
+  @Column({
+    type: DataType.TEXT,
+    field: 'group_id'
+  })
+  groupId: string;
+
+  @Column({
+    type: DataType.INTEGER
+  })
+  order: number;
+
+  static getDefault() {
+    return Palette.findOne<Palette>({where: { isDefault: true} as any});
+  }
 
 }

@@ -7,7 +7,7 @@ import {MatSnackBar, MatSnackBarRef} from '@angular/material';
 import {DialogsService} from "./dialogs.service";
 
 // Default snack bar duration before auto-dismiss
-const NOTIFICATION_DURATION = 4000;
+const NOTIFICATION_DURATION = 2000;
 const INFO_CLASS = 'info';
 const ERROR_CLASS = 'error';
 
@@ -30,7 +30,7 @@ export class NotificationService {
   error(e: Error): void {
     this.snackBar.open(e.message, 'Details', {
       extraClasses: [ERROR_CLASS],
-      duration: NOTIFICATION_DURATION
+      duration: NOTIFICATION_DURATION * 2
     }).onAction().subscribe(() => {
         this.dialogsService.information(e.message, JSON.stringify(e));
     });

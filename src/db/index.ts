@@ -54,12 +54,18 @@ export class DB {
   /**
    * Check DB connection is alive and well
    */
-  async checkConnection(): Promise<void> {
+  async checkConnection(force: boolean = false): Promise<void> {
     try {
       await this.sequelize.authenticate();
-      await this.sequelize.sync({force: false});
 
-      this.logger.info('Connected to DB');
+      if (force) {
+        await this.sequelize.sync({force: force, match: /test/});
+      }
+      else {
+        await this.sequelize.sync({force: force});
+      }
+
+      this.logger.info(`Connected to DB: ${this.sequelize.options.database}`);
     } catch (e) {
       this.logger.error('Error connecting to DB:', e);
       throw e;

@@ -1,9 +1,9 @@
 tombolo-mapbox {
   display: block;
   height: 100%;
-  background-color: black;
+  background-color: white;
 
-  &.hover .mapboxgl-canvas-container {
+  .map-container.hover .mapboxgl-canvas-container {
     cursor: pointer;
   }
 
@@ -33,6 +33,17 @@ tombolo-mapbox {
 
   .zoom-button-minus {
     top: 60px;
+  }
+
+  .hidden {
+    width: 0px;
+    height: 0px;
+    position: fixed;
+    verflow: hidden;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 28px;
   }
 }
 

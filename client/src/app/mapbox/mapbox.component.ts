@@ -3,12 +3,27 @@ import * as Debug from 'debug';
 import 'rxjs/add/operator/auditTime';
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {MapRegistry} from "./map-registry.service";
-import {Map, LngLat, MapMouseEvent} from 'mapbox-gl';
+import {Map, LngLat, MapMouseEvent, AttributionControl} from 'mapbox-gl';
 import MapDataEvent = mapboxgl.MapDataEvent;
+import {ExportMap} from "./export-map/export-map";
 
 const debug = Debug('tombolo:mapboxgl');
 
-export class TomboloMapbox extends Map {
+export class EmuMapboxMap extends Map {
+
+  exportMap = new ExportMap();
+
+  export(name, width, height, dpi, format, drawOverlay: (ctx: CanvasRenderingContext2D, width: number, height: number, callback) => void = null): Promise<string> {
+    const options = {
+      center: this.getCenter(),
+      zoom: this.getZoom(),
+      style: {...this.getStyle(), transition: {delay: 0, duration: 0}},
+      bearing: this.getBearing(),
+      pitch: this.getPitch(),
+    };
+
+    return this.exportMap.downloadCanvas(options, name, width, height, dpi, format, drawOverlay);
+  }
 
   // Update a source as smoothly as possible. All layers using that source are duplicated while the updated source
   // is loading. Note that this does not work perfectly with transparent layers
@@ -163,16 +178,17 @@ export class MapboxComponent implements OnInit {
 
   private mouseMove$ = new EventEmitter<MapboxState>();
 
-  map: TomboloMapbox;
+  map: EmuMapboxMap;
   pendingStyle: any;
   loading = true;
   mapOpacity = 0;
 
+  @Input() mapClass: typeof EmuMapboxMap = EmuMapboxMap;
   @Input() showHover: boolean;
   @Input() id: string;
   @ViewChild('mapContainer') mapContainer;
 
-  @Output() mapLoaded = new EventEmitter<TomboloMapbox>();
+  @Output() mapLoaded = new EventEmitter<EmuMapboxMap>();
   @Output() mapMoveEnd = new EventEmitter<MapboxState>();
   @Output() mapClick = new EventEmitter<MapMouseEvent>();
   @Output() mouseMove = this.mouseMove$.auditTime(200);
@@ -181,10 +197,12 @@ export class MapboxComponent implements OnInit {
 
   ngOnInit() {
     const options = {
-      container: this.mapContainer.nativeElement
+      container: this.mapContainer.nativeElement,
+      attributionControl: false
     };
 
-    this.map = new TomboloMapbox(options);
+    this.map = new this.mapClass(options);
+    this.map.addControl(new AttributionControl(), 'bottom-left');
 
     if (this.pendingStyle) {
       this.map.setStyle(this.pendingStyle);

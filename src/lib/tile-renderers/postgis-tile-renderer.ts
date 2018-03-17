@@ -4,6 +4,7 @@ import * as LRU from 'lru-cache';
 import * as SphericalMercator from '@mapbox/sphericalmercator';
 import * as Handlebars from 'handlebars';
 import * as mapnik from 'mapnik';
+import * as moment from 'moment';
 
 import {startTimer} from '../utils';
 
@@ -11,12 +12,13 @@ import {Logger} from '../logger';
 import {Dataset} from '../../db/models/Dataset';
 import {TileRenderer} from './tile-renderer-service';
 import {DB} from '../../db/index';
+import {DATA_LAYER_ID} from '../../shared/style-generator/style-generator';
 import * as sequelize from 'sequelize';
 
 const db = Container.get(DB);
 
 // Layer id to use for the single tile layer supported by this renderer
-export const DATA_LAYER_ID = 'data';
+
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 
@@ -218,6 +220,12 @@ export class PostgisTileRenderer implements TileRenderer {
 
       let geom = feature['geometry'];
       if (!geom) throw new Error('No geometry field on feature');
+
+      Object.keys(feature).forEach(key => {
+        if (feature[key] instanceof Date) {
+          feature[key] = moment(feature[key]).valueOf();
+        }
+      });
 
       let geojsonFeature = {
         type: 'Feature',

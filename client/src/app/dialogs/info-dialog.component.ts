@@ -2,27 +2,24 @@
  * General purpose information dialog
  */
 
-import { MatDialogRef } from '@angular/material';
-import { Component } from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {Component, Inject} from '@angular/core';
 
 @Component({
   selector: 'information-dialog',
   template: `
-    <h1 mat-dialog-title>{{ title }}</h1>
+    <h1 mat-dialog-title>{{ data.title }}</h1>
     <div mat-dialog-content>
-        <p [innerHTML]="message"></p>
+        <p [innerHTML]="data.message"></p>
     </div>
     <div mat-dialog-actions fxLayoutAlign="end">
-        <button type="button" mat-button (click)="dialogRef.close(true)">OK</button>
+        <button type="button" cdk-focus-start mat-raised-button color="accent" (click)="dialogRef.close(true)">{{data.okButtonText}}</button>
     </div>
     `,
 })
 export class InformationDialog {
 
-  public title: string;
-  public message: string;
-
-  constructor(public dialogRef: MatDialogRef<InformationDialog>) {
-
-  }
+  constructor(
+    public dialogRef: MatDialogRef<InformationDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {}
 }

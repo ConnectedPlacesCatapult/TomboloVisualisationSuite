@@ -2,28 +2,27 @@
  * General purpose confirmation dialog
  */
 
-import { MatDialogRef } from '@angular/material';
-import { Component } from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {Component, Inject} from '@angular/core';
 
 @Component({
   selector: 'confirm-dialog',
   template: `
-    <h1 mat-dialog-title>{{ title }}</h1>
+    <h1 mat-dialog-title>{{ data.title }}</h1>
     <div mat-dialog-content>
-        <p [innerHTML]="message"></p>
+        <p [innerHTML]="data.message"></p>
     </div>
     <div mat-dialog-actions fxLayoutAlign="end">
-      <button type="button" mat-button (click)="dialogRef.close(false)">Cancel</button>
-        <button type="button" mat-button (click)="dialogRef.close(true)">OK</button>
+      <button type="button" cdk-focus-start mat-raised-button (click)="dialogRef.close(false)">Cancel</button>
+        <button type="button" mat-raised-button color="accent" (click)="dialogRef.close(true)">{{data.okButtonText}}</button>
     </div>
     `,
 })
 export class ConfirmDialog {
 
-  public title: string;
-  public message: string;
-
-  constructor(public dialogRef: MatDialogRef<ConfirmDialog>) {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 }

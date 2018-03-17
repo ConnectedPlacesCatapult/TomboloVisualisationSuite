@@ -6,7 +6,5 @@
 export const environment = {
   name: 'development',
   production: false,
-  apiEndpoint: '/api/v1',
-  tileEndpoint: '/tiles',
-  localApiEndpoint: 'http://localhost:3000/api/v1'
+  apiEndpoint: '/api/v1'
 };

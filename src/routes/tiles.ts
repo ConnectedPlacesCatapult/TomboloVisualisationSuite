@@ -8,8 +8,6 @@ import {Dataset} from '../db/models/Dataset';
 import {startTimer} from '../lib/utils';
 import {DataAttribute} from '../db/models/DataAttribute';
 import {TileRenderer, TileRendererService} from '../lib/tile-renderers/tile-renderer-service';
-import {TileliveTileRenderer} from '../lib/tile-renderers/tilelive-tile-renderer';
-import {PostgisTileRenderer} from '../lib/tile-renderers/postgis-tile-renderer';
 
 const logger = Container.get(LoggerService);
 const router = express.Router();
@@ -114,6 +112,8 @@ router.get('/:datasetId/calculatestats', async (req, res, next) => {
   try {
     const dataset = await loadDataset(req.params.datasetId);
     await dataset.calculateDataAttributeStats();
+    await dataset.calculateGeometryExtent();
+    await dataset.calculateDatasetBytes();
     await dataset.reload({include: [DataAttribute]});
     res.json(dataset);
   } catch (e) {
@@ -129,6 +129,7 @@ router.get('/:datasetId/calculatestats', async (req, res, next) => {
  * Load a dataset from DB (or return cached value)
  */
 async function loadDataset(datasetId: string): Promise<Dataset> {
+
 
   if (!datasetCaching || !datasetCache.has(datasetId)) {
     const dataset = await Dataset.findById<Dataset>(datasetId, {include: [DataAttribute]});
