@@ -222,7 +222,7 @@ export class UploadPage1Component implements OnInit, OnDestroy {
 
       this.angulartics2.eventTrack.next({
         action: 'UploadDatasetSuccess',
-        properties: { category: 'UploadDataset', label: fileUpload.mimeType}
+        properties: { category: 'UploadDataset', label: fileUpload.size}
       });
 
       this.context.setNextEnabled(0);

@@ -141,7 +141,12 @@ export function AppConfigFactory(configService: ConfigService) {
     NgUploaderModule,
     ColorPickerModule,
     DragulaModule,
-    Angulartics2Module.forRoot([CustomGoogleTagManager]),
+    Angulartics2Module.forRoot([CustomGoogleTagManager], {
+      pageTracking: {
+        clearIds: true,
+        clearQueryParams: true
+      }
+    }),
     ShareModule.forRoot(),
     LocalStorageModule.withConfig({
       prefix: 'tombolo',
