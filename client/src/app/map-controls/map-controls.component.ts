@@ -67,9 +67,7 @@ export class MapControlsComponent implements OnInit {
     // Update map when map is loaded
     this._subs.push(this.mapService.mapLoaded$().subscribe(map => {
       this.map = map;
-
-      // Ensure basemap detail is applied whenever a map is loaded
-      this.map.setBasemapDetail(this.basemapDetailSliderValue, false);
+      this.basemapDetailSliderValue = map.mapDefinition.basemapDetailLevel;
       this.updateURLforBasemapDetail();
     }));
 
