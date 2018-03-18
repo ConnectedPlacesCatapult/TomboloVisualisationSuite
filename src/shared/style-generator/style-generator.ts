@@ -1,6 +1,6 @@
 import {IBasemap} from '../IBasemap';
 import {IMapDefinition} from '../IMapDefinition';
-import {ILabelLayerStyleMetadata, IStyle, IStyleMetadata} from '../IStyle';
+import {ILabelLayerStyleMetadata, IStyle, IStyleLayer, IStyleMetadata} from '../IStyle';
 import {IMapLayer} from '../IMapLayer';
 import {ITomboloDataset} from '../ITomboloDataset';
 import * as d3scale from 'd3-scale';
@@ -33,6 +33,8 @@ export class StyleGenerator {
     style.sources = this.expandTileSources(this.mapDefinition.tileUrl, style.sources);
     style.glyphs = this.expandRelativeURL(this.mapDefinition.mapAssetsUrl, style.glyphs);
     style.sprite = this.expandRelativeURL(this.mapDefinition.mapAssetsUrl, style.sprite);
+
+    this.applyBasemapDetail(style);
 
     // Find layer indices of insertion points
     let insertionPoints = style.metadata.insertionPoints || {};
@@ -107,7 +109,7 @@ export class StyleGenerator {
     }
   }
 
-  generateMapLayer(layer: IMapLayer): object {
+  generateMapLayer(layer: IMapLayer): IStyleLayer {
 
     const dataset = this.datasetForLayer(layer);
 
@@ -124,7 +126,7 @@ export class StyleGenerator {
     };
   }
 
-  generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): object {
+  generateLabelLayer(layer: IMapLayer, labelAttributeStyle: ILabelLayerStyleMetadata): IStyleLayer {
 
     // Do nothing of no label attribute
     if (!layer.labelAttribute) return null;
@@ -171,7 +173,7 @@ export class StyleGenerator {
     };
   }
 
-  insertMapLayer(insertionPoint: string, style: IStyle, layer: object): void {
+  insertMapLayer(insertionPoint: string, style: IStyle, layer: IStyleLayer): void {
     const index = style.layers.findIndex(l => l['id'] === insertionPoint);
     style['layers'].splice(index, 0, layer);
   }
@@ -298,6 +300,32 @@ export class StyleGenerator {
 
   private expandRelativeURL(baseUrl, url: string): string {
     return (url.startsWith('http')) ? url : baseUrl + url;
+  }
+
+  private applyBasemapDetail(style: IStyle): void {
+
+    const level = style.metadata.mapDefinition.basemapDetailLevel;
+
+    Object.keys(style.metadata.basemapDetail.layers).forEach(key => {
+      const layer = style.layers.find(l => l.id === key);
+      if (!layer) throw new Error(`Unknown layer ${key}`);
+      const opacity = (style.metadata.basemapDetail.layers[key] <= level) ? 1 : 0;
+
+      switch (layer.type) {
+        case 'line':
+          layer.paint['line-opacity'] = opacity;
+          break;
+        case 'symbol':
+          layer.paint['text-opacity'] = opacity;
+          layer.paint['icon-opacity'] = opacity;
+          break;
+        case 'fill':
+          layer.paint['fill-opacity'] = opacity;
+          break;
+        default:
+          throw new Error(`Unsupported layer type for basemap detail: ${layer.type}`);
+      }
+    });
   }
 
   private datasetForLayer(layer: IMapLayer): ITomboloDataset {

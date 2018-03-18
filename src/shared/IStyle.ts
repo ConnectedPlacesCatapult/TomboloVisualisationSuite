@@ -1,12 +1,24 @@
 import {IMapDefinition} from './IMapDefinition';
 
+export interface IStyleLayer {
+  id: string;
+  source: string;
+  'source-layer': string,
+  type: 'fill' | 'circle' | 'line' | 'symbol';
+  paint?: object;
+  layout?: object;
+  filter?: any[];
+  minzoom?: number;
+  maxzoom?: number;
+}
+
 export interface IStyle {
   zoom: number;
   center: number[];
   glyphs: string;
   sprite: string;
   sources: object;
-  layers: object[];
+  layers: IStyleLayer[];
   metadata: IStyleMetadata;
 }
 
