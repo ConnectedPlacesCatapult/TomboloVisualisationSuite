@@ -40,6 +40,10 @@
   </mat-step>
   <mat-step label="Finish" editable="false">
     <upload-page4 [context]="context"></upload-page4>
-    <button mat-raised-button color="accent" class="wizard-button" (click)="finish()">OK</button>
+    <button mat-raised-button color="accent" class="wizard-button" (click)="finish()"
+            angulartics2On="click"
+            angularticsCategory="UploadDataset"
+            angularticsAction="WizardCompleted"
+            angularticsLabel="3">OK</button>
   </mat-step>
 </mat-horizontal-stepper>
