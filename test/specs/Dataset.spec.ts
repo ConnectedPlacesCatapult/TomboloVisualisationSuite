@@ -19,6 +19,12 @@ describe('Dataset', () => {
       actual.forEach((x, i) => expect(x).toBeCloseTo(expected[i], 0.01));
     });
 
+    it('should interpolate duplicates at the end', () => {
+      const actual = Dataset.adjustDuplicateQuantiles([20, 50, 100, 120, 120]);
+      const expected = [20, 50, 100, 110, 120];
+      actual.forEach((x, i) => expect(x).toBeCloseTo(expected[i], 0.01));
+    });
+
     it('should interpolate duplicates in the middle', () => {
       const actual = Dataset.adjustDuplicateQuantiles([0, 1, 2, 2, 2, 3, 4]);
       const expected = [0, 1, 2, 2.333, 2.666, 3, 4];

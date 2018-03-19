@@ -1,6 +1,9 @@
 
 import {OgrFileInfoBase} from './ogrfileinfo-base';
 import {IDBAttribute} from './IDBAttribute';
+import {IUser} from './IUser';
+import {ITomboloDataset} from './ITomboloDataset';
+import {ITomboloMap} from './ITomboloMap';
 
 export interface IFileUpload {
   id?: string;
