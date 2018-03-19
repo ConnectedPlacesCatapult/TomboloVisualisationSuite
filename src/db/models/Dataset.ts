@@ -188,15 +188,22 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
     let results = [...quantiles];
 
     for (let i = 0; i < quantiles.length; i++) {
+
       if (quantiles[i] !== currentVal && !duplicatesFound) {
         // Possibly starting a new run of duplicates
         currentVal = results[i];
         startIndex = i;
       }
-      else if (quantiles[i] !== currentVal && duplicatesFound) {
+      else {
+        duplicatesFound = true;
+      }
+
+      // Tests for end of a run
+      if (quantiles[i] !== currentVal && duplicatesFound) {
         // At end of a run of duplicates before end of quantiles
         // Interpolate duplicate quantiles up to next value
         //e.g [0, 0, 0, 0, 1, 2] -> [0, 0.25, 0.5, 0.75, 1, 2]
+
         const stepPerQuantile = (quantiles[i] - quantiles[startIndex]) / (i - startIndex);
         for (let j = startIndex; j < i; j++) {
           results[j] = currentVal + stepPerQuantile * (j - startIndex);
@@ -225,9 +232,6 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
             results[j] = quantiles[0] + j;
           }
         }
-      }
-      else {
-        duplicatesFound = true;
       }
     }
 
@@ -325,11 +329,11 @@ export class Dataset extends Model<Dataset> implements ITomboloDataset {
 
     // See if field is categorical (i.e. has distinct values less than CATEGORY_MAX_COUNT)
     const categoriesSql = `select distinct ${attribute.sqlSafeField()} as val 
-      from ${this.sqlSafeSource()} order by 1 limit ${CATEGORY_MAX_COUNT + 1}`;
+      from ${this.sqlSafeSource()} where ${attribute.sqlSafeField()} notnull order by 1 limit ${CATEGORY_MAX_COUNT + 1}`;
 
     const results = await this.sequelize.query(categoriesSql, {type: sequelize.QueryTypes.SELECT});
 
-    if (results.length <= CATEGORY_MAX_COUNT) {
+    if (results.length > 1 && results.length <= CATEGORY_MAX_COUNT) {
       attribute.isCategorical = true;
       attribute.categories = results.map(d => d.val);
     }

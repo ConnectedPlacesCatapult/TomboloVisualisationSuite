@@ -473,6 +473,11 @@
       }
     }
 
+    .mapboxgl-popup-content {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
     // Map controls component
     map-controls {
       background-color: mat-color($accent);
