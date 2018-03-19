@@ -22,7 +22,7 @@ describe('File Ingester', () => {
   };
 
   beforeEach(() => {
-    fileIngester = new FileIngester(mockLogger, config.get('db'));
+    fileIngester = new FileIngester(mockLogger, db, config.get('db'));
   });
 
   describe('Ingester', () => {
@@ -84,10 +84,10 @@ describe('File Ingester', () => {
 
     it('should ingest a geojson file', async () => {
 
-      const file: IFileUpload = {
+      const file = FileUpload.build<FileUpload>({
         id: 'geojson1',
         path: 'test/fixtures/geojson1.json'
-      };
+      });
 
       await fileIngester.ingestFile(file);
 
@@ -105,10 +105,10 @@ describe('File Ingester', () => {
 
     it('should handle colons in attribute names', async () => {
 
-      const file: IFileUpload = {
+      const file = FileUpload.build<FileUpload>({
         id: 'colon_in_attributes',
         path: 'test/fixtures/colon_in_attributes.json'
-      };
+      });
 
       await fileIngester.ingestFile(file);
 
@@ -138,7 +138,8 @@ describe('File Ingester', () => {
 
       const file = await FileUpload.create<FileUpload>({
         id: 'geojson2',
-        path: 'test/fixtures/geojson1.json'
+        path: 'test/fixtures/geojson1.json',
+        name: 'geojson2'
       });
 
       file.ogrInfo = await fileIngester.validateFile(file);

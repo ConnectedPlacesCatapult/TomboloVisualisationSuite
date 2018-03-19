@@ -3,7 +3,7 @@ import {IMapDefinition} from './IMapDefinition';
 export interface IStyleLayer {
   id: string;
   source: string;
-  'source-layer': string,
+  'source-layer': string;
   type: 'fill' | 'circle' | 'line' | 'symbol';
   paint?: object;
   layout?: object;
