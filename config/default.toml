@@ -12,6 +12,11 @@ database = "tombolo-staging"
 dialect = "postgres"
 loglevel = 'debug' # Log level at which Sequelize logs are made
 
+[db.pool]
+max = 20
+idle = 30000
+acquire = 60000
+
 [jwt]
 issuer = "Emu Analytics"
 secret = "pm7ycGPshGXx"
