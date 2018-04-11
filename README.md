@@ -20,14 +20,6 @@ create extension "postgis";
 create extension "uuid-ossp";
 ```
 
-Create the basemap styles and palette tables using the following psql command:
-
-```bash
-psql -h [host] -U [username] < ./db/basemaps_palettes.sql
-```
-
-Other required tables will be created when the backend server is first run.
-
 Installation of Basemap Tiles 
 -----------------------------
 The backend server requires an OpenStreetMap extract covering your area of support (e.g. UK/Planet-wide).
@@ -99,12 +91,19 @@ In development mode, all source files are watched and any changes made will trig
 
 Preparation of the default map
 ------------------------------
-On running the backed server for the first time, required database tables are created. Once this has
-been done, the default map (which is shown when the app is started) must currently be created by hand. To create
+On running the backed server for the first time, required database tables are created. 
+
+After running for the first time, shut down the server and import the basemap styles and palettes using the following psql command:
+
+```bash
+psql -h [host] -U [username] [dbname] < ./db/basemaps_palettes.sql
+```
+
+Once this has been done, the default map (which is shown when the app is started) must currently be created by hand. To create
 the default dataset that is used for basemaps add the following row to the `datasets` table in the database.
 
 ```sql
-INSERT INTO public.datasets (id, name, description, "sourceType", source,  "minZoom", "maxZoom", extent, headers, "createdAt", "updatedAt") 
+INSERT INTO public.datasets (id, name, description, "sourceType", source,  "minZoom", "maxZoom", extent, headers, "createdAt", "updatedAt", "is_private") 
   VALUES (
   '38080fa1-e5c3-487d-8347-3532d071c8a6', 
   'openmaptiles_uk', 
@@ -116,14 +115,15 @@ INSERT INTO public.datasets (id, name, description, "sourceType", source,  "minZ
   '{-180.00000000000000000,-90.00000000000000000,180.00000000000000000,90.00000000000000000}', 
   '{"Cache-Control":"public, max-age=86400"}', 
   '2017-01-01 00:00:00.000000 +00:00', 
-  '2017-01-01 00:00:00.000000 +00:00');
+  '2017-01-01 00:00:00.000000 +00:00',
+  FALSE);
 ```
 Replace the source value with the path to you mbtiles file (e.g. `mbtiles:///data/mytiles.mbtiles`);
 
 To create the default map, add the following row to the `maps` table in the database.
 
 ```sql
-INSERT INTO public.maps (id, name, "createdAt", "updatedAt", basemap_id, zoom, center) 
+INSERT INTO public.maps (id, name, "createdAt", "updatedAt", basemap_id, zoom, center, is_private) 
 VALUES (
 '950db2c7-1a3b-448d-9b21-444a0ec7b5e0', 
 'Default Map',
@@ -131,7 +131,8 @@ VALUES (
 '2018-03-08 11:33:47.099000 +00:00',
 'fjord', 
 4.6, 
-'{-0.58455999995931050,54.91938000004640000}');
+'{-0.58455999995931050,54.91938000004640000}',
+FALSE);
 ```
 
 Production
