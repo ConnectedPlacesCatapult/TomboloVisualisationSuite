@@ -2,13 +2,12 @@
 label = "tombolo-viewer"
 level = "debug"
 
-
 [db]
 host = "localhost"
 port = 5432
-username = "tombolo"
+username = "tombolo_cde"
 password = "*************"  # Excluded from git - set DB_PASSWORD environment variable
-database = "tombolo-staging"
+database = "tombolo_cde"
 dialect = "postgres"
 loglevel = 'debug' # Log level at which Sequelize logs are made
 
@@ -18,8 +17,8 @@ idle = 30000
 acquire = 60000
 
 [jwt]
-issuer = "Emu Analytics"
-secret = "pm7ycGPshGXx"
+issuer = "Future Cities Catapult"
+secret = "changethis!"
 
 [cors]
 origin = "*"
@@ -31,7 +30,7 @@ area_threshold = 20
 
 [server]
 baseUrl = "http://localhost:4200"
-mapAssetsUrl = "" # Empty string means use baseUrl value
+mapAssetsUrl = "http://localhost:4200/assets/"
 datasetCaching = false
 slowTileLimit = 500 # ms
 largeTileLimit = 100000 # bytes
@@ -70,13 +69,10 @@ from = "tombolo@emu-analytics.net"
 basePath = "./email-templates"
 
 [smtp]
-host = 'mail.server.net'
-port = 587
+host = "localhost"
+port = 1025
 secure = false
-
-[smtp.auth]
-user = 'postmaster@server.net'
-pass ='changethis!'
+ignoreTLS = true
 
 [quota]
 maps = 50
