@@ -22,3 +22,9 @@ psql -d tombolo_cde -c "SET NAMES 'UTF8';"
 
 # Restore db dump
 pg_restore --username=tombolo_cde --no-privileges --dbname=tombolo_cde --no-owner -v ./db/db.dump
+
+echo "---------------------------------------------------"
+echo "Verifying Tombolo City Data Explorer Database"
+echo "---------------------------------------------------"
+
+psql -h localhost tombolo_cde -c "\dt"
