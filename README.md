@@ -4,19 +4,19 @@ City Data Explorer
 Prerequisites
 -------------
 
-The following libraries and tools are required to build and run the CDE.
+The following libraries and tools are required to build and run the City Data Explorer (CDE).
 
 - node v8.11.1
 - yarn v1.6.0
 - PostgreSQL 9.5+
 - PostGIS 2.2.4+
 - Angular CLI 1.7.4
-- Build tools for native npm modules (e.g. XCode for MacOS or build-essential for Ubuntu)
+- Build tools for native node modules (e.g. XCode for MacOS or build-essential for Ubuntu)
 
 Full instructions are given below for installing these prerequisites on Mac OS X using the Homebrew package manager. However, the
-CDE can also be built and run on Linux by installing the prerequisites using an alternative package manager such as **apt** on Ubuntu.
+CDE can also be built and run on Linux by installing the prerequisites using an alternative package manager (such as **apt** on Ubuntu).
 
-A note about node v9: The project will theoretically run with node v9, however, the project depends on the
+A note about node v9: The project will run with node v9, however, the project depends on the
 [node-mapnik](https://github.com/mapnik/node-mapnik) native library and a prebuilt binary for node V9 is not currently available. Until the
 maintainers of node-mapnik release a node v9-compatible version, the CDE must be built and run with
 node v8.
@@ -24,13 +24,13 @@ node v8.
 MacOS Local Development
 ------------------------
 
-Set-up scripts are provided in `./setup/` for setting up a local development system on MacOS 10.13.1 (High Sierra). Set-up should work on
+Shell scripts are provided in `./setup/` for setting up a local development system on MacOS 10.13.1 (High Sierra). Set-up should work on
 earlier versions of MacOS but has not been tested.
 
 Set-up requires that you have the Homebrew package manager installed. If you do not already have this then follow
 installation instructions at [Homebrew](https://brew.sh/).
 
-You can verify if you have Homebrew installed by running the following in a terminal:
+You can verify if you have Homebrew installed by running the following command in a terminal:
 ```bash
 brew --version
 
@@ -121,7 +121,7 @@ Installation of map fonts
 -------------------------
 
 The map styles used by the CDE require a set of open source fonts in .pbf format. To install
-the fonts from [OpenMapTiles](https://github.com/openmaptiles/fonts) run the terminal command below:
+the fonts from [OpenMapTiles](https://github.com/openmaptiles/fonts) run the command below in a terminal:
 
 ```bash
 ./setup/install_fonts.sh
@@ -176,7 +176,7 @@ For example, using `psql` to modify the configuration:
 
 ```sql
 # To configure a newer mbtiles file
-update datasets set source = 'mbtiles://./data/mbtiles/2018-01-01_europe_great-britain.mbtiles' where id = '38080fa1-e5c3-487d-8347-3532d071c8a6';
+update datasets set source = 'mbtiles://./data/mbtiles/2018-XX-XX_europe_great-britain.mbtiles' where id = '38080fa1-e5c3-487d-8347-3532d071c8a6';
 
 # To configure an absolute path
 update datasets set source = 'mbtiles:///abs/path/mytiles.mbtiles' where id = '38080fa1-e5c3-487d-8347-3532d071c8a6';
@@ -214,11 +214,10 @@ maildev
 # MailDev SMTP Server running at 0.0.0.0:1025
 ```
 
-Email sent to the server can be accessing using the url `http://0.0.0.0:1080` in a browser. Any email
+Email sent to the server can be accessed using the url `http://localhost:1080` in a browser. Any email
 address or domain can be used with the maildev SMTP server and does not have to be pre-configured.
 
-The CDE is pre-configured to connect to the SMTP server on port 1080 and, therefore, does not need any configuration
-out of the box. If you wish to use a different SMTP server then please refer to the configuration section below.
+The CDE is pre-configured to connect to the SMTP server on port 1025. If you wish to use a different SMTP server then please refer to the configuration section below.
 
 ### Running the CDE backend server and front end UI
 
