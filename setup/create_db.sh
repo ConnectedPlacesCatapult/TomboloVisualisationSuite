@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#Give this script execution permision
-# chmod +x create_db.sh
+# Run in terminal from project root:
+# chmod +x ./setup/create_db.sh
+# ./setup/create_db.sh
 
 echo "---------------------------------------------------"
 echo "Creating Tombolo City Data Explorer Database"

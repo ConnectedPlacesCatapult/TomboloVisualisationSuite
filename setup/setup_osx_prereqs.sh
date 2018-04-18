@@ -1,9 +1,9 @@
 #!/bin/bash
-# Script assumes brew is already installed
-#
-# To run:
-# 1. Clone the repo
-# 2. In terminal type ./setup/setup_osx.sh
+# Setup script assumes brew is already installed
+
+# Run in terminal from project root:
+# chmod +x ./setup/setup_osx.sh
+# ./setup/setup_osx.sh
 
 echo "---------------------------------------------------"
 echo "Installing Tombolo City Data Explorer Prerequisites"
@@ -26,6 +26,11 @@ echo "----------------------------------"
 npm install -g @angular/cli
 
 echo "----------------------------------"
+echo "Installing Maildev"
+echo "----------------------------------"
+npm install -g maildev
+
+echo "----------------------------------"
 echo "Installing PostgreSQL"
 echo "----------------------------------"
 brew install postgresql
@@ -40,5 +45,6 @@ echo "Verifying installation"
 echo "----------------------------------"
 echo node: `node -v`
 echo yarn: `yarn -v`
+echo maildev: `maildev --version`
 echo postgresql: `psql --version`
 echo GDAL: `ogr2ogr --version`
