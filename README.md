@@ -11,9 +11,9 @@ The following libraries and tools are required to build and run the City Data Ex
 - PostgreSQL 9.5+
 - PostGIS 2.2.4+
 - Angular CLI 1.7.4
-- Build tools for native node modules (e.g. XCode for MacOS or build-essential for Ubuntu)
+- Build tools for native node modules (e.g. XCode for macOS or build-essential for Ubuntu)
 
-Full instructions are given below for installing these prerequisites on Mac OS X using the Homebrew package manager. However, the
+Full instructions are given below for installing these prerequisites on macOS using the Homebrew package manager. However, the
 CDE can also be built and run on Linux by installing the prerequisites using an alternative package manager (such as **apt** on Ubuntu).
 
 A note about node v9: The project will run with node v9, however, the project depends on the
@@ -21,17 +21,18 @@ A note about node v9: The project will run with node v9, however, the project de
 maintainers of node-mapnik release a node v9-compatible version, the CDE must be built and run with
 node v8.
 
-MacOS Local Development
+macOS Local Development
 ------------------------
 
-Shell scripts are provided in `./setup/` for setting up a local development system on MacOS 10.13.1 (High Sierra). Set-up should work on
-earlier versions of MacOS but has not been tested.
+Shell scripts are provided in `./setup/` for setting up a local development system on macOS 10.13.1 (High Sierra). Set-up should work on
+earlier versions of macOS but has not been tested.
 
 Set-up requires that you have the Homebrew package manager installed. If you do not already have this then follow
 installation instructions at [Homebrew](https://brew.sh/).
 
 You can verify if you have Homebrew installed by running the following command in a terminal:
 ```bash
+# Check brew is installed
 brew --version
 
 # Output on success
@@ -47,6 +48,7 @@ a local folder. The project root folder is referred to as [projectroot] in this 
 Run the script `setup_osx_prereqs.sh` as shown below to install the required libraries and tools using brew.
 
 ```bash
+# Install prerequisites
 cd [projectroot]
 ./setup/setup_osx_prereqs.sh
 
@@ -77,6 +79,7 @@ Run the `./setup/create_db.sh` script to create the `tombolo_cde` database, `tom
 and restore a database dump containing the default maps, datasets and other required entities.
 
 ```bash
+# Create DB, user and restore DB.
 ./setup/create_db.sh
 
 # Output on success
@@ -124,6 +127,7 @@ The map styles used by the CDE require a set of open source fonts in .pbf format
 the fonts from [OpenMapTiles](https://github.com/openmaptiles/fonts) run the command below in a terminal:
 
 ```bash
+# Install map fonts
 ./setup/install_fonts.sh
 
 # Output on success
@@ -159,6 +163,7 @@ The file you receive should be called `2017-07-03_europe_great-britain.mbtiles` 
 into place using the following terminal commands:
 
 ```bash
+# Install basemap mbtiles file
 cd [projectroot]
 mkdir -p ./data/mbtiles
 mv [download location]/2017-07-03_europe_great-britain.mbtiles ./data/mbtiles
@@ -188,15 +193,31 @@ update datasets set source = 'mbtiles:///abs/path/mytiles.mbtiles' where id = '3
 To install required node modules for the backend server and front end UI run the following commands in a terminal:
 
 ```bash
-cd [projectroot]
 # Install backend node modules
+cd [projectroot]
 yarn install
 
-cd client
 # Install front end client modules
+cd client
 yarn install
 
 ```
+
+
+### Generate version file
+
+The git commit SHA hash and build date are required to display version information in the app. This information
+is contained in the file `[projectroot]/src/version.js`. To generate this file, run the following command in a
+terminal.
+
+```bash
+# Generate version.js
+yarn run version
+```
+
+For local development it is sufficient to run this command once during setting up your environment. For continuous
+integration or production builds the version file should be regenerated to provide up-to-date version
+information to be displayed in the app.
 
 ### Running a development SMTP mail server
 
@@ -224,6 +245,7 @@ The CDE is pre-configured to connect to the SMTP server on port 1025. If you wis
 To run the backend:
 
 ```bash
+# Run backend server
 cd [projectroot]
 yarn run dev
 
@@ -237,6 +259,8 @@ yarn run dev
 To run the front end UI (in a separate terminal):
 
 ```bash
+# Run front end UI
+cd client
 yarn start
 
 # Output on success
@@ -255,11 +279,12 @@ yarn start
 Once the CDE backend server and frontend UI are running you can access the CDE in your browser at
 url `http://localhost:4200`.
 
+Changes to source files are automatically detected during local development 
 
 Configuration
 -------------
 
-The CDE is preconfigured to run as using the MacOS local development instructions above. If your
+The CDE is preconfigured to run using the macOS local development instructions above. If your
 installation requirements are different then you will need to reconfigure the system.
 
 [node-config](https://github.com/lorenwest/node-config) is used for app configuration. The base configuration
@@ -294,6 +319,7 @@ database = "tombolo_dev"
 host = 'mysmtpserver.com'
 port = 587
 secure = false
+ignoreTLS = false
 
 #Configure SMTP auth credentials
 [smtp.auth]
