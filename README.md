@@ -339,3 +339,21 @@ the complete app.
 The backend server is generally stateless and can be deployed as a load-balanced cluster of instances.
 Stateful sessions are used only for holding login information and session content is persisted in the
 backend database.
+
+
+Documentation
+-------------
+Documentation is generated with [TypeDoc][1]. Use `/** .. **/`-style doc comments for classes,
+function and methods.
+
+To generate documentation:
+```bash
+npm run gen-doc
+```
+
+To view documentationn:
+```bash
+npm run view-gen
+```
+
+[1]: http://typedoc.org/
