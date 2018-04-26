@@ -36,7 +36,7 @@ slowTileLimit = 500 # ms
 largeTileLimit = 100000 # bytes
 
 [fileUpload]
-uploadPath = "/uploads"
+uploadPath = "./data/uploads"
 maxFileSize = 52428800 # 50 MB
 
 [auth]
