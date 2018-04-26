@@ -16,6 +16,7 @@ authEndpoint = "AUTH_ENDPOINT"
 
 [server]
 baseUrl = "SERVER_BASE_URL"
+mapAssetsUrl = "SERVER_MAP_ASSETS_URL"
 
 [smtp]
 host = "SMTP_HOST"
