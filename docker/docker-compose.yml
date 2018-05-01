@@ -16,7 +16,7 @@ services:
        - citydataexplorer
 
   citydataexplorer:
-    image: citydataexplorer
+    image: emuanalytics/citydataexplorer
     volumes:
       - ./data/mbtiles:/data/mbtiles
     environment:
