@@ -131,17 +131,11 @@ Copy the `docker` folder from the GIT repo to the EC2 box:
 ```bash
 scp -i [key].pem -r ./docker ubuntu@[ec2 public address]:~
 ```
-This includes the config files and static map sprites but *not* the mbtiles file (cannot be distributed)
-or the static map fonts (too large).
+This includes the config files, map sprites and compressed map fonts but *not* the mbtiles file (this file cannot be distributed).
 
 Copy the mbtiles file `2017-07-03_europe_great-britain.mbtiles` into place:
 ```bash
 scp -i [key].pem ./data/mbtiles/* ubuntu@[ec2 public address]:~/docker/data/mbtiles
-```
-
-Copy the map fonts into place:
-```bash
-scp -i [key].pem ./fonts.tar.gz ubuntu@[ec2 public address]:~/docker/data/static
 ```
 
 Unarchive the map fonts:
