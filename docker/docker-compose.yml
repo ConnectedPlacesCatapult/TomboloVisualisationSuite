@@ -38,3 +38,6 @@ services:
       - SMTP_PORT=************      # SMTP Port e.g 25 or 587
       - SMTP_USER=************      # SMTP User
       - SMTP_PASSWORD=************  # SMTP Password
+
+      # Extra config for items without env variables can be done like this:
+      # - NODE_CONFIG={"fileUpload":{"maxFileSize":104428800}}
