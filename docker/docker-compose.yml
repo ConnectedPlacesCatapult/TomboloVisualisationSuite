@@ -18,7 +18,7 @@ services:
   citydataexplorer:
     image: emuanalytics/citydataexplorer
     volumes:
-      - ./data/mbtiles:/data/mbtiles
+      - ./data/mbtiles:/app/data/mbtiles
     environment:
       - NODE_ENV=production
       - LOG_LEVEL=info

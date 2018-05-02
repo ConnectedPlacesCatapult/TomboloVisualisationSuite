@@ -61,8 +61,9 @@ this is not necessary for a non-critical demo instance.
 Enter a name for the DB and choose a master username and password.
 
 The 'advanced settings' may be left at their default values. By default the DB will be accessible via
-a public IP address. This facilitates setup of the DB but you may sibsequently want to restrict access to the DB
-once setup is complete.
+a public IP address. Modify the security group to allow access to port 5432 from anywhere. 
+This facilitates setup of the DB but you may subsequently want to 
+restrict access to the DB once setup is complete.
 
 Follow the setup procedure outlined in create_db.sh to create the default user, database, add required
 extensions and restore the database dump.
@@ -95,14 +96,14 @@ Configure security groups to allow access from anywhere for ports:
 Verify you can SSH into the instance:
 ```
 # SSH into EC2 instance
-ssh -i ~/.ssh/[key].pem ubuntu@ec2-54-171-208-71.eu-west-1.compute.amazonaws.com
+ssh -i ~/.ssh/[key].pem ubuntu@[EC2 address]
 ```
 
 Install Docker:
 ```bash
 # Install Docker using get.docker.com script
 curl -fsSL get.docker.com -o get-docker.sh
-ubuntu@ip-172-31-38-106:~$ sudo sh get-docker.sh
+sudo sh get-docker.sh
 sudo usermod -aG docker ubuntu
 docker --version
 ```
@@ -140,11 +141,16 @@ scp -i [key].pem ./data/mbtiles/* ubuntu@[ec2 public address]:~/docker/data/mbti
 
 Copy the map fonts into place:
 ```bash
-scp -i [key].pem -r ./client/src/assets/fonts/* ubuntu@[ec2 public address]:~/docker/data/static/fonts
+scp -i [key].pem ./fonts.tar.gz ubuntu@[ec2 public address]:~/docker/data/static
 ```
 
-Because there are a lot of small files, the copy can take a long time. You can archive the fonts directory
-first and copy it across and then unarchive:
+Unarchive the map fonts:
+
+```bash
+# Unarchive fonts on EC2 instance
+cd ~/docker/data/static
+tar zxvf fonts.tar.gz
+```
 
 You should end up with something like this:
 
