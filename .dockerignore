@@ -7,6 +7,8 @@ doc/
 client/
 docker/
 data/
+assets/fonts
+assets/sprites
 
 bitbucket-pipelines.yml
 *.iml

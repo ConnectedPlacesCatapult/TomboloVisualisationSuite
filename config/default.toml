@@ -72,7 +72,6 @@ basePath = "./email-templates"
 host = "localhost"
 port = 1025
 secure = false
-ignoreTLS = true
 
 [quota]
 maps = 50

@@ -10,15 +10,10 @@
     "outDir": "./build",
     "allowJs": true
   },
-  "filesGlob": [
+  "include": [
     "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "client",
-    "test",
-    "src/lib/customTypings",
-    "build",
-    "db"
+   "src/lib/customTypings"
   ]
 }
