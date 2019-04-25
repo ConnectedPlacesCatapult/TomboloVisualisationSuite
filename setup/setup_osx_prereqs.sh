@@ -18,7 +18,7 @@ brew link --force node@8
 echo "----------------------------------"
 echo "Installing yarn"
 echo "----------------------------------"
-brew install yarn --without-node
+brew install yarn --ignore-dependencies
 
 echo "----------------------------------"
 echo "Installing Angular CLI"
